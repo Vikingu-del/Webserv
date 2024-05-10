@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 14:50:23 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:05:29 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,5 @@
 #include "ConfigFileParser.hpp"
 #include "ServerConfiguration.hpp"
 #include "ConfigFile.hpp"
-
+#include "Client.hpp"
 /* Webserv.hpp */
