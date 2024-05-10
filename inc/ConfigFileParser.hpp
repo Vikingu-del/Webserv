@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 11:48:36 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/10 15:10:05 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CONFIGFILEPARSER_HPP
-#define CONFIGFILEPARSER_HPP
+#pragma once
 
 #include "Webserv.hpp"
+
+class ServerConfig;
 
 class ConfigFileParser
 {
@@ -21,7 +22,7 @@ class ConfigFileParser
 	private:
 		std::vector<std::string>	_serversConfig;
 		size_t						_numOfServers;
-		// std::vector<ServerConfig> _servers;
+		std::vector<ServerConfig> _servers;
 	
 	// Constructor / Destructor
 	public:
@@ -30,22 +31,25 @@ class ConfigFileParser
 	
 	// Methods
 	public:
-		int parseConfigFile(std::string string);
-		// std::vector<ServerConfig> getServers() const;
-		// void setServers(std::vector<ServerConfig> servers);
-		// void addServer(ServerConfig server);
-		// void removeServer(ServerConfig server);
-		// void removeServer(size_t index);
-		// void clearServers();
-		// size_t getNumOfServers() const;
-		// void setNumOfServers(size_t numOfServers);
-		// std::string toString() const;
-		// std::string toFile() const;
-		// void fromFile(std::string file);
-		// void fromString(std::string string);
-		// void fromServerConfig(ServerConfig server);
-		// void fromServerConfig(std::vector<ServerConfig> servers);
+		int parseConfigFile(std::string & configFilePath);
+		std::vector<ServerConfig> getServers() const;
+		void checkServers();
+
+	public: 
+		class ParsingErrorException : public std::exception
+		{
+			private:
+				std::string _message;
+			public:
+				ParsingErrorException(std::string message) throw()
+				{
+					_message = "Config File Parser Error: " + message;
+				}
+				virtual const char* what() const throw()
+				{
+					return (_message.c_str());
+				}
+				virtual ~ParsingErrorException() throw() {}
+		};
 		
 };
-
-#endif

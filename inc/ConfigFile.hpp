@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 11:52:45 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/10 12:50:46 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/10 15:11:17 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class ConfigFile {
         std::string getFileContent(std::string const path);
         std::string getPath();
         int getNumOfServers();
+
         
         void setNumOfServers(int num);
 };

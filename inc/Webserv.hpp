@@ -3,34 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 13:46:42 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/10 14:50:23 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-#define WEBSERV_HPP
-
-// This file will include itself all needed libs
+#pragma once
 
 // Default libs
 #include <iostream>
 
 
 // STL libs
+#include <map>
 #include <vector>
 
+// Network / IP etc.
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <sys/select.h>
+# include <arpa/inet.h>
+
 // Webserv libs
-#include "ConfigFileParser.hpp"
-#include "defines.h"
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
+// #include <types.h>
 #include <unistd.h>
 
+#include "defines.h"
+#include "ConfigFileParser.hpp"
+#include "ServerConfiguration.hpp"
+#include "ConfigFile.hpp"
 
-#include "Webserv.hpp"
-
-#endif /* Webserv.hpp */
+/* Webserv.hpp */
