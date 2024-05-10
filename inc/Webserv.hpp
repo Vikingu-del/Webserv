@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 14:50:23 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/10 17:46:51 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,7 @@
 #include "ConfigFileParser.hpp"
 #include "ServerConfiguration.hpp"
 #include "ConfigFile.hpp"
+#include "Location.hpp"
+#include "WebservUtils.hpp"
 
 /* Webserv.hpp */

@@ -1,20 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   defines.h                                          :+:      :+:    :+:   */
+/*   WebservUtils.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/10 17:39:03 by ipetruni         ###   ########.fr       */
+/*   Created: 2024/05/10 17:12:54 by ipetruni          #+#    #+#             */
+/*   Updated: 2024/05/10 17:13:33 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define OTHER 2
+#include "Webserv.hpp"
 
-
-#define MAX_CONTENT_LENGTH 3000000
-
-
+int ft_stoi(std::string str);
