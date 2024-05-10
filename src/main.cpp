@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/09 12:20:59 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/09 14:39:15 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,19 @@ int main(int argc, char **argv)
 	std::string configFilePath;
 	ConfigFileParser parser;
 
-
 	try {
 		switch (argc) 
 		{
 			case 1:
 				configFilePath = "configs/default.conf";
-			 parser.parseConfigFile(configFilePath);
+				parser.parseConfigFile(configFilePath);
+				// After parsing setup all needed info
+				// Run the servers
 			case 2:
 				configFilePath = argv[1];
 				parser.parseConfigFile(configFilePath);
+				// After parsing setup all needed info
+				// Run the servers
 			default:
 				throw std::invalid_argument("Wrong arguments");
 				return 1;
@@ -37,46 +40,5 @@ int main(int argc, char **argv)
 		std::cerr << ex.what() << std::endl;
 		return 1;
 	}
-	
-	
 	return 0;
 }
-
-
-// int main(int argc, char **argv) 
-// {
-//     std::string config;
-//     ConfigParser cluster;
-//     ServerManager master;
-
-//     try 
-//     {
-//         signal(SIGPIPE, sigpipeHandle);
-
-//         switch (argc)
-//         {
-//         case 1:
-//             config = "configs/default.conf";
-//             cluster.createCluster(config);
-//             master.setupServers(cluster.getServers());
-//             master.runServers();
-//             break;
-//         case 2:
-//             config = argv[1];
-//             cluster.createCluster(config);
-//             master.setupServers(cluster.getServers());
-//             master.runServers();
-//             break;
-//         default:
-//             Logger::logMsg(RED, CONSOLE_OUTPUT, "Error: wrong arguments");
-//             return 1;
-//         }
-//     }
-//     catch (std::exception &e) 
-//     {
-//         std::cerr << e.what() << std::endl;
-//         return 1;
-//     }
-
-//     return 0;
-// }
