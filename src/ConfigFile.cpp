@@ -2,12 +2,15 @@
 
 // Constructors / Destructor
 ConfigFile::ConfigFile() : _configFilePath("configs/default.conf"), _numOfServers(0) {}
+
 ConfigFile::ConfigFile(std::string const path) : _configFilePath(path), _numOfServers(0) {}
+
 ConfigFile::~ConfigFile() {}
 
 // Getters
 std::string ConfigFile::getPath() { return this->_configFilePath; }
 int ConfigFile::getNumOfServers() { return this->_numOfServers; }
+
 std::string ConfigFile::getFileContent(std::string const path) {
 if (path.empty() || path.length() == 0)
         throw std::invalid_argument("Path cannot be empty");
@@ -35,6 +38,7 @@ int ConfigFile::checkFileExistence(std::string const path) {
     }
     return (-1);
 }
+
 
 int ConfigFile::checkFilePermissons(std::string const path, int mode) {
     return (access(path.c_str(), mode));
