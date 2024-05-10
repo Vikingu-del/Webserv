@@ -1,9 +1,4 @@
 #include "ConfigFile.hpp"
-#include "defines.h"
-#include <fstream>
-#include <sstream>
-#include <sys/stat.h>
-# include <fcntl.h>
 
 // Constructors / Destructor
 ConfigFile::ConfigFile() : _configFilePath("configs/default.conf"), _numOfServers(0) {}
@@ -32,15 +27,23 @@ int ConfigFile::checkFileExistence(std::string const path) {
     struct stat buffer;
     if (stat(path.c_str(), &buffer) == 0) {
         if (buffer.st_mode & S_IFREG)
-            return S_IFREG;
+            return 1;
         else if (buffer.st_mode & S_IFDIR)
-            return S_IFDIR;
+            return 2;
         else
-            return OTHER;
+            return 3;
     }
     return (-1);
 }
 
-// int ConfigFile::checkFilePermissons(std::string const path, int mode) {
-//     return (access(path.c_str(), mode));
-// }
+int ConfigFile::checkFilePermissons(std::string const path, int mode) {
+    return (access(path.c_str(), mode));
+}
+
+int ConfigFile::checkFile(std::string const path, std::string const index) {
+    if (checkFileExistence(index) == 1 && checkFilePermissons(index, R_OK) == 0)
+        return 0;
+    if (!path.empty() && checkFileExistence(path + index) == 1 && checkFilePermissons(path + index, R_OK) == 0)
+        return 0;
+    return -1;
+}
