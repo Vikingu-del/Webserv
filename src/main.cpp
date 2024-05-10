@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/09 12:20:59 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/10 11:38:10 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 				configFilePath = argv[1];
 				parser.parseConfigFile(configFilePath);
 			default:
-				throw std::invalid_argument("Wrong arguments");
+				throw std::invalid_argument("Wrong number arguments");
 				return 1;
 		}
 	}
