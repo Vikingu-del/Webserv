@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:37:43 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:42:53 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 	if (content.empty())
 		throw ParsingErrorException("File is empty"); 
 	removeComments(content);
-	// TODO: removeWhiteSpace(content);
+	removeWhiteSpace(content);
 	// TODO: splitServers(content);
 	if (this->_serversConfig.size() != this->_numOfServers)
 		throw ParsingErrorException("Number of servers in configuration does not match expected count.");
@@ -81,4 +81,16 @@ void ConfigFileParser::removeComments(std::string &someString) {
 }
 
 //! This method deletes all whitespaces in 
+void ConfigFileParser::removeWhiteSpace(std::string &content)
+{
+	size_t	i = 0;
+
+	while (content[i] && isspace(content[i]))
+		i++;
+	content = content.substr(i);
+	i = content.length() - 1;
+	while (i > 0 && isspace(content[i]))
+		i--;
+	content = content.substr(0, i + 1);
+}
 

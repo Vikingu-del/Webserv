@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:38:12 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:45:48 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -516,4 +516,26 @@ int ServerConfig::isValidLocation(Location & location) const
 		}
 	}
 	return (0);
+}
+
+/* socket setup and binding */
+void	ServerConfig::bindServer(void)
+{
+	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
+    {
+		Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    int option_value = 1;
+    setsockopt(_listen_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
+    memset(&_server_address, 0, sizeof(_server_address));
+    _server_address.sin_family = AF_INET;
+    _server_address.sin_addr.s_addr = _host;
+    _server_address.sin_port = htons(_port);
+    if (bind(_listen_fd, (struct sockaddr *) &_server_address, sizeof(_server_address)) == -1)
+    {
+		Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
 }
