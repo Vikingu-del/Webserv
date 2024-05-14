@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:22:13 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:50:34 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ class ServerConfig {
 		bool							_autoindex;
 		std::map<short, std::string>	_error_pages;
 		std::vector<Location> 			_locations;
-        struct sockaddr_in 				_server_address;
-        int     						_listen_fd;
+		struct sockaddr_in 				_server_address;
+		int     						_listen_fd;
 
 	// !Getters
 	public:
@@ -71,5 +71,7 @@ class ServerConfig {
 		void initErrorPages();
 		void checkToken(std::string & parametr);
 		int isValidLocation(Location & location) const;
-		
+		bool isValidHost(std::string host) const;
+		void ServerConfig::bindServer()
+	//! Here 		
 };

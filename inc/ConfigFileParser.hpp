@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 17:39:04 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:50:47 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ class ConfigFileParser
 		std::vector<ServerConfig> getServers() const;
 		void checkServers();
 	
-	//! 
+	//! Removing methods
 		void removeComments(std::string & someString);
-
+		void removeWhiteSpace(std::string &content);
+		
 	public: 
 		class ParsingErrorException : public std::exception
 		{
