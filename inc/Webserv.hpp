@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 16:05:29 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:49:10 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 // Webserv libs
 #include <fstream>
 #include <sstream>
+#include <sstream>
 #include <sys/stat.h>
 // #include <types.h>
 #include <unistd.h>
@@ -38,4 +39,7 @@
 #include "ServerConfiguration.hpp"
 #include "ConfigFile.hpp"
 #include "Client.hpp"
+// #include "HttpResponse.hpp"
+#include "HttpParser.hpp"
+#include "utils.hpp"
 /* Webserv.hpp */
