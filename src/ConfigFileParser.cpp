@@ -6,18 +6,18 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 15:11:45 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 17:44:16 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ConfigFileParser.hpp"
 
-// Constructors
+// !Constructors
 ConfigFileParser::ConfigFileParser() {
 	_numOfServers = 0;
 }
 
-// Destructor
+// !Destructor
 ConfigFileParser::~ConfigFileParser() {
 }
 
@@ -36,7 +36,7 @@ void ConfigFileParser::checkServers()
 	}
 }
 
-// Methods
+// !Main method 
 int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 	
 	std::string		content;
@@ -48,20 +48,37 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 		throw ParsingErrorException("File is not accessible");
 	content = file.getFileContent(configFilePath);
 	if (content.empty())
-		throw ParsingErrorException("File is empty");
-	// removeComments(content);
-	// removeWhiteSpace(content);
-	// splitServers(content);
+		throw ParsingErrorException("File is empty"); 
+	removeComments(content);
+	// TODO: removeWhiteSpace(content);
+	// TODO: splitServers(content);
 	if (this->_serversConfig.size() != this->_numOfServers)
 		throw ParsingErrorException("Number of servers in configuration does not match expected count.");
 	for (size_t i = 0; i < this->_numOfServers; i++)
 	{
 		ServerConfig server;
-		// createServer(this->_serversConfig[i], server);
+		// TODO: createServer(this->_serversConfig[i], server);
 		this->_servers.push_back(server);
 	}
 	if (this->_numOfServers > 1)
 		checkServers();
 	return (0);
 }
+
+//! This method just remove all the commets , fm: '#' to '\n'
+void ConfigFileParser::removeComments(std::string &someString) {
+	size_t hashPos;
+
+	hashPos = someString.find('#');
+	
+	while (hashPos != std::string::npos)
+	{
+		size_t newLineCharPos;
+		newLineCharPos = someString.find('\n');
+		someString.erase(hashPos, newLineCharPos - hashPos); //? params are (starting position, how many chars to delete)
+		hashPos = someString.find('#');
+	}
+}
+
+//! This method deletes all whitespaces in 
 
