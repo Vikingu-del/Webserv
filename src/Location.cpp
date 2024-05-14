@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 17:45:59 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:23:52 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,15 @@ const std::string &Location::getAlias() const {
 	return(this->_alias);
 }
 
-// TODO:
+const std::vector<std::string> &Location::getCgiPath() const
+{
+	return (this->_cgi_path);
+}
 
-// Getters for CGIPATH and CGIEXTENSION
-
-// TODO:
+const std::vector<std::string> &Location::getCgiExtension() const
+{
+	return (this->_cgi_ext);
+}
 
 const std::map<std::string, std::string> &Location::getExtensionPath() const {
 	return(this->_ext_path);

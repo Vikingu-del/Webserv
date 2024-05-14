@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 18:04:56 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:50:34 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ class ServerConfig {
 		bool							_autoindex;
 		std::map<short, std::string>	_error_pages;
 		std::vector<Location> 			_locations;
-        struct sockaddr_in 				_server_address;
-        int     						_listen_fd;
+		struct sockaddr_in 				_server_address;
+		int     						_listen_fd;
 
 	// !Getters
 	public:
@@ -44,8 +44,20 @@ class ServerConfig {
 		const struct sockaddr_in & getServerArddres();
 		const int & getListenFd();
 
+
+	// !Setters
 	public:
-		
+		void setServerName(std::string server_name);
+		void setHost(std::string parametr);
+		void setRoot(std::string root);
+		void setFd(int fd);
+		void setPort(std::string parametr);
+		void setClientMaxBodySize(std::string parametr);
+		void setErrorPages(std::vector<std::string> &parametr);
+		void setIndex(std::string index);
+		void setLocation(std::string nameLocation, std::vector<std::string> parametr);
+		void setAutoindex(std::string autoindex);
+
 
 	// !Constructors / Destructors
 	public:
@@ -57,5 +69,9 @@ class ServerConfig {
 	// !Methods
 	public:
 		void initErrorPages();
-	
+		void checkToken(std::string & parametr);
+		int isValidLocation(Location & location) const;
+		bool isValidHost(std::string host) const;
+		void ServerConfig::bindServer()
+	//! Here 		
 };

@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/10 17:10:31 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:24:41 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,8 @@ class Location
 		std::vector<short>			_methods;
 		std::string					_return;
 		std::string					_alias;
-		// TODO: 
-
-		// std::vector<std::string>	_cgi_path;
-		// std::vector<std::string>	_cgi_ext;
-		
-		// TODO: 
+		std::vector<std::string>	_cgi_path;
+		std::vector<std::string>	_cgi_ext;
 		unsigned long				_client_max_body_size;
 
 	// !Public Attributes
@@ -53,12 +49,8 @@ class Location
 		const std::vector<short> &getMethods() const;
 		const std::string &getReturn() const;
 		const std::string &getAlias() const;
-		// TODO: 
-		
-		// const std::vector<std::string> &getCgiPath() const;
-		// const std::vector<std::string> &getCgiExtension() const;
-
-		// TODO: 
+		const std::vector<std::string> &getCgiPath() const;
+		const std::vector<std::string> &getCgiExtension() const; 
 		const std::map<std::string, std::string> &getExtensionPath() const;
 		const unsigned long &getMaxBodySize() const;
 
@@ -70,13 +62,9 @@ class Location
 		void setAutoindex(std::string value);
 		void setIndexLocation(std::string value);
 		void setReturn(std::string value);
-		void setAlias(std::string value);
-		// TODO: 
-		
-		// void setCgiPath(std::vector<std::string> path);
-		// void setCgiExtension(std::vector<std::string> extension);
-		
-		// TODO: 
+		void setAlias(std::string value);		
+		void setCgiPath(std::vector<std::string> path);
+		void setCgiExtension(std::vector<std::string> extension);
 		void setMaxBodySize(std::string string_value);
 		void setMaxBodySize(unsigned long value);
 };

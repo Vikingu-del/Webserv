@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 19:04:29 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/14 19:08:07 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,9 @@
 #include "ConfigFileParser.hpp"
 #include "ServerConfiguration.hpp"
 #include "ConfigFile.hpp"
+#include "Location.hpp"
 #include "Client.hpp"
+#include "WebservUtils.hpp"
 // #include "HttpResponse.hpp"
 #include "HttpParser.hpp"
 #include "utils.hpp"
