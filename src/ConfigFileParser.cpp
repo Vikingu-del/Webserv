@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 17:44:16 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:37:43 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 
 	if (file.checkFileExistence(file.getPath()) != 1)
 		throw ParsingErrorException("File is invalid");
-	if (file.checkFile(file.getPath(), 4) == -1)
+	if (file.checkFilePermissons(file.getPath(), 4) == -1)
 		throw ParsingErrorException("File is not accessible");
 	content = file.getFileContent(configFilePath);
 	if (content.empty())

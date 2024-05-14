@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:22:48 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:38:12 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,14 @@ void ServerConfig::setHost(std::string parametr)
 	this->_host = inet_addr(parametr.data());
 }
 
+/* validation of parametrs */
+bool ServerConfig::isValidHost(std::string host) const
+{
+	struct sockaddr_in sockaddr;
+  	return (inet_pton(AF_INET, host.c_str(), &(sockaddr.sin_addr)) ? true : false);
+}
+
+
 void ServerConfig::setRoot(std::string root)
 {
 	checkToken(root);
@@ -233,7 +241,7 @@ void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
 		{
 			if (ConfigFile::checkFileExistence(this->_root + path) != 1)
 				std::cerr << ("Incorrect path for err << std::endl; page file: " + this->_root + path);
-			if (ConfigFile::checkFile(this->_root + path, 0) == -1 || ConfigFile::checkFile(this->_root + path, 4) == -1)
+			if (ConfigFile::checkFile(this->_root + path, 0) == -1 || ConfigFile::checkFilePermissons(this->_root + path, 4) == -1)
 				std::cerr << "Error page file" <<  this->_root + path << "is not accessible" << std::endl;
 		}
 		std::map<short, std::string>::iterator it = this->_error_pages.find(code_error);
@@ -364,8 +372,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 					if (i + 1 >= parametr.size())
 						std::cerr << "Token is invalid" << std::endl;
 				}
-				if (parametr[i].find("/python") == std::string::npos && parametr[i].find("/bash") == std::string::npos)
-				{	
+				if (parametr[i].find("/python") == std::string::npos && parametr[i].find("/bash") == std::string::npos)	
 					std::cerr << "cgi_path is invalid" << std::endl;
 				}
 			new_location.setCgiPath(path);
@@ -379,7 +386,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 			flag_max_size = true;
 		}
 		else if (i < parametr.size())
-			std::cerr << "Parametr in a locati << std::endl; is invalid");
+			std::cerr << "Parametr in a locati is invalid" << std::endl;
 	}
 	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
 		new_location.setIndexLocation(this->_index);
@@ -429,7 +436,7 @@ void ServerConfig::checkToken(std::string &parametr)
 {
 	size_t pos = parametr.rfind(';');
 	if (pos != parametr.size() - 1)
-		throw ErrorException("Token is invalid");
+		std::cerr << "Token is invalid" << std::endl;
 	parametr.erase(pos);
 }
 
@@ -442,7 +449,7 @@ int ServerConfig::isValidLocation(Location & location) const
 		if (location.getCgiPath().empty() || location.getCgiExtension().empty() || location.getIndexLocation().empty())
 			return (1);
 		
-		if (ConfigFile::checkFile(location.getIndexLocation(), 4) < 0)
+		if (ConfigFile::checkFilePermissons(location.getIndexLocation(), 4) < 0)
 		{
 			std::string path = location.getRootLocation() + location.getPath() + "/" + location.getIndexLocation();
 			if (ConfigFile::checkFileExistence(path) != 1)
@@ -451,7 +458,7 @@ int ServerConfig::isValidLocation(Location & location) const
 				location.setRootLocation(root);
 				path = root + location.getPath() + "/" + location.getIndexLocation();
 			}
-			if (path.empty() || ConfigFile::checkFileExistence(path) != 1 || ConfigFile::checkFile(path, 4) < 0)
+			if (path.empty() || ConfigFile::checkFileExistence(path) != 1 || ConfigFile::checkFilePermissons(path, 4) < 0)
 				return (1);
 		}
 		if (location.getCgiPath().size() != location.getCgiExtension().size())
@@ -495,16 +502,16 @@ int ServerConfig::isValidLocation(Location & location) const
 		if (location.getRootLocation().empty()) {
 			location.setRootLocation(this->_root);
 		}
-		if (ConfigFile::isFileExistAndReadable(location.getRootLocation() + location.getPath() + "/", location.getIndexLocation()))
+		if (ConfigFile::checkFile(location.getRootLocation() + location.getPath() + "/", location.getIndexLocation()))
 			return (5);
 		if (!location.getReturn().empty())
 		{
-			if (ConfigFile::isFileExistAndReadable(location.getRootLocation(), location.getReturn()))
+			if (ConfigFile::checkFile(location.getRootLocation(), location.getReturn()))
 				return (3);
 		}
 		if (!location.getAlias().empty())
 		{
-			if (ConfigFile::isFileExistAndReadable(location.getRootLocation(), location.getAlias()))
+			if (ConfigFile::checkFile(location.getRootLocation(), location.getAlias()))
 			 	return (4);
 		}
 	}
