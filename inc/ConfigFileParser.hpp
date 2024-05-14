@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:50:47 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 19:20:04 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ class ConfigFileParser
 		~ConfigFileParser();
 	
 	// !Methods
-	public:
 		int parseConfigFile(std::string & configFilePath);
 		std::vector<ServerConfig> getServers() const;
 		void checkServers();
@@ -38,6 +37,12 @@ class ConfigFileParser
 	//! Removing methods
 		void removeComments(std::string & someString);
 		void removeWhiteSpace(std::string &content);
+
+	//! Split servers
+		size_t findStartServer(size_t start, std::string &content);
+		size_t findEndServer(size_t start, std::string &content);
+		void splitServers(std::string &content);
+		void createServer(std::string &config, ServerConfig &server);
 		
 	public: 
 		class ParsingErrorException : public std::exception
