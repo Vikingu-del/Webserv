@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 17:12:35 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:26:37 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:51:08 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ int ft_stoi(std::string str)
     ss >> res;
     return (res);
 }
-
 
 std::string statusCodeString(short statusCode)
 {
