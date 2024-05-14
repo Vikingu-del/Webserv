@@ -1,16 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   defines.h                                          :+:      :+:    :+:   */
+/*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/14 19:02:52 by eseferi          ###   ########.fr       */
+/*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
+/*   Updated: 2024/05/14 18:59:00 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "Webserv.hpp"
 
-#define LINE_END "\r\n"
-#define MAX_CONTENT_LENGTH 3000000
+namespace utils
+{
+    std::vector<std::string> split(const std::string &s, char delimiter);
+    std::string concat(const std::vector<std::string> &v, char delimiter);
+}

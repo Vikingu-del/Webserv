@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-<<<<<<< .merge_file_fS6R8H
-/*   Updated: 2024/05/10 16:05:29 by kilchenk         ###   ########.fr       */
-=======
-/*   Updated: 2024/05/10 17:46:51 by ipetruni         ###   ########.fr       */
->>>>>>> .merge_file_id48Q6
+/*   Updated: 2024/05/14 19:04:29 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +29,7 @@
 // Webserv libs
 #include <fstream>
 #include <sstream>
+#include <sstream>
 #include <sys/stat.h>
 // #include <types.h>
 #include <unistd.h>
@@ -41,11 +38,8 @@
 #include "ConfigFileParser.hpp"
 #include "ServerConfiguration.hpp"
 #include "ConfigFile.hpp"
-<<<<<<< .merge_file_fS6R8H
 #include "Client.hpp"
-=======
-#include "Location.hpp"
-#include "WebservUtils.hpp"
-
->>>>>>> .merge_file_id48Q6
+// #include "HttpResponse.hpp"
+#include "HttpParser.hpp"
+#include "utils.hpp"
 /* Webserv.hpp */
