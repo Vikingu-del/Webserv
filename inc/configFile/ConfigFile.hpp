@@ -6,13 +6,14 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 11:52:45 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/10 15:11:17 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:05:56 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef CONFIG_FILE_HPP
+#define CONFIG_FILE_HPP
 
-#include "Webserv.hpp"
+#include "../Webserv.hpp"
 
 class ConfigFile {
     private:
@@ -35,3 +36,4 @@ class ConfigFile {
         void setNumOfServers(int num);
 };
 
+#endif

@@ -6,13 +6,14 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:24:41 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 15:58:04 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef LOCATION_HPP
+#define LOCATION_HPP
 
-#include "Webserv.hpp"
+#include "../Webserv.hpp"
 
 class Location 
 {
@@ -68,3 +69,5 @@ class Location
 		void setMaxBodySize(std::string string_value);
 		void setMaxBodySize(unsigned long value);
 };
+
+#endif

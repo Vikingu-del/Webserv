@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+         #
+#    By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/07 15:15:09 by ipetruni          #+#    #+#              #
-#    Updated: 2024/05/15 12:11:43 by eseferi          ###   ########.fr        #
+#    Updated: 2024/05/15 16:22:51 by ipetruni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,14 @@ NAME =  webserv
 
 OBJ_DIR = obj/
 SRC_DIR = src/
+CONFIG_DIR = configFile/
 
 SRC	=	main \
+        Client \
+        Http \
+        ServerSocket \
+        utils \
+		$(addprefix $(CONFIG_DIR), CofigFileUtils ConfigFile ConfigFileParser Location ServerConfiguration)
 
 SRCS =  $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(SRC)))
 OBJS = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC)))
@@ -27,7 +33,7 @@ OBJS = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC)))
 # COMMANDS
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror #-std=c++98
+CFLAGS = #-Wall -Wextra -Werror #-std=c++98
 RM = rm -rf
 
 all: $(NAME)

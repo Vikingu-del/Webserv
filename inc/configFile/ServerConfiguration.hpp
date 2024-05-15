@@ -6,13 +6,16 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 15:08:58 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:56:07 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef SERVER_CONFIGURATION_HPP
+#define SERVER_CONFIGURATION_HPP
 
-#include "Webserv.hpp"
+#include "../Webserv.hpp"
+
+class Location;
 
 class ServerConfig {
 
@@ -77,3 +80,5 @@ class ServerConfig {
 		bool isValidErrorPages();
 	//! Here 		
 };
+
+#endif

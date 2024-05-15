@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:57:30 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/15 10:02:46 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/15 16:24:18 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.hpp"
+#include "../inc/utils.hpp"
 
 std::vector<std::string> utils::split(const std::string &s, const std::string &delimiter) {
     std::vector<std::string> tokens;

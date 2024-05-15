@@ -6,11 +6,11 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:23:52 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:57:40 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/Location.hpp"
+#include "../../inc/configFile/Location.hpp"
 
 // !Constructors
 
@@ -162,11 +162,15 @@ void Location::setAlias(std::string value) {
 	this->_alias = value;
 }
 
-// TODO:
+void Location::setCgiPath(std::vector<std::string> path)
+{
+	this->_cgi_path = path;
+}
 
-// Setters for CGIPATH and CGIEXTENTION
-
-// TODO:
+void Location::setCgiExtension(std::vector<std::string> extension)
+{
+	this->_cgi_ext = extension;
+}
 
 void Location::setMaxBodySize(std::string string_value) {
 	unsigned long body_size = 0;

@@ -6,11 +6,11 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 19:16:41 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 17:00:40 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/ConfigFileParser.hpp"
+#include "../../inc/configFile/ConfigFileParser.hpp"
 
 // !Constructors
 ConfigFileParser::ConfigFileParser() {
@@ -18,8 +18,7 @@ ConfigFileParser::ConfigFileParser() {
 }
 
 // !Destructor
-ConfigFileParser::~ConfigFileParser() {
-}
+ConfigFileParser::~ConfigFileParser() {}
 
 void ConfigFileParser::checkServers()
 {
@@ -57,7 +56,7 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 	for (size_t i = 0; i < this->_numOfServers; i++)
 	{
 		ServerConfig server;
-		// TODO: createServer(this->_serversConfig[i], server);
+		createServer(this->_serversConfig[i], server);
 		this->_servers.push_back(server);
 	}
 	if (this->_numOfServers > 1)
@@ -118,7 +117,7 @@ size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 		return (i);
 	else
 		("Wrong character out of server scope{}");
-
+	return (start);
 }
 
 /* finding a server end and return the index of } end of server */

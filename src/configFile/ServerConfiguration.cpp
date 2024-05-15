@@ -6,11 +6,11 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 12:45:05 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:53:31 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/ServerConfiguration.hpp"
+#include "../../inc/Webserv.hpp"
 
 // !Constructors
 
@@ -431,16 +431,6 @@ void ServerConfig::initErrorPages(void)
 	_error_pages[505] = "";
 }
 
-/* check is a properly end of parametr */
-void ServerConfig::checkToken(std::string &parametr)
-{
-	size_t pos = parametr.rfind(';');
-	if (pos != parametr.size() - 1)
-		std::cerr << "Token is invalid" << std::endl;
-	parametr.erase(pos);
-}
-
-
 /* check parametrs of location */
 int ServerConfig::isValidLocation(Location & location) const
 {
@@ -562,8 +552,10 @@ void	ServerConfig::bindServer(void)
 {
 	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
     {
-		Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
-        exit(EXIT_FAILURE);
+		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
+        // exit(EXIT_FAILURE);
+		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		exit(1);
     }
 
     int option_value = 1;
@@ -574,7 +566,9 @@ void	ServerConfig::bindServer(void)
     _server_address.sin_port = htons(_port);
     if (bind(_listen_fd, (struct sockaddr *) &_server_address, sizeof(_server_address)) == -1)
     {
-		Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
-        exit(EXIT_FAILURE);
+		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
+        // exit(EXIT_FAILURE);
+		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		exit(1);
     }
 }

@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WebservUtils.cpp                                   :+:      :+:    :+:   */
+/*   CofigFileUtils.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/10 17:12:35 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:57:05 by ipetruni         ###   ########.fr       */
+/*   Created: 2024/05/15 15:46:14 by ipetruni          #+#    #+#             */
+/*   Updated: 2024/05/15 16:36:22 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/WebservUtils.hpp"
+// #include "../../inc/configFile/ConfigFileUtils.hpp"
+#include "../../inc/Webserv.hpp"
 
 int ft_stoi(std::string str)
 {

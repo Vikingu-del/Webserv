@@ -6,43 +6,54 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 15:09:39 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:52:42 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef WEBSERV_HPP
+#define WEBSERV_HPP
 
-// Default libs
+
+//! Default libs
 #include <iostream>
 
-
-// STL libs
+//! STL libs
 #include <map>
 #include <vector>
 
-// Network / IP etc.
+//! Network / IP etc.
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <sys/select.h>
 # include <arpa/inet.h>
 # include <iterator>
 
-// Webserv libs
+//! Webserv libs
 #include <fstream>
 #include <sstream>
 #include <sstream>
 #include <sys/stat.h>
 // #include <types.h>
 #include <unistd.h>
+#include <cstddef>
+#include <cstring>
 
 #include "defines.h"
-#include "Location.hpp"
-#include "ConfigFileParser.hpp"
-#include "ServerConfiguration.hpp"
-#include "ConfigFile.hpp"
+
+//! ConfigFileParsingUtils
+#include "configFile/ConfigFile.hpp"
+#include "configFile/ConfigFileParser.hpp"
+#include "configFile/ConfigFileUtils.hpp"
+#include "configFile/Location.hpp"
+#include "configFile/ServerConfiguration.hpp"
+
+
+
 #include "Client.hpp"
-#include "WebservUtils.hpp"
+
 // #include "HttpResponse.hpp"
 #include "Http.hpp"
 #include "utils.hpp"
+
 /* Webserv.hpp */
+#endif

@@ -1,4 +1,4 @@
-#include "ConfigFile.hpp"
+#include "../../inc/configFile/ConfigFile.hpp"
 
 // !Constructors 
 

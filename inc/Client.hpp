@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/15 12:31:15 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/15 15:39:11 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class Client
         Client();
         Client(const Client &copy);
         Client  &operator=(const Client &copy);
-        Client(ServerConfig &server);
+        Client(ServerConfig & server);
         ~Client();
         /*Geters*/ //need request class
         const int                   &getSocket() const;

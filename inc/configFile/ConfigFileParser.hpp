@@ -6,38 +6,38 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 19:20:04 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:33:34 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef CONFIG_FILE_PARSER_HPP
+#define CONFIG_FILE_PARSER_HPP
 
-#include "Webserv.hpp"
+#include "../Webserv.hpp"
 
 class ServerConfig;
 
 class ConfigFileParser
 {
+	// !Constructor / Destructor
+	public:
+		ConfigFileParser();
+		~ConfigFileParser();
 	// !Private attributes
 	private:
 		std::vector<std::string>	_serversConfig;
 		size_t						_numOfServers;
 		std::vector<ServerConfig> _servers;
-	
-	// !Constructor / Destructor
 	public:
-		ConfigFileParser();
-		~ConfigFileParser();
-	
 	// !Methods
 		int parseConfigFile(std::string & configFilePath);
 		std::vector<ServerConfig> getServers() const;
 		void checkServers();
-	
+	public:
 	//! Removing methods
 		void removeComments(std::string & someString);
 		void removeWhiteSpace(std::string &content);
-
+	public:
 	//! Split servers
 		size_t findStartServer(size_t start, std::string &content);
 		size_t findEndServer(size_t start, std::string &content);
@@ -62,3 +62,5 @@ class ConfigFileParser
 		};
 		
 };
+
+#endif
