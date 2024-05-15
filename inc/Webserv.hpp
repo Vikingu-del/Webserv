@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 19:08:07 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/15 12:19:03 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <netinet/in.h>
 # include <sys/select.h>
 # include <arpa/inet.h>
+# include <iterator>
 
 // Webserv libs
 #include <fstream>
@@ -42,6 +43,6 @@
 #include "Client.hpp"
 #include "WebservUtils.hpp"
 // #include "HttpResponse.hpp"
-#include "HttpParser.hpp"
+#include "Http.hpp"
 #include "utils.hpp"
 /* Webserv.hpp */
