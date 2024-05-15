@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 12:31:02 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/15 12:33:19 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,9 @@ class ServerConfig {
 		void checkToken(std::string & parametr);
 		int isValidLocation(Location & location) const;
 		bool isValidHost(std::string host) const;
-		void ServerConfig::bindServer()
+		void bindServer();
+		void checkToken(std::string &parametr);
+		bool checkLocaitons() const;
+		bool ServerConfig::isValidErrorPages();
 	//! Here 		
 };

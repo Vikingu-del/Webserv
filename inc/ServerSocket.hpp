@@ -6,7 +6,7 @@
 /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:03:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/10 16:18:13 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:53:23 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ class ServerSocket
         std::vector<ServerConfig> _servers;
         std::map<int, ServerConfig> _servers_map;
         std::map<int, Client> _clients_map;
-        fd_set     _recv_fd_pool;
-        fd_set     _write_fd_pool;
+        fd_set     _read_fd;
+        fd_set     _write_fd;
         int        _biggest_fd;
 
         void acceptNewConnection(ServerConfig &serv);
         void checkTimeout();
-        void initializeSets();
+        void listenServer();
         void readRequest(const int &fd, Client &client);
         void handleReqBody(Client &client);
         void sendResponse(const int &fd, Client &client);

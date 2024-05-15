@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/14 18:45:48 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/14 19:21:07 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -516,6 +516,45 @@ int ServerConfig::isValidLocation(Location & location) const
 		}
 	}
 	return (0);
+}
+
+
+bool ServerConfig::isValidErrorPages()
+{
+	std::map<short, std::string>::const_iterator it;
+	for (it = this->_error_pages.begin(); it != this->_error_pages.end(); it++)
+	{
+		if (it->first < 100 || it->first > 599)
+			return (false);
+		if (ConfigFile::checkFilePermissons(getRoot() + it->second, 0) < 0 || ConfigFile::checkFilePermissons(getRoot() + it->second, 4) < 0)
+			return (false);
+	}
+	return (true);
+}
+
+/* check is a properly end of parametr */
+void ServerConfig::checkToken(std::string &parametr)
+{
+	size_t pos = parametr.rfind(';');
+	if (pos != parametr.size() - 1)
+		std::cerr << "Token is invalid" << std::endl;
+	parametr.erase(pos);
+}
+
+/* check location for a dublicate */
+bool ServerConfig::checkLocaitons() const
+{
+	if (this->_locations.size() < 2)
+		return (false);
+	std::vector<Location>::const_iterator it1;
+	std::vector<Location>::const_iterator it2;
+	for (it1 = this->_locations.begin(); it1 != this->_locations.end() - 1; it1++) {
+		for (it2 = it1 + 1; it2 != this->_locations.end(); it2++) {
+			if (it1->getPath() == it2->getPath())
+				return (true);
+		}
+	}
+	return (false);
 }
 
 /* socket setup and binding */
