@@ -6,12 +6,21 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:21:20 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 16:52:42 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 17:27:51 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
+
+#define GREEN "\033[0;32m"
+#define RED "\033[0;31m"
+#define YELLOW "\033[0;33m"
+#define BLUE "\033[0;34m"
+#define CYAN "\033[0;36m"
+#define PINK "\033[0;35m"
+#define BLD "\033[1m"
+#define RST "\033[0m"
 
 
 //! Default libs

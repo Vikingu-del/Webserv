@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 15:58:04 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 17:06:25 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ class Location
 		const std::vector<std::string> &getCgiExtension() const; 
 		const std::map<std::string, std::string> &getExtensionPath() const;
 		const unsigned long &getMaxBodySize() const;
+		std::string getPrintMethods() const;
 
 	// !Setters
 	public:

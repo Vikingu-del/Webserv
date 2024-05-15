@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 17:00:40 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 17:50:33 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,18 @@
 
 // !Constructors
 ConfigFileParser::ConfigFileParser() {
+	std::cout << YELLOW "ConfigFileParser constructor" RST << std::endl;
 	_numOfServers = 0;
 }
 
 // !Destructor
-ConfigFileParser::~ConfigFileParser() {}
+ConfigFileParser::~ConfigFileParser() {
+	std::cout << RED "ConfigFileParser destructor" RST << std::endl;
+}
 
 void ConfigFileParser::checkServers()
 {
+	std::cout << CYAN BLD "ConfigFileParser checkServers" RST << std::endl;
 	std::vector<ServerConfig>::iterator it1;
 	std::vector<ServerConfig>::iterator it2;
 
@@ -37,7 +41,7 @@ void ConfigFileParser::checkServers()
 
 // !Main method 
 int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
-	
+	std::cout << CYAN BLD "ConfigFileParser parseConfigFile" RST << std::endl;
 	std::string		content;
 	ConfigFile		file(configFilePath);
 
@@ -65,7 +69,9 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 }
 
 //! This method just remove all the commets , fm: '#' to '\n'
-void ConfigFileParser::removeComments(std::string &someString) {
+void ConfigFileParser::removeComments(std::string &someString)
+{
+	std::cout << CYAN BLD "ConfigFileParser removeComments" RST << std::endl;
 	size_t hashPos;
 
 	hashPos = someString.find('#');
@@ -82,6 +88,7 @@ void ConfigFileParser::removeComments(std::string &someString) {
 //! This method deletes all whitespaces in 
 void ConfigFileParser::removeWhiteSpace(std::string &content)
 {
+	std::cout << CYAN BLD "ConfigFileParser removeWhiteSpace" RST << std::endl;
 	size_t	i = 0;
 
 	while (content[i] && isspace(content[i]))
@@ -97,6 +104,7 @@ void ConfigFileParser::removeWhiteSpace(std::string &content)
 /* finding a server begin and return the index of { start of server */
 size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 {
+	std::cout << CYAN BLD "ConfigFileParser findStartServer" RST << std::endl;
 	size_t i;
 
 	for (i = start; content[i]; i++)
@@ -117,12 +125,13 @@ size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 		return (i);
 	else
 		("Wrong character out of server scope{}");
-	return (start);
+	// return (start);
 }
 
 /* finding a server end and return the index of } end of server */
 size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
 {
+	std::cout << CYAN BLD "ConfigFileParser findEndServer" RST << std::endl;
 	size_t	i;
 	size_t	scope;
 	
@@ -144,6 +153,8 @@ size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
 /* spliting line by separator */
 std::vector<std::string> splitParametrs(std::string line, std::string sep)
 {
+	std::cout << CYAN BLD "splitParametrs in ConfigFileParser line:154 " RST << std::endl;
+	std::cout << CYAN BLD "splitParametrs in ConfigFileParser separator is: " << sep << "#" RST << std::endl;
 	std::vector<std::string>	str;
 	std::string::size_type		start, end;
 
@@ -165,6 +176,7 @@ std::vector<std::string> splitParametrs(std::string line, std::string sep)
 /* spliting servers on separetly strings in vector */
 void ConfigFileParser::splitServers(std::string &content)
 {
+	std::cout << CYAN BLD "ConfigFileParser splitServers" RST << std::endl;
 	size_t start = 0;
 	size_t end = 1;
 
@@ -185,6 +197,7 @@ void ConfigFileParser::splitServers(std::string &content)
 /* creating Server from string and fill the value */
 void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 {
+	std::cout << CYAN BLD "ConfigFileParser createServer" RST << std::endl;
 	std::vector<std::string>	parametrs;
 	std::vector<std::string>	error_codes;
 	int		flag_loc = 1;
@@ -193,13 +206,13 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 
 	parametrs = splitParametrs(config += ' ', std::string(" \n\t"));
 	if (parametrs.size() < 3)
-		("Failed server validation");
+		std::cerr << "Failed server validation" << std::endl;
 	for (size_t i = 0; i < parametrs.size(); i++)
 	{
 		if (parametrs[i] == "listen" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (server.getPort())
-				("Port is duplicated");
+				std::cerr << "Port is duplicated" << std::endl;
 			server.setPort(parametrs[++i]);
 		}
 		else if (parametrs[i] == "location" && (i + 1) < parametrs.size())
@@ -207,29 +220,29 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 			std::string	path;
 			i++;
 			if (parametrs[i] == "{" || parametrs[i] == "}")
-				("Wrong character in server scope{}");
+				std::cerr << "Wrong character in server scope{}" << std::endl;
 			path = parametrs[i];
 			std::vector<std::string> codes;
 			if (parametrs[++i] != "{")
-				("Wrong character in server scope{}");
+				std::cerr << "Wrong character in server scope{}" << std::endl;
 			i++;
 			while (i < parametrs.size() && parametrs[i] != "}")
 				codes.push_back(parametrs[i++]);
 			server.setLocation(path, codes);
 			if (i < parametrs.size() && parametrs[i] != "}")
-				("Wrong character in server scope{}");
+				std::cerr << "Wrong character in server scope{}" << std::endl;
 			flag_loc = 0;
 		}
 		else if (parametrs[i] == "host" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (server.getHost())
-				("Host is duplicated");
+				std::cerr << "Host is duplicated" << std::endl;
 			server.setHost(parametrs[++i]);
 		}
 		else if (parametrs[i] == "root" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (!server.getRoot().empty())
-				("Root is duplicated");
+				std::cerr << "Root is duplicated" << std::endl;
 			server.setRoot(parametrs[++i]);
 		}
 		else if (parametrs[i] == "error_page" && (i + 1) < parametrs.size() && flag_loc)
@@ -240,41 +253,41 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 				if (parametrs[i].find(';') != std::string::npos)
 					break ;
 				if (i + 1 >= parametrs.size())
-					("Wrong character out of server scope{}");
+					std::cerr << "Wrong character out of server scope{}" << std::endl;
 			}
 		}
 		else if (parametrs[i] == "client_max_body_size" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (flag_max_size)
-				("Client_max_body_size is duplicated");
+				std::cerr << "Client_max_body_size is duplicated" << std::endl;
 			server.setClientMaxBodySize(parametrs[++i]);
 			flag_max_size = true;
 		}
 		else if (parametrs[i] == "server_name" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (!server.getServerName().empty())
-				("Server_name is duplicated");
+				std::cerr << "Server_name is duplicated" << std::endl;
 			server.setServerName(parametrs[++i]);
 		}
 		else if (parametrs[i] == "index" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (!server.getIndex().empty())
-				("Index is duplicated");
+				std::cerr << "Index is duplicated" << std::endl;
 			server.setIndex(parametrs[++i]);
 		}
 		else if (parametrs[i] == "autoindex" && (i + 1) < parametrs.size() && flag_loc)
 		{
 			if (flag_autoindex)
-				("Autoindex of server is duplicated");
+				std::cerr << "Autoindex of server is duplicated" << std::endl;
 			server.setAutoindex(parametrs[++i]);
 			flag_autoindex = true;
 		}
 		else if (parametrs[i] != "}" && parametrs[i] != "{")
 		{
 			if (!flag_loc)
-				("Parametrs after location");
+				std::cerr << "Parametrs after location" << std::endl;
 			else
-				("Unsupported directive");
+				std::cerr << "Unsupported directive" << std::endl;
 		}
 	}
 	if (server.getRoot().empty())
@@ -284,12 +297,66 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 	if (server.getIndex().empty())
 		server.setIndex("index.html;");
 	if (ConfigFile::checkFile(server.getRoot(), server.getIndex()))
-		("Index from config file not found or unreadable");
+		std::cerr << "Index from config file not found or unreadable" << std::endl;
 	if (server.checkLocaitons())
-		("Locaition is duplicated");
+		std::cerr << "Location is duplicated" << std::endl;
 	if (!server.getPort())
-		("Port not found");
+		std::cerr << "Port not found" << std::endl;
 	server.setErrorPages(error_codes);
 	if (!server.isValidErrorPages())
-		("Incorrect path for error page or number of error");
+		std::cerr << "Incorrect path for error page or number of error" << std::endl;
+	std::cout << YELLOW BLD "Server created" RST << std::endl;
+	std::cout << GREEN BLD "Server created" RST << std::endl;
+	std::cout << YELLOW BLD "Server created" RST << std::endl;
+}
+
+
+
+int ConfigFileParser::printServers()
+{
+	std::cout << CYAN BLD "ConfigFileParser printServers" RST << std::endl;
+	std::cout << "------------- Config -------------" << std::endl;
+	for (size_t i = 0; i < _servers.size(); i++)
+	{
+		std::cout << "Server #" << i + 1 << std::endl;
+		std::cout << "Server name: " << _servers[i].getServerName() << std::endl;
+		std::cout << "Host: " << _servers[i].getHost() << std::endl;
+		std::cout << "Root: " << _servers[i].getRoot() << std::endl;
+		std::cout << "Index: " << _servers[i].getIndex() << std::endl;
+		std::cout << "Port: " << _servers[i].getPort() << std::endl;
+		std::cout << "Max BSize: " << _servers[i].getClientMaxBody() << std::endl;
+		std::cout << "Error pages: " << _servers[i].getErrorPages().size() << std::endl;
+		std::map<short, std::string>::const_iterator it = _servers[i].getErrorPages().begin();
+		while (it != _servers[i].getErrorPages().end())
+		{
+			std::cout << (*it).first << " - " << it->second << std::endl;
+			++it;
+		}
+		std::cout << "Locations: " << _servers[i].getLocations().size() << std::endl;
+		std::vector<Location>::const_iterator itl = _servers[i].getLocations().begin();
+		while (itl != _servers[i].getLocations().end())
+		{
+			std::cout << "name location: " << itl->getPath() << std::endl;
+			std::cout << "methods: " << itl->getPrintMethods() << std::endl;
+			std::cout << "index: " << itl->getIndexLocation() << std::endl;
+			if (itl->getCgiPath().empty())
+			{
+				std::cout << "root: " << itl->getRootLocation() << std::endl;
+				if (!itl->getReturn().empty())
+					std::cout << "return: " << itl->getReturn() << std::endl;
+				if (!itl->getAlias().empty())
+					std::cout << "alias: " << itl->getAlias() << std::endl;
+			}
+			else
+			{
+				std::cout << "cgi root: " << itl->getRootLocation() << std::endl;
+				std::cout << "sgi_path: " << itl->getCgiPath().size() << std::endl;
+				std::cout << "sgi_ext: " << itl->getCgiExtension().size() << std::endl;
+			}
+			++itl;
+		}
+		itl = _servers[i].getLocations().begin();
+		std::cout << "-----------------------------" << std::endl;
+	}
+	return (0);
 }

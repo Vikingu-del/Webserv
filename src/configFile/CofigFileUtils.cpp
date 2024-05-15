@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 15:46:14 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 16:36:22 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 17:11:10 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 int ft_stoi(std::string str)
 {
+    std::cout << GREEN << "entered ft_stoi" RST << std::endl;
     std::stringstream ss(str);
     if (str.length() > 10)
         throw std::exception();
@@ -30,6 +31,7 @@ int ft_stoi(std::string str)
 
 std::string statusCodeString(short statusCode)
 {
+    std::cout << GREEN << "entered statusCodeString" RST << std::endl;
     switch (statusCode)
     {
         case 100:

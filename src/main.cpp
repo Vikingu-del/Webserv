@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 16:07:14 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 18:03:32 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,18 @@
 int main(int argc, char **argv)
 {
 
+	//! NOTICE FOR ERIC 
+
+	//! DO NOT RUN THE PROGRAMM WITH DEFAULT CONFIG FILE
+
+	//! IT WILL CRASH
+
+	//! USE THE CONFIG FILE siege.conf
+
+	//! OR CREATE A NEW ONE
+
+	//! AND RUN THE PROGRAMM WITH IT
+
 	std::string configFilePath;
 	ConfigFileParser parser;
 
@@ -22,14 +34,16 @@ int main(int argc, char **argv)
 		switch (argc) 
 		{
 			case 1:
-				configFilePath = "configs/default.conf";
+				configFilePath = "configs/siege.conf";
 				parser.parseConfigFile(configFilePath);
+				parser.printServers();
 				// After parsing setup all needed info
 				// Run the servers
 				break;
 			case 2:
 				configFilePath = argv[1];
 				parser.parseConfigFile(configFilePath);
+				parser.printServers();
 				// After parsing setup all needed info
 				// Run the servers
 				break;

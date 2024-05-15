@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 16:33:34 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/15 17:04:24 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ class ConfigFileParser
 		size_t findEndServer(size_t start, std::string &content);
 		void splitServers(std::string &content);
 		void createServer(std::string &config, ServerConfig &server);
-		
+	//! Debugging
+		int printServers();
 	public: 
 		class ParsingErrorException : public std::exception
 		{
