@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/10 16:00:30 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:51:38 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,11 @@ const time_t &Client::getLastTime() const
     return (_last_msg);
 }
 
+const HTTP::Request   &Client::getRequest() const
+{
+    return (request);
+}
+
 void Client::setSocket(int &socket)
 {
     _client_socket = socket;
@@ -85,4 +90,11 @@ void Client::setServer(ServerConfig &serv)
 void Client::setTime()
 {
     _last_msg = time(NULL);
+}
+
+
+void    Client::clearClient()
+{
+    // response.clear(); need func to clear all of it
+    // request.clear(); 
 }
