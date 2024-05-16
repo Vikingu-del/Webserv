@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 17:06:25 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:34:10 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
-#include "../Webserv.hpp"
+#include "Webserv.hpp"
 
 class Location 
 {
@@ -23,12 +23,12 @@ class Location
 		std::string					_root;
 		bool						_autoindex;
 		std::string					_index;
-		std::vector<short>			_methods;
 		std::string					_return;
 		std::string					_alias;
+		unsigned long				_client_max_body_size;
+		std::vector<short>			_methods;
 		std::vector<std::string>	_cgi_path;
 		std::vector<std::string>	_cgi_ext;
-		unsigned long				_client_max_body_size;
 
 	// !Public Attributes
 	public:

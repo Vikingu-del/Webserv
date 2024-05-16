@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 17:04:24 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:26:26 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_FILE_PARSER_HPP
 #define CONFIG_FILE_PARSER_HPP
 
-#include "../Webserv.hpp"
+#include "Webserv.hpp"
 
 class ServerConfig;
 

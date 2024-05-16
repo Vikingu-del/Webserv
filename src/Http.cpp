@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:49:32 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/15 16:24:06 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:27:29 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/Http.hpp"
+#include "Http.hpp"
 
 // METHODS
 

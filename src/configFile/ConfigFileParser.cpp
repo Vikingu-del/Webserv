@@ -3,51 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 17:50:33 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:39:57 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/configFile/ConfigFileParser.hpp"
+#include "ConfigFileParser.hpp"
 
-// !Constructors
-ConfigFileParser::ConfigFileParser() {
-	std::cout << YELLOW "ConfigFileParser constructor" RST << std::endl;
-	_numOfServers = 0;
-}
-
-// !Destructor
-ConfigFileParser::~ConfigFileParser() {
-	std::cout << RED "ConfigFileParser destructor" RST << std::endl;
-}
-
-void ConfigFileParser::checkServers()
-{
-	std::cout << CYAN BLD "ConfigFileParser checkServers" RST << std::endl;
-	std::vector<ServerConfig>::iterator it1;
-	std::vector<ServerConfig>::iterator it2;
-
-	for (it1 = this->_servers.begin(); it1 != this->_servers.end() - 1; it1++)
-	{
-		for (it2 = it1 + 1; it2 != this->_servers.end(); it2++)
-		{
-			if (it1->getPort() == it2->getPort() && it1->getHost() == it2->getHost() && it1->getServerName() == it2->getServerName())
-				throw ParsingErrorException("Failed server validation");
-		}
-	}
-}
-
-// !Main method 
+// !Main method && Starting point of parsing
 int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
-	std::cout << CYAN BLD "ConfigFileParser parseConfigFile" RST << std::endl;
+	// std::cout << CYAN BLD "ConfigFileParser parseConfigFile" RST << std::endl;
 	std::string		content;
 	ConfigFile		file(configFilePath);
 
-	if (file.checkFileExistence(file.getPath()) != 1)
+	if (file.checkFileExistence(file.getPath()) != THIS_IS_FILE)
 		throw ParsingErrorException("File is invalid");
-	if (file.checkFilePermissons(file.getPath(), 4) == -1)
+	if (file.checkFilePermissons(file.getPath(), READ_PERMISSION) == -1)
 		throw ParsingErrorException("File is not accessible");
 	content = file.getFileContent(configFilePath);
 	if (content.empty())
@@ -71,90 +44,75 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 //! This method just remove all the commets , fm: '#' to '\n'
 void ConfigFileParser::removeComments(std::string &someString)
 {
-	std::cout << CYAN BLD "ConfigFileParser removeComments" RST << std::endl;
-	size_t hashPos;
-
-	hashPos = someString.find('#');
+	size_t hashPos = someString.find('#');
 	
 	while (hashPos != std::string::npos)
 	{
-		size_t newLineCharPos;
-		newLineCharPos = someString.find('\n');
-		someString.erase(hashPos, newLineCharPos - hashPos); //? params are (starting position, how many chars to delete)
-		hashPos = someString.find('#');
+		size_t newLineCharPos = someString.find('\n', hashPos);
+		
+		if (newLineCharPos == std::string::npos) {
+			someString.erase(hashPos, newLineCharPos - hashPos);
+		}
+		else {
+			someString.erase(hashPos);
+			break;
+		}
+		hashPos = someString.find('#', newLineCharPos);
 	}
 }
 
 //! This method deletes all whitespaces in 
 void ConfigFileParser::removeWhiteSpace(std::string &content)
 {
-	std::cout << CYAN BLD "ConfigFileParser removeWhiteSpace" RST << std::endl;
-	size_t	i = 0;
+    // Remove leading whitespace
+    size_t firstNonSpace = content.find_first_not_of(" \t\n\r");
+    if (firstNonSpace != std::string::npos)
+    {
+        content = content.substr(firstNonSpace);
+    }
+    else
+    {
+        // If the string contains only whitespace, clear it
+        content.clear();
+        return;
+    }
 
-	while (content[i] && isspace(content[i]))
-		i++;
-	content = content.substr(i);
-	i = content.length() - 1;
-	while (i > 0 && isspace(content[i]))
-		i--;
-	content = content.substr(0, i + 1);
+    // Remove trailing whitespace
+    size_t lastNonSpace = content.find_last_not_of(" \t\n\r");
+    if (lastNonSpace != std::string::npos)
+    {
+        content = content.substr(0, lastNonSpace + 1);
+    }
 }
 
 
-/* finding a server begin and return the index of { start of server */
-size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
+//! Spliting servers by server{} and push to vector
+void ConfigFileParser::splitServers(std::string &content)
 {
-	std::cout << CYAN BLD "ConfigFileParser findStartServer" RST << std::endl;
-	size_t i;
+	size_t start = 0;
+	size_t end = 1;
 
-	for (i = start; content[i]; i++)
+	if (content.find("server", 0) == std::string::npos)
+		std::cerr << "Server did not find" << std::endl;
+	while (start != end && start < content.length())
 	{
-		if (content[i] == 's')
-			break ;
-		if (!isspace(content[i]))
-			("Wrong character out of server scope{}");
+		start = findStartServer(start, content);
+		end = findEndServer(start, content);
+		if (start == end)
+			ParsingErrorException("problem with scope");
+		this->_serversConfig.push_back(content.substr(start, end - start + 1));
+		this->_numOfServers++;
+		start = end + 1;
 	}
-	if (!content[i])
-		return (start);
-	if (content.compare(i, 6, "server") != 0)
-		("Wrong character out of server scope{}");
-	i += 6;
-	while (content[i] && isspace(content[i]))
-		i++;
-	if (content[i] == '{')
-		return (i);
-	else
-		("Wrong character out of server scope{}");
-	// return (start);
+	std::cout << GREEN << BLD "Number of servers: " RST << this->_numOfServers << std::endl;
 }
 
-/* finding a server end and return the index of } end of server */
-size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
-{
-	std::cout << CYAN BLD "ConfigFileParser findEndServer" RST << std::endl;
-	size_t	i;
-	size_t	scope;
-	
-	scope = 0;
-	for (i = start + 1; content[i]; i++)
-	{
-		if (content[i] == '{')
-			scope++;
-		if (content[i] == '}')
-		{
-			if (!scope)
-				return (i);
-			scope--;
-		}
-	}
-	return (start);
-}
 
 /* spliting line by separator */
 std::vector<std::string> splitParametrs(std::string line, std::string sep)
 {
-	std::cout << CYAN BLD "splitParametrs in ConfigFileParser line:154 " RST << std::endl;
-	std::cout << CYAN BLD "splitParametrs in ConfigFileParser separator is: " << sep << "#" RST << std::endl;
+	// std::cout << CYAN BLD "splitParametrs in ConfigFileParser line:154 " RST << std::endl;
+	// std::cout << CYAN BLD "splitParametrs in ConfigFileParser separator is: " << sep << "#" RST << std::endl;
 	std::vector<std::string>	str;
 	std::string::size_type		start, end;
 
@@ -173,31 +131,49 @@ std::vector<std::string> splitParametrs(std::string line, std::string sep)
 	return (str);
 }
 
-/* spliting servers on separetly strings in vector */
-void ConfigFileParser::splitServers(std::string &content)
+//! Finding a server start and return the index of { start of server
+size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 {
-	std::cout << CYAN BLD "ConfigFileParser splitServers" RST << std::endl;
-	size_t start = 0;
-	size_t end = 1;
+	// std::cout << CYAN BLD "ConfigFileParser findStartServer" RST << std::endl;
+	size_t serverPos = content.find("server", start);
+	
+	if (serverPos == std::string::npos)
+        throw ParsingErrorException("Server keyword not found");
 
-	if (content.find("server", 0) == std::string::npos)
-		std::cerr << "Server did not find" << std::endl;
-	while (start != end && start < content.length())
-	{
-		start = findStartServer(start, content);
-		end = findEndServer(start, content);
-		if (start == end)
-			std::cerr << "problem with scope" << std::endl;
-		this->_serversConfig.push_back(content.substr(start, end - start + 1));
-		this->_numOfServers++;
-		start = end + 1;
-	}
+    size_t openBracePos = content.find_first_not_of(" \t\n", serverPos + 6);
+    if (openBracePos == std::string::npos || content[openBracePos] != '{')
+        throw ParsingErrorException("Expected '{' after server keyword");
+
+    return openBracePos;
 }
+
+//! Finding a server end and return the index of } end of server
+size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
+{
+	// std::cout << CYAN BLD "ConfigFileParser findEndServer" RST << std::endl;
+	size_t	i;
+	size_t	scope;
+	
+	scope = 0;
+	for (i = start + 1; content[i]; i++)
+	{
+		if (content[i] == '{')
+			scope++;
+		if (content[i] == '}')
+		{
+			if (!scope)
+				return (i);
+			scope--;
+		}
+	}
+	return (start);
+}
+
 
 /* creating Server from string and fill the value */
 void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 {
-	std::cout << CYAN BLD "ConfigFileParser createServer" RST << std::endl;
+	// std::cout << CYAN BLD "ConfigFileParser createServer" RST << std::endl;
 	std::vector<std::string>	parametrs;
 	std::vector<std::string>	error_codes;
 	int		flag_loc = 1;
@@ -305,20 +281,20 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server)
 	server.setErrorPages(error_codes);
 	if (!server.isValidErrorPages())
 		std::cerr << "Incorrect path for error page or number of error" << std::endl;
-	std::cout << YELLOW BLD "Server created" RST << std::endl;
-	std::cout << GREEN BLD "Server created" RST << std::endl;
-	std::cout << YELLOW BLD "Server created" RST << std::endl;
+	// std::cout << YELLOW BLD "Server created" RST << std::endl;
+	// std::cout << GREEN BLD "Server created" RST << std::endl;
+	// std::cout << YELLOW BLD "Server created" RST << std::endl;
 }
 
 
 
 int ConfigFileParser::printServers()
 {
-	std::cout << CYAN BLD "ConfigFileParser printServers" RST << std::endl;
+	// std::cout << CYAN BLD "ConfigFileParser printServers" RST << std::endl;
 	std::cout << "------------- Config -------------" << std::endl;
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
-		std::cout << "Server #" << i + 1 << std::endl;
+		std::cout << GREEN << BLD << "Server #" << RST << i + 1 << std::endl;
 		std::cout << "Server name: " << _servers[i].getServerName() << std::endl;
 		std::cout << "Host: " << _servers[i].getHost() << std::endl;
 		std::cout << "Root: " << _servers[i].getRoot() << std::endl;
@@ -359,4 +335,31 @@ int ConfigFileParser::printServers()
 		std::cout << "-----------------------------" << std::endl;
 	}
 	return (0);
+}
+
+// !Constructors
+ConfigFileParser::ConfigFileParser() {
+	// std::cout << YELLOW "ConfigFileParser constructor" RST << std::endl;
+	_numOfServers = 0;
+}
+
+// !Destructor
+ConfigFileParser::~ConfigFileParser() {
+	// std::cout << RED "ConfigFileParser destructor" RST << std::endl;
+}
+
+void ConfigFileParser::checkServers()
+{
+	// std::cout << CYAN BLD "ConfigFileParser checkServers" RST << std::endl;
+	std::vector<ServerConfig>::iterator it1;
+	std::vector<ServerConfig>::iterator it2;
+
+	for (it1 = this->_servers.begin(); it1 != this->_servers.end() - 1; it1++)
+	{
+		for (it2 = it1 + 1; it2 != this->_servers.end(); it2++)
+		{
+			if (it1->getPort() == it2->getPort() && it1->getHost() == it2->getHost() && it1->getServerName() == it2->getServerName())
+				throw ParsingErrorException("Failed server validation");
+		}
+	}
 }

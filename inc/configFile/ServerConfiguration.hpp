@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 16:56:07 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:35:11 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_CONFIGURATION_HPP
 #define SERVER_CONFIGURATION_HPP
 
-#include "../Webserv.hpp"
+#include "Webserv.hpp"
 
 class Location;
 
@@ -28,10 +28,10 @@ class ServerConfig {
 		unsigned long					_client_max_body_size;
 		std::string						_index;
 		bool							_autoindex;
-		std::map<short, std::string>	_error_pages;
 		std::vector<Location> 			_locations;
-		struct sockaddr_in 				_server_address;
 		int     						_listen_fd;
+		struct sockaddr_in 				_server_address;
+		std::map<short, std::string>	_error_pages;
 
 	// !Getters
 	public:

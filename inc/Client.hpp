@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/16 14:52:39 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 18:41:36 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Client
         const int                   &getSocket() const;
         const struct sockaddr_in    &getAddress() const;
         const time_t                &getLastTime() const;
-        const HTTP::Request         &getRequest() const;
+        // const HTTP::Request         &getRequest() const;
         /*Seters*/
         void                        setSocket(int &socket);
         void                        setAddress(sockaddr_in &address);
@@ -42,8 +42,8 @@ class Client
         /*Another*/
         void                        clearClient();
         ServerConfig                server;
-        HTTP::Request               request;
-        HTTP::Response              response;
+        // HTTP::Request               request;
+        // HTTP::Response              response;
 };
 
 

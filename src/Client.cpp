@@ -6,11 +6,11 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/16 14:51:38 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 18:41:46 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/Client.hpp"
+#include "Client.hpp"
 
 Client::Client()
 {
@@ -67,10 +67,10 @@ const time_t &Client::getLastTime() const
     return (_last_msg);
 }
 
-const HTTP::Request   &Client::getRequest() const
-{
-    return (request);
-}
+// const HTTP::Request   &Client::getRequest() const
+// {
+//     return (request);
+// }
 
 void Client::setSocket(int &socket)
 {

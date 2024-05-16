@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 11:52:45 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/15 16:05:56 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:41:23 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_FILE_HPP
 #define CONFIG_FILE_HPP
 
-#include "../Webserv.hpp"
+#include "Webserv.hpp"
 
 class ConfigFile {
     private:
@@ -34,6 +34,16 @@ class ConfigFile {
 
         
         void setNumOfServers(int num);
+    public:
+        class ConfigFileException : public std::exception {
+            private:
+                std::string _msg;
+            public:
+                ConfigFileException(std::string const &msg) : _msg(msg) {}
+                virtual const char *what() const throw() {
+                    return _msg.c_str();
+                }
+        };
 };
 
 #endif

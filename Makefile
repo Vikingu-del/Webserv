@@ -3,66 +3,53 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+         #
+#    By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/05/07 15:15:09 by ipetruni          #+#    #+#              #
-#    Updated: 2024/05/15 16:22:51 by ipetruni         ###   ########.fr        #
+#    Created: 2024/05/16 18:24:38 by eseferi           #+#    #+#              #
+#    Updated: 2024/05/16 18:30:51 by eseferi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# SETUP OF THE PROGRAM
-
 NAME =  webserv
-
-# FILES AND PATH TO THEM
-
-OBJ_DIR = obj/
-SRC_DIR = src/
-CONFIG_DIR = configFile/
-
-SRC	=	main \
-        Client \
-        Http \
-        ServerSocket \
-        utils \
-		$(addprefix $(CONFIG_DIR), CofigFileUtils ConfigFile ConfigFileParser Location ServerConfiguration)
-
-SRCS =  $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(SRC)))
-OBJS = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC)))
-
-# COMMANDS
-
-CC = c++
-CFLAGS = #-Wall -Wextra -Werror #-std=c++98
-RM = rm -rf
+COMP = c++
+SRC = $(shell find src -name "*.cpp")
+OBJ = $(SRC:src/%.cpp=obj/%.o)
+INCL = $(shell find inc -type d)
+FLAGS = -Wall -Wextra -Werror  $(addprefix -I,$(INCL)) -Wshadow  -Wno-shadow #-std=c++98 -g
+GREEN = \033[32m
+RED = \033[31m
+YELLOW = \033[33m
+RESET = \033[0m
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
-	@echo "$(GREEN)$(NAME) was successfully created!$(DEFAULT)"
-	
-$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
-	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -I./includes -c $< -o $@
-	
+$(NAME): $(OBJ)
+		@$(COMP) $(FLAGS) $^ -o $@
+		@echo "$(GREEN)Compiled$(RESET)"
+
+obj/%.o: src/%.cpp
+		@mkdir -p $(@D)
+		@$(COMP) $(FLAGS) -c $< -o $@
+
 clean:
-		@$(RM) $(OBJS)
-		@$(RM) $(OBJ_DIR)
-		@echo "$(YELLOW)$(NAME) objects files deleted!$(DEFAULT)"
-	
+		@if [ -d obj ]; then \
+			rm -rf obj; \
+			echo "$(RED)Object files cleaned$(RESET)"; \
+		else \
+			echo "$(YELLOW)No Object file to clean$(RESET)"; \
+		fi
+
 fclean: clean
-		@$(RM) $(NAME)
-		@echo "$(RED)$(NAME) program and objects deleted!$(DEFAULT)"
+		@if [ -f $(NAME) ]; then \
+			rm -rf $(NAME); \
+			echo "$(RED)Executable file cleaned$(RESET)"; \
+		else \
+			echo "$(YELLOW)No executable file to clean$(RESET)"; \
+		fi
 
-re:		fclean all
+debug: 
+	$(MAKE) FLAGS="$(FLAGS) -DDEBUG=1" all
 
-.PHONY: all clean fclean re
+re: fclean all
 
-# COLORS DEFENITIONS
-
-RED = \033[1;31m
-DEFAULT = \033[0m
-GREEN = \033[1;32m
-BOLD = \033[1m
-YELLOW = \033[1;33m
+.PHONY: all clean fclean re%     

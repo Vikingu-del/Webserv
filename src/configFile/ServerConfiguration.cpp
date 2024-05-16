@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/15 17:51:54 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 18:40:07 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/Webserv.hpp"
+#include "Webserv.hpp"
 
 // !Constructors
 
@@ -25,7 +25,7 @@ ServerConfig::ServerConfig()
 	_locations(0),
 	_listen_fd(0)
 {	
-	std::cout << PINK BLD "ServerConfig default constructor" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig default constructor" RST << std::endl;
 	initErrorPages();
 }
 
@@ -41,12 +41,12 @@ ServerConfig::ServerConfig(const ServerConfig &other)
 	_listen_fd(other._listen_fd),
 	_error_pages(other._error_pages)
 {
-	std::cout << PINK BLD "ServerConfig copy constructor" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig copy constructor" RST << std::endl;
 }
 
 ServerConfig &ServerConfig::operator=(const ServerConfig &other)
 {
-	std::cout << PINK BLD "ServerConfig assignation operator" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig assignation operator" RST << std::endl;
 	if (this != &other)
 	{
 		this->_server_name = other._server_name;
@@ -67,7 +67,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other)
 // !Destructor
 
 ServerConfig::~ServerConfig(){
-	std::cout << RED BLD "ServerConfig destructor" RST << std::endl;
+	// std::cout << RED BLD "ServerConfig destructor" RST << std::endl;
 	// ? no specific cleanup needed
 }
 
@@ -75,66 +75,66 @@ ServerConfig::~ServerConfig(){
 
 const uint16_t &ServerConfig::getPort()
 {
-	std::cout << PINK BLD "ServerConfig getPort called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getPort called" RST << std::endl;
 	return (this->_port);
 }
 
 const in_addr_t &ServerConfig::getHost()
 {
-	std::cout << PINK BLD "ServerConfig getHost called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getHost called" RST << std::endl;
 	return (this->_host);
 }
 
 const std::string &ServerConfig::getServerName()
 {
-	std::cout << PINK BLD "ServerConfig getServerName called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getServerName called" RST << std::endl;
 	return (this->_server_name);
 }
 
 const std::string &ServerConfig::getRoot()
 {
-	std::cout << PINK BLD "ServerConfig getRoot called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getRoot called" RST << std::endl;
 	return (this->_root);
 }
 
 const unsigned long &ServerConfig::getClientMaxBody()
 {
-	std::cout << PINK BLD "ServerConfig getClientMaxBody called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getClientMaxBody called" RST << std::endl;
 	return (this->_client_max_body_size);
 }
 
 const std::string &ServerConfig::getIndex()
 {
-	std::cout << PINK BLD "ServerConfig getIndex called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getIndex called" RST << std::endl;
 	return (this->_index);
 }
 
 const bool & ServerConfig::getAutoindex()
 {
-	std::cout << PINK BLD "ServerConfig getAutoindex called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getAutoindex called" RST << std::endl;
 	return (this->_autoindex);
 }
 
 const std::map<short, std::string> &ServerConfig::getErrorPages()
 {
-	std::cout << PINK BLD "ServerConfig getErrorPages called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getErrorPages called" RST << std::endl;
 	return (this->_error_pages);
 }
 
 const std::vector<Location> &ServerConfig::getLocations() {
-	std::cout << PINK BLD "ServerConfig getLocations called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getLocations called" RST << std::endl;
 	return (this->_locations);
 }
 
 const sockaddr_in &ServerConfig::getServerArddres()
 {
-	std::cout << PINK BLD "ServerConfig getServerArddres called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getServerArddres called" RST << std::endl;
 	return (this->_server_address);
 }
 
 const int &ServerConfig::getListenFd()
 {
-	std::cout << PINK BLD "ServerConfig getListenFd called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig getListenFd called" RST << std::endl;
 	return(this->_listen_fd);
 }
 
@@ -143,14 +143,14 @@ const int &ServerConfig::getListenFd()
 
 void ServerConfig::setServerName(std::string server_name)
 {
-	std::cout << PINK BLD "ServerConfig setServerName called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setServerName called" RST << std::endl;
 	checkToken(server_name);
 	this->_server_name = server_name;
 }
 
 void ServerConfig::setHost(std::string parametr)
 {
-	std::cout << PINK BLD "ServerConfig setHost called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setHost called" RST << std::endl;
 	checkToken(parametr);
 	if (parametr == "localhost")
 		parametr = "127.0.0.1";
@@ -162,7 +162,7 @@ void ServerConfig::setHost(std::string parametr)
 /* validation of parametrs */
 bool ServerConfig::isValidHost(std::string host) const
 {
-	std::cout << PINK BLD "ServerConfig isValidHost called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig isValidHost called" RST << std::endl;
 	struct sockaddr_in sockaddr;
   	return (inet_pton(AF_INET, host.c_str(), &(sockaddr.sin_addr)) ? true : false);
 }
@@ -170,7 +170,7 @@ bool ServerConfig::isValidHost(std::string host) const
 
 void ServerConfig::setRoot(std::string root)
 {
-	std::cout << PINK BLD "ServerConfig setRoot called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setRoot called" RST << std::endl;
 	checkToken(root);
 	if (ConfigFile::checkFileExistence(root) == 2)
 	{
@@ -187,7 +187,7 @@ void ServerConfig::setRoot(std::string root)
 
 void ServerConfig::setPort(std::string parametr)
 {
-	std::cout << PINK BLD "ServerConfig setPort called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setPort called" RST << std::endl;
 	unsigned int port;
 	
 	port = 0;
@@ -205,7 +205,7 @@ void ServerConfig::setPort(std::string parametr)
 
 void ServerConfig::setClientMaxBodySize(std::string parametr)
 {
-	std::cout << PINK BLD "ServerConfig setClientMaxBodySize called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setClientMaxBodySize called" RST << std::endl;
 	unsigned long body_size;
 	
 	body_size = 0;
@@ -223,14 +223,14 @@ void ServerConfig::setClientMaxBodySize(std::string parametr)
 
 void ServerConfig::setIndex(std::string index)
 {
-	std::cout << PINK BLD "ServerConfig setIndex called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setIndex called" RST << std::endl;
 	checkToken(index);
 	this->_index = index;
 }
 
 void ServerConfig::setAutoindex(std::string autoindex)
 {
-	std::cout << PINK BLD "ServerConfig setAutoindex called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setAutoindex called" RST << std::endl;
 	checkToken(autoindex);
 	if (autoindex != "on" && autoindex != "off")
 		std::cerr << "Wrong syntax: autoindex" << std::endl;
@@ -242,7 +242,7 @@ void ServerConfig::setAutoindex(std::string autoindex)
 otherwise it creates a new pair: error code - path to the file */
 void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
 {
-	std::cout << PINK BLD "ServerConfig setErrorPages called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setErrorPages called" RST << std::endl;
 	if (parametr.empty())
 		return;
 	if (parametr.size() % 2 != 0)
@@ -279,7 +279,7 @@ void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
 /* parsing and set locations */
 void ServerConfig::setLocation(std::string path, std::vector<std::string> parametr)
 {
-	std::cout << PINK BLD "ServerConfig setLocation called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setLocation called" RST << std::endl;
 	Location new_location;
 	std::vector<std::string> methods;
 	bool flag_methods = false;
@@ -431,7 +431,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 
 void ServerConfig::setFd(int fd)
 {
-	std::cout << PINK BLD "ServerConfig setFd called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig setFd called" RST << std::endl;
 	this->_listen_fd = fd;
 }
 
@@ -440,7 +440,7 @@ void ServerConfig::setFd(int fd)
 
 void ServerConfig::initErrorPages(void)
 {
-	std::cout << PINK BLD "ServerConfig initErrorPages called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig initErrorPages called" RST << std::endl;
 	_error_pages[301] = "";
 	_error_pages[302] = "";
 	_error_pages[400] = "";
@@ -461,7 +461,7 @@ void ServerConfig::initErrorPages(void)
 /* check parametrs of location */
 int ServerConfig::isValidLocation(Location & location) const
 {
-	std::cout << PINK BLD "ServerConfig isValidLocation called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig isValidLocation called" RST << std::endl;
 	if (location.getPath() == "/cgi-bin")
 	{
 		if (location.getCgiPath().empty() || location.getCgiExtension().empty() || location.getIndexLocation().empty())
@@ -539,7 +539,7 @@ int ServerConfig::isValidLocation(Location & location) const
 
 bool ServerConfig::isValidErrorPages()
 {
-	std::cout << PINK BLD "ServerConfig isValidErrorPages called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig isValidErrorPages called" RST << std::endl;
 	std::map<short, std::string>::const_iterator it;
 	for (it = this->_error_pages.begin(); it != this->_error_pages.end(); it++)
 	{
@@ -554,7 +554,7 @@ bool ServerConfig::isValidErrorPages()
 /* check is a properly end of parametr */
 void ServerConfig::checkToken(std::string &parametr)
 {
-	std::cout << PINK BLD "ServerConfig checkToken called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig checkToken called" RST << std::endl;
 	std::cout << "parametr: " << parametr << std::endl;
 	size_t pos = parametr.rfind(';');
 	if (pos != parametr.size() - 1)
@@ -565,7 +565,7 @@ void ServerConfig::checkToken(std::string &parametr)
 /* check location for a dublicate */
 bool ServerConfig::checkLocaitons() const
 {
-	std::cout << PINK BLD "ServerConfig checkLocaitons called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig checkLocaitons called" RST << std::endl;
 	if (this->_locations.size() < 2)
 		return (false);
 	std::vector<Location>::const_iterator it1;
@@ -582,7 +582,7 @@ bool ServerConfig::checkLocaitons() const
 /* socket setup and binding */
 void	ServerConfig::bindServer(void)
 {
-	std::cout << PINK BLD "ServerConfig bindServer called" RST << std::endl;
+	// std::cout << PINK BLD "ServerConfig bindServer called" RST << std::endl;
 	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
     {
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
