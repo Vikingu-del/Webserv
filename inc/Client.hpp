@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/15 15:39:11 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:52:39 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 #include "Webserv.hpp"
+#include "Http.hpp"
 
 class Client
 {
@@ -28,18 +29,21 @@ class Client
         Client  &operator=(const Client &copy);
         Client(ServerConfig & server);
         ~Client();
-        /*Geters*/ //need request class
+        /*Geters*/
         const int                   &getSocket() const;
         const struct sockaddr_in    &getAddress() const;
         const time_t                &getLastTime() const;
-        /*Seters*/ //need request class
+        const HTTP::Request         &getRequest() const;
+        /*Seters*/
         void                        setSocket(int &socket);
         void                        setAddress(sockaddr_in &address);
         void                        setServer(ServerConfig &serv);
-        void                        setTime(); //update
-        /*Another*/ //need request and response classes
-        // void                        clearClient();// need request and response
+        void                        setTime(); //update time
+        /*Another*/
+        void                        clearClient();
         ServerConfig                server;
+        HTTP::Request               request;
+        HTTP::Response              response;
 };
 
 
