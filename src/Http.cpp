@@ -1,3 +1,7 @@
+/**
+ * @file Http.cpp
+ * @brief Implementation of the Http class and its related classes and methods.
+ */
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -6,7 +10,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:49:32 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/16 20:26:17 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/17 10:34:56 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,78 +21,74 @@
 
 // METHODS
 
+// this function converts the HTTP Method enum to a string
 std::string		HTTP::methodToString(Method method) {
-	switch(method)
-	{
-		case HTTP::GET:
-			return "GET";
-		case HTTP::HEAD:
-			return "HEAD";
-		case HTTP::POST:
-			return "POST";
-		case HTTP::PUT:
-			return "PUT";
-		case HTTP::DELETE:
-			return "DELETE";
-		case HTTP::TRACE:
-			return "TRACE";
-		case HTTP::OPTIONS:
-			return "OPTIONS";
-		case HTTP::CONNECT:
-			return "CONNECT";
-		case HTTP::PATCH:
-			return "PATCH";
-		default:
-			return "UNKNOWN";
-	}
+	static const std::map<Method, std::string> methods = {
+		{GET, "GET"},
+		{HEAD, "HEAD"},
+		{POST, "POST"},
+		{PUT, "PUT"},
+		{DELETE, "DELETE"},
+		{TRACE, "TRACE"},
+		{OPTIONS, "OPTIONS"},
+        {CONNECT, "CONNECT"},
+        {PATCH, "PATCH"}
+	};
+	std::map<Method, std::string>::const_iterator it = methods.find(method);
+	if (it != methods.end())
+		return it->second;
+	else
+		return "UNKNOWN";
 }
 
+// this function converts the HTTP Method string to an enum
 HTTP::Method	HTTP::stringToMethod(const std::string& method) {
-	if (method == "GET")
-		return HTTP::GET;
-	else if (method == "HEAD")
-		return HTTP::HEAD;
-	else if (method == "POST")
-		return HTTP::POST;
-	else if (method == "PUT")
-		return HTTP::PUT;
-	else if (method == "DELETE")
-		return HTTP::DELETE;
-	else if (method == "TRACE")
-		return HTTP::TRACE;
-	else if (method == "OPTIONS")
-		return HTTP::OPTIONS;
-	else if (method == "CONNECT")
-		return HTTP::CONNECT;
-	else if (method == "PATCH")
-		return HTTP::PATCH;
+	static const std::map<std::string, Method> methods = {
+        {"GET", GET},
+        {"HEAD", HEAD},
+        {"POST", POST},
+        {"PUT", PUT},
+        {"DELETE", DELETE},
+        {"TRACE", TRACE},
+        {"OPTIONS", OPTIONS},
+        {"CONNECT", CONNECT},
+        {"PATCH", PATCH}
+	};
+	std::map<std::string, Method>::const_iterator it = methods.find(method);
+	if (it != methods.end())
+		return it->second;
 	else
-		return HTTP::GET;
+		throw std::invalid_argument("Invalid Http Method: " + method);
 }
 
+// this function converts the HTTP Version enum to a string
 std::string		HTTP::versionToString(Version version) {
-	switch(version)
-	{
-		case HTTP::HTTP_1_0:
-			return "HTTP/1.0";
-		case HTTP::HTTP_1_1:
-			return "HTTP/1.1";
-		case HTTP::HTTP_2_0:
-			return "HTTP/2.0";
-		default:
-			return "UNKNOWN";
+	static const std::map<Version, std::string> versions = {
+		{HTTP::HTTP_1_0, "HTTP/1.0"},
+		{HTTP::HTTP_1_1, "HTTP/1.1"},
+		{HTTP::HTTP_2_0, "HTTP/2.0"}
+	};
+	std::map<Version, std::string>::const_iterator it = versions.find(version);
+	if (it != versions.end()) {
+		return it->second;
+	} else {
+		return "UNKNOWN";
 	}
 }
 
-HTTP::Version	HTTP::stringToVersion(const std::string& version) {
-	if (version == "HTTP/1.0")
-		return HTTP::HTTP_1_0;
-	else if (version == "HTTP/1.1")
-		return HTTP::HTTP_1_1;
-	else if (version == "HTTP/2.0")
-		return HTTP::HTTP_2_0;
-	else
-		return HTTP::HTTP_1_1;
+// this function converts the HTTP Version string to an enum
+HTTP::Version HTTP::stringToVersion(const std::string& version) {
+    static const std::map<std::string, Version> versions = {
+        {"HTTP/1.0", HTTP::HTTP_1_0},
+        {"HTTP/1.1", HTTP::HTTP_1_1},
+        {"HTTP/2.0", HTTP::HTTP_2_0}
+    };
+    auto it = versions.find(version);
+    if (it != versions.end()) {
+        return it->second;
+    } else {
+        throw std::invalid_argument("Invalid Http Version: " + version);
+    }
 }
 
 
@@ -123,10 +123,11 @@ std::string		HTTP::Header::serialize() const {
 }
 
 HTTP::Header	HTTP::Header::deserialize(const std::string &header) {
-	std::vector<std::string> segments = utils::split(header, " ");
-	const std::string key = segments[0].substr(0, segments[0].size() - 1);
-	segments.erase(segments.begin());
-	const std::string value = utils::concat(segments, " ");
+	std::vector<std::string> segments = utils::split(header, ": ");
+	if (segments.size() < 2)
+		throw std::runtime_error("Invalid HTTP Header: " + header);
+	const std::string key = segments[0];
+	const std::string value = segments[1];
 	return Header(key, value);
 }
 
@@ -169,6 +170,8 @@ HTTP::Request	HTTP::Request::deserialize(const std::string &request) {
 	std::vector<std::string> lines = utils::split(request, std::string(LINE_END));
 	if (lines.size() < 1)
 		throw std::runtime_error("HTTP Request ('" + std::string(request) + "') consisted of " + utils::toString(lines.size()) + " lines, should be >= 1.");
+	if (lines[0].empty())
+		throw std::runtime_error("First line of HTTP Request ('" + std::string(request) + "') was empty.");
 	std::vector<std::string> segments = utils::split(lines[0], " ");
 	if (segments.size() != 3)
 		throw std::runtime_error("First line of HTTP Request ('" + std::string(request) + "') consisted of " + utils::toString(segments.size()) + " space separated segments, should be 3.");
@@ -223,6 +226,8 @@ std::string		HTTP::Response::serialize() const {
 
 HTTP::Response		HTTP::Response::deserialize(const std::string &response) {
 	std::vector<std::string> segments = utils::split(response, std::string(LINE_END) + std::string(LINE_END));
+	if (segments.size() < 2)
+		throw std::runtime_error("Invalid HTTP response: " + response);
 	std::string headerSegment = segments[0];
 	segments.erase(segments.begin());
 	std::string body = utils::concat(segments, LINE_END);
@@ -233,9 +238,9 @@ HTTP::Response		HTTP::Response::deserialize(const std::string &response) {
 	int responseCode = utils::strToInt(responseCodeSegments[1]);
 	headerLines.erase(headerLines.begin());
 	std::map<std::string, Header> headers;
-	for (size_t i = 0; i < headerLines.size(); ++i) {
-		const Header header = Header::deserialize(headerLines[i]);
-		headers.insert(std::make_pair(header.getKey(), header));
-	}
+	for (std::vector<std::string>::const_iterator it = headerLines.begin(); it != headerLines.end(); ++it) {
+        const Header header = Header::deserialize(*it);
+        headers.insert(std::make_pair(header.getKey(), header));
+    }
 	return Response(responseCode, version, headers, body);
 }
