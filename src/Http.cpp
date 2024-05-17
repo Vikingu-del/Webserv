@@ -15,9 +15,6 @@
 /* ************************************************************************** */
 
 #include "Http.hpp"
-#include "defines.h"
-#include <vector>
-#include "utils.hpp"
 
 // METHODS
 
@@ -112,6 +109,17 @@ HTTP::Request::Request()
 HTTP::Request::Request(Method method, const std::string& resource, const std::map<std::string, HTTP::Header>& headers, Version version)
     : _method(method), _resource(resource), _headers(headers), _version(version) {}
 
+// copy assignment operator
+HTTP::Request& HTTP::Request::operator=(const HTTP::Request& other) {
+    if (this != &other) {
+        _method = other._method;
+        _resource = other._resource;
+        _headers = other._headers;
+        _version = other._version;
+    }
+    return *this;
+}
+
 // Setters
 void	HTTP::Request::setMethod(Method method) { _method = method; }
 void	HTTP::Request::setResource(const std::string &resource) { _resource = resource; }
@@ -165,6 +173,18 @@ HTTP::Response::Response() : _responseCode(), _version(HTTP::HTTP_1_1), _headers
 
 HTTP::Response::Response(StatusCode responseCode, Version version, const std::map<std::string, Header>& headers, const std::string& body)
 	: _responseCode(responseCode), _version(version), _headers(headers), _body(body) {};
+
+// copy assignment operator
+HTTP::Response& HTTP::Response::operator=(const HTTP::Response& other) {
+	if (this != &other) {
+		_responseCode = other._responseCode;
+		_version = other._version;
+		_headers = other._headers;
+		_body = other._body;
+	}
+	return *this;
+}
+
 
 // Setters
 void	HTTP::Response::setResponseCode(StatusCode responseCode) { _responseCode = responseCode; }

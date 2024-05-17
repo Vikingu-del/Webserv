@@ -6,26 +6,16 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:27:34 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/17 13:42:31 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
 
+void	testHttpHandler();
+
 int main(int argc, char **argv)
 {
-
-	//! NOTICE FOR ERIC 
-
-	//! DO NOT RUN THE PROGRAMM WITH DEFAULT CONFIG FILE
-
-	//! IT WILL CRASH
-
-	//! USE THE CONFIG FILE siege.conf
-
-	//! OR CREATE A NEW ONE
-
-	//! AND RUN THE PROGRAMM WITH IT
 
 	std::string configFilePath;
 	ConfigFileParser parser;
@@ -51,6 +41,7 @@ int main(int argc, char **argv)
 				throw std::invalid_argument("Wrong number arguments");
 				return 1;
 		}
+		testHttpHandler();
 	}
 	catch (std::exception & ex) {
 		std::cerr << ex.what() << std::endl;

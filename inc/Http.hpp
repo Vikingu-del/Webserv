@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/17 12:54:05 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/17 13:41:11 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 
 #include <iostream>
 #include <map>
+#include "defines.h"
+#include <vector>
+#include "utils.hpp"
 
 namespace   HTTP
 {
@@ -104,22 +107,25 @@ namespace   HTTP
 			Request();
 			Request(Method method, const std::string& resource, const std::map<std::string, Header>& headers, Version version);
 			~Request() {};
+			
+			// copy assignment operator
+			Request& operator=(const Request& other);
 
-		// Setters
-		void								setVersion(Version version);
-		void								setMethod(Method method);
-		void								setResource(const std::string &resource);
-		void									setHeaders(const std::map<std::string, Header> &headers);
+			// Setters
+			void								setVersion(Version version);
+			void								setMethod(Method method);
+			void								setResource(const std::string &resource);
+			void									setHeaders(const std::map<std::string, Header> &headers);
 
-		// Getters
-		Version								getVersion() const;
-		Method								getMethod() const;
-		const std::string					&getResource() const;
-		const std::map<std::string, Header>	&getHeaders() const;
+			// Getters
+			Version								getVersion() const;
+			Method								getMethod() const;
+			const std::string					&getResource() const;
+			const std::map<std::string, Header>	&getHeaders() const;
 
-		// Methods
-		std::string							serialize() const;
-		static Request						deserialize(const std::string &request);
+			// Methods
+			std::string							serialize() const;
+			static Request						deserialize(const std::string &request);
 	};
 
     class   Response {
@@ -133,6 +139,9 @@ namespace   HTTP
             Response(StatusCode responseCode, Version version, const std::map<std::string, Header> &headers, const std::string &body);
             ~Response() {};
             
+			// copy assignment operator
+			Response& operator=(const Response& other);
+
             // Setters
             void								setResponseCode(StatusCode responseCode);
             void								setVersion(Version version);
