@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/17 11:32:10 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/17 12:54:05 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,23 +124,23 @@ namespace   HTTP
 
     class   Response {
         private:
-            int									_responseCode;
+            StatusCode							_responseCode;
             Version								_version;
             std::map<std::string, Header>		_headers;
             std::string							_body;
         public:
             Response();
-            Response(int responseCode, Version version, const std::map<std::string, Header> &headers, const std::string &body);
+            Response(StatusCode responseCode, Version version, const std::map<std::string, Header> &headers, const std::string &body);
             ~Response() {};
             
             // Setters
-            void								setResponseCode(int responseCode);
+            void								setResponseCode(StatusCode responseCode);
             void								setVersion(Version version);
             void								setHeaders(const std::map<std::string, Header> &headers);
             void								setBody(const std::string &body);
 
             // Getters
-            int									getResponseCode() const;
+            StatusCode							getResponseCode() const;
             Version								getVersion() const;
             const std::map<std::string, Header>	&getHeaders() const;
             const std::string					&getBody() const;
