@@ -10,7 +10,8 @@ void	testHttpHandler()
 	"Accept-Encoding: gzip, deflate, br\r\n"
 	"Connection: keep-alive\r\n"
 	"Upgrade-Insecure-Requests: 1\r\n"
-	"\r\n";
+	"\r\n"
+	"{\"username\":\"testuser\",\"email\":\"testuser@example.com\",\"password\":\"mypassword\"}";
 	HTTP::Request requestParser = HTTP::Request::deserialize(requestExample);
 	std::cout << "Example http request:\n\n" << requestExample << std::endl << "------------------------------" << std::endl;
 	std::cout << RED << "METHOD: " << HTTP::methodToString(requestParser.getMethod()) << RESET << std::endl;
@@ -22,6 +23,7 @@ void	testHttpHandler()
 		std::cout << CYAN <<  "Header " << j << ":     " << it->first << ": " << it->second.getValue() << RESET << std::endl;
 	}
 	std::cout << YELLOW << "VERSION: " << HTTP::versionToString(requestParser.getVersion()) << RESET << std::endl;
+	std::cout << GREEN << "BODY: " << requestParser.getBody() << RESET << std::endl;
 	std::cout << "------------------------------" << std::endl;
 
 	std::string responseExample = "HTTP/1.0 200 OK\r\n"

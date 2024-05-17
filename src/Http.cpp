@@ -105,9 +105,9 @@ HTTP::Header	HTTP::Header::deserialize(const std::string &header) {
 
 // Constructors
 HTTP::Request::Request()
-	: _method(HTTP::GET), _resource(0), _headers(), _version(HTTP::HTTP_1_1) {};
-HTTP::Request::Request(Method method, const std::string& resource, const std::map<std::string, HTTP::Header>& headers, Version version)
-    : _method(method), _resource(resource), _headers(headers), _version(version) {}
+	: _method(HTTP::GET), _resource(0), _headers(), _version(HTTP::HTTP_1_1), _body(0) {};
+HTTP::Request::Request(Method method, const std::string& resource, const std::map<std::string, HTTP::Header>& headers, Version version, const std::string& body)
+    : _method(method), _resource(resource), _headers(headers), _version(version), _body(body) {}
 
 // copy assignment operator
 HTTP::Request& HTTP::Request::operator=(const HTTP::Request& other) {
@@ -125,12 +125,14 @@ void	HTTP::Request::setMethod(Method method) { _method = method; }
 void	HTTP::Request::setResource(const std::string &resource) { _resource = resource; }
 void	HTTP::Request::setVersion(Version version) { _version = version; }
 void	HTTP::Request::setHeaders(const std::map<std::string, Header> &headers) { _headers = headers; }
+void	HTTP::Request::setBody(const std::string &body) { _body = body; }
 
 // Getters
 HTTP::Version	HTTP::Request::getVersion() const { return _version; }
 HTTP::Method	HTTP::Request::getMethod() const { return _method; }
 const			std::string &HTTP::Request::getResource() const { return _resource; }
 const			std::map<std::string, HTTP::Header> &HTTP::Request::getHeaders() const { return _headers; }
+const			std::string &HTTP::Request::getBody() const { return _body; }
 
 // Methods
 std::string		HTTP::Request::serialize() const {
@@ -138,6 +140,7 @@ std::string		HTTP::Request::serialize() const {
 	for (std::map<std::string, HTTP::Header>::const_iterator it = _headers.begin(); it != _headers.end(); ++it)
     	request += it->second.serialize();
 	request += LINE_END;
+	request += _body;
 	return request;
 }
 
@@ -154,13 +157,18 @@ HTTP::Request	HTTP::Request::deserialize(const std::string &request) {
 	const std::string resource = segments[1];
 	const Version version = stringToVersion(segments[2]);
 	std::map<std::string, Header> headers;
-	for (size_t i = 1; i < lines.size(); ++i) {
+	size_t i;
+	for (i = 1; i < lines.size(); ++i) {
 		if (lines[i].size() > 0) {
 			const Header header = Header::deserialize(lines[i]);
 			headers.insert(std::make_pair(header.getKey(), header));
-		}
+		} else
+			break; // stop when we reach the blank line separating headers from body
 	}
-	return Request(method, resource, headers, version);
+	std::string body;
+	for (++i; i < lines.size(); ++i)
+		body += lines[i] + LINE_END;
+	return Request(method, resource, headers, version, body);
 }
 
 //             REQUEST                 */

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/17 13:41:11 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/17 14:48:07 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,10 @@ namespace   HTTP
 			std::string						_resource;
 			std::map<std::string, Header>	_headers;
 			Version							_version;
+			std::string						_body;
 		public:
 			Request();
-			Request(Method method, const std::string& resource, const std::map<std::string, Header>& headers, Version version);
+			Request(Method method, const std::string& resource, const std::map<std::string, Header>& headers, Version version, const std::string& body);
 			~Request() {};
 			
 			// copy assignment operator
@@ -115,13 +116,15 @@ namespace   HTTP
 			void								setVersion(Version version);
 			void								setMethod(Method method);
 			void								setResource(const std::string &resource);
-			void									setHeaders(const std::map<std::string, Header> &headers);
+			void								setHeaders(const std::map<std::string, Header> &headers);
+			void								setBody(const std::string &body);
 
 			// Getters
 			Version								getVersion() const;
 			Method								getMethod() const;
 			const std::string					&getResource() const;
 			const std::map<std::string, Header>	&getHeaders() const;
+			const std::string					&getBody() const;
 
 			// Methods
 			std::string							serialize() const;
