@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 11:52:45 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/16 18:41:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 20:07:00 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class ConfigFile {
                 std::string _msg;
             public:
                 ConfigFileException(std::string const &msg) : _msg(msg) {}
+                virtual ~ConfigFileException() throw() {}  // Add this line From Erik, had  prblems with std=c++98
                 virtual const char *what() const throw() {
                     return _msg.c_str();
                 }

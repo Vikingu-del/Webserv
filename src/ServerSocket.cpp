@@ -6,11 +6,12 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/16 18:27:38 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 20:29:53 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerSocket.hpp"
+#include <cstdlib>  // note by erik: added this include to use exit(1)
 
 ServerSocket::ServerSocket()
 {

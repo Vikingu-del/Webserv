@@ -6,13 +6,12 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:40:07 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 20:30:05 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-
-// !Constructors
+#include <cstdlib>  // note by erik: added this include to use exit(1)
 
 ServerConfig::ServerConfig()
 	:_port(0),

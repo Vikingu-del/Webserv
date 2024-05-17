@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpParser.hpp                                     :+:      :+:    :+:   */
+/*   Http.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/15 11:48:19 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 20:03:21 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #pragma once
 
-#include "Webserv.hpp"
+#include <iostream>
+#include <map>
 
 namespace   HTTP
 {
@@ -38,7 +39,7 @@ namespace   HTTP
     const int SERVICE_UNAVAILABLE = 503;
     
     // ENUMS
-    enum class  Method
+    enum Method
     {
         GET,
         HEAD,
@@ -51,7 +52,7 @@ namespace   HTTP
         PATCH
     };
 
-    enum class  Version
+    enum Version
     {
         HTTP_1_0,
         HTTP_1_1,

@@ -6,34 +6,37 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:49:32 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/16 18:27:29 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 20:26:17 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Http.hpp"
+#include "defines.h"
+#include <vector>
+#include "utils.hpp"
 
 // METHODS
 
 std::string		HTTP::methodToString(Method method) {
 	switch(method)
 	{
-		case Method::GET:
+		case HTTP::GET:
 			return "GET";
-		case Method::HEAD:
+		case HTTP::HEAD:
 			return "HEAD";
-		case Method::POST:
+		case HTTP::POST:
 			return "POST";
-		case Method::PUT:
+		case HTTP::PUT:
 			return "PUT";
-		case Method::DELETE:
+		case HTTP::DELETE:
 			return "DELETE";
-		case Method::TRACE:
+		case HTTP::TRACE:
 			return "TRACE";
-		case Method::OPTIONS:
+		case HTTP::OPTIONS:
 			return "OPTIONS";
-		case Method::CONNECT:
+		case HTTP::CONNECT:
 			return "CONNECT";
-		case Method::PATCH:
+		case HTTP::PATCH:
 			return "PATCH";
 		default:
 			return "UNKNOWN";
@@ -42,35 +45,35 @@ std::string		HTTP::methodToString(Method method) {
 
 HTTP::Method	HTTP::stringToMethod(const std::string& method) {
 	if (method == "GET")
-		return Method::GET;
+		return HTTP::GET;
 	else if (method == "HEAD")
-		return Method::HEAD;
+		return HTTP::HEAD;
 	else if (method == "POST")
-		return Method::POST;
+		return HTTP::POST;
 	else if (method == "PUT")
-		return Method::PUT;
+		return HTTP::PUT;
 	else if (method == "DELETE")
-		return Method::DELETE;
+		return HTTP::DELETE;
 	else if (method == "TRACE")
-		return Method::TRACE;
+		return HTTP::TRACE;
 	else if (method == "OPTIONS")
-		return Method::OPTIONS;
+		return HTTP::OPTIONS;
 	else if (method == "CONNECT")
-		return Method::CONNECT;
+		return HTTP::CONNECT;
 	else if (method == "PATCH")
-		return Method::PATCH;
+		return HTTP::PATCH;
 	else
-		return Method::GET;
+		return HTTP::GET;
 }
 
 std::string		HTTP::versionToString(Version version) {
 	switch(version)
 	{
-		case Version::HTTP_1_0:
+		case HTTP::HTTP_1_0:
 			return "HTTP/1.0";
-		case Version::HTTP_1_1:
+		case HTTP::HTTP_1_1:
 			return "HTTP/1.1";
-		case Version::HTTP_2_0:
+		case HTTP::HTTP_2_0:
 			return "HTTP/2.0";
 		default:
 			return "UNKNOWN";
@@ -79,13 +82,13 @@ std::string		HTTP::versionToString(Version version) {
 
 HTTP::Version	HTTP::stringToVersion(const std::string& version) {
 	if (version == "HTTP/1.0")
-		return Version::HTTP_1_0;
+		return HTTP::HTTP_1_0;
 	else if (version == "HTTP/1.1")
-		return Version::HTTP_1_1;
+		return HTTP::HTTP_1_1;
 	else if (version == "HTTP/2.0")
-		return Version::HTTP_2_0;
+		return HTTP::HTTP_2_0;
 	else
-		return Version::HTTP_1_1;
+		return HTTP::HTTP_1_1;
 }
 
 
@@ -132,7 +135,7 @@ HTTP::Header	HTTP::Header::deserialize(const std::string &header) {
 /*                REQUEST                 */
 
 // Constructors
-HTTP::Request::Request() : _method(Method::GET), _resource(0), _headers(), _version(Version::HTTP_1_1) {};
+HTTP::Request::Request() : _method(HTTP::GET), _resource(0), _headers(), _version(HTTP::HTTP_1_1) {};
 HTTP::Request::Request(Method method, const std::string& resource, const std::map<std::string, Header>& headers, Version version) : _method(method), _resource(resource), _headers(headers), _version(version) {};
 
 // Setters
@@ -156,8 +159,8 @@ std::string		HTTP::Request::serialize() const {
 	request += " ";
 	request += versionToString(this->_version);
 	request += LINE_END;
-	for (auto it = this->_headers.begin(); it != this->_headers.end(); ++it)
-		request += it->second.serialize();
+	for (std::map<std::string, HTTP::Header>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); ++it)
+    	request += it->second.serialize();
 	request += LINE_END;
 	return request;
 }
@@ -165,10 +168,10 @@ std::string		HTTP::Request::serialize() const {
 HTTP::Request	HTTP::Request::deserialize(const std::string &request) {
 	std::vector<std::string> lines = utils::split(request, std::string(LINE_END));
 	if (lines.size() < 1)
-		throw std::runtime_error("HTTP Request ('" + std::string(request) + "') consisted of " + std::to_string(lines.size()) + " lines, should be >= 1.");
+		throw std::runtime_error("HTTP Request ('" + std::string(request) + "') consisted of " + utils::toString(lines.size()) + " lines, should be >= 1.");
 	std::vector<std::string> segments = utils::split(lines[0], " ");
 	if (segments.size() != 3)
-		throw std::runtime_error("First line of HTTP Request ('" + std::string(request) + "') consisted of " + std::to_string(segments.size()) + " space separated segments, should be 3.");
+		throw std::runtime_error("First line of HTTP Request ('" + std::string(request) + "') consisted of " + utils::toString(segments.size()) + " space separated segments, should be 3.");
 	const Method method = stringToMethod(segments[0]);
 	const std::string resource = segments[1];
 	const Version version = stringToVersion(segments[2]);
@@ -188,7 +191,7 @@ HTTP::Request	HTTP::Request::deserialize(const std::string &request) {
 //            RESPONSE                 */
 
 // Constructors
-HTTP::Response::Response() : _responseCode(0), _version(Version::HTTP_1_1), _headers(), _body(0) {};
+HTTP::Response::Response() : _responseCode(0), _version(HTTP::HTTP_1_1), _headers(), _body(0) {};
 
 HTTP::Response::Response(int responseCode, Version version, const std::map<std::string, Header> &headers, const std::string &body) : _responseCode(responseCode), _version(version), _headers(headers), _body(body) {};
 
@@ -209,10 +212,10 @@ std::string		HTTP::Response::serialize() const {
 	std::string response;
 	response += versionToString(this->_version);
 	response += " ";
-	response += std::to_string(this->_responseCode);
+	response += utils::toString(this->_responseCode);
 	response += LINE_END;
-	for (auto it = this->_headers.begin(); it != this->_headers.end(); ++it)
-		response += it->second.serialize();
+	for (std::map<std::string, HTTP::Header>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); ++it)
+    	response += it->second.serialize();
 	response += LINE_END;
 	response += this->_body;
 	return response;
@@ -227,7 +230,7 @@ HTTP::Response		HTTP::Response::deserialize(const std::string &response) {
 	const std::string& responseCodeLine = headerLines[0];
 	std::vector<std::string> responseCodeSegments = utils::split(responseCodeLine, " ");
 	Version version = stringToVersion(responseCodeSegments[0]);
-	int responseCode = std::stoi(responseCodeSegments[1]);
+	int responseCode = utils::strToInt(responseCodeSegments[1]);
 	headerLines.erase(headerLines.begin());
 	std::map<std::string, Header> headers;
 	for (size_t i = 0; i < headerLines.size(); ++i) {

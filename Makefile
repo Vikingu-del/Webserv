@@ -6,7 +6,7 @@
 #    By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/16 18:24:38 by eseferi           #+#    #+#              #
-#    Updated: 2024/05/16 18:30:51 by eseferi          ###   ########.fr        #
+#    Updated: 2024/05/16 19:59:06 by eseferi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ COMP = c++
 SRC = $(shell find src -name "*.cpp")
 OBJ = $(SRC:src/%.cpp=obj/%.o)
 INCL = $(shell find inc -type d)
-FLAGS = -Wall -Wextra -Werror  $(addprefix -I,$(INCL)) -Wshadow  -Wno-shadow #-std=c++98 -g
+FLAGS = -Wall -Wextra -Werror  $(addprefix -I,$(INCL)) -Wshadow  -Wno-shadow -g -std=c++98
 GREEN = \033[32m
 RED = \033[31m
 YELLOW = \033[33m

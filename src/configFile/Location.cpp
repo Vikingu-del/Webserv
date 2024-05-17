@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:40:03 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/16 20:29:15 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,15 @@ Location::Location()
 	_index(""),
 	_return(""),
 	_alias(""),
-	_client_max_body_size(MAX_CONTENT_LENGTH),
-	_methods{1, 0, 0, 0, 0}
+	_client_max_body_size(MAX_CONTENT_LENGTH)
+	// _methods{1, 0, 0, 0, 0}
 {
+	_methods.push_back(1);
+    _methods.push_back(0);
+    _methods.push_back(0);
+    _methods.push_back(0);
+    _methods.push_back(0);
+	// note by erik: I changed the initialization of _methods to use push_back instead of the initializer list because std ++98 does not support this feature
 	// std::cout << BLUE << "Location default constructor" << RST << std::endl;
 }
 
