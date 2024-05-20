@@ -20,7 +20,7 @@ void	testHttpHandler()
 	for (std::map<std::string, HTTP::Header>::const_iterator it = requestParser.getHeaders().begin(); it != requestParser.getHeaders().end(); ++it)
 	{
 		++j;
-		std::cout << CYAN <<  "Header " << j << ":     " << it->first << ": " << it->second.getValue() << RESET << std::endl;
+		std::cout << CYAN <<  "Header " << j << ":     " << it->first << ": " << it->second.getValue() << "-----> " << RESET << "Type: " << HTTP::headerTypeToStr(it->second.getType())  << std::endl;
 	}
 	std::cout << YELLOW << "VERSION: " << HTTP::versionToString(requestParser.getVersion()) << RESET << std::endl;
 	std::cout << GREEN << "BODY: " << requestParser.getBody() << RESET << std::endl;
@@ -29,9 +29,9 @@ void	testHttpHandler()
 	std::string responseExample = "HTTP/1.0 200 OK\r\n"
 	"Server: Netscape-Communications/1.1\r\n"
 	"Date: Tuesday, 25-Nov-97 01:22:04 GMT\r\n"
-	"Last-modified: Thursday, 20-Nov-97 10:44:53 GMT\r\n"
-	"Content-length: 6372\r\n"
-	"Content-type: text/html\r\n"
+	"Last-Modified: Thursday, 20-Nov-97 10:44:53 GMT\r\n"
+	"Content-Length: 6372\r\n"
+	"Content-Type: text/html\r\n"
 	"\r\n"
 	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\r\n"
 	"<HTML>";
@@ -43,7 +43,7 @@ void	testHttpHandler()
 	for (std::map<std::string, HTTP::Header>::const_iterator it = responseParser.getHeaders().begin(); it != responseParser.getHeaders().end(); ++it)
 	{
 		++i;
-		std::cout << CYAN <<  "Header " << i << ":     " << it->first << ": " << it->second.getValue() << RESET << std::endl;
+		std::cout << CYAN <<  "Header " << i << ":     " << it->first << ": " << it->second.getValue() << "-----> " << RESET << "Type: " << HTTP::headerTypeToStr(it->second.getType())  << std::endl;
 	}
 	std::cout << YELLOW << "BODY: " << responseParser.getBody() << RESET << std::endl;
 }

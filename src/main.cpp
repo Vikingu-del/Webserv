@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/17 13:42:31 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 09:00:04 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,15 @@ int main(int argc, char **argv)
 		{
 			case 1:
 				configFilePath = "configs/siege.conf";
-				parser.parseConfigFile(configFilePath);
-				parser.printServers();
+				// parser.parseConfigFile(configFilePath);
+				// parser.printServers();
 				// After parsing setup all needed info
 				// Run the servers
 				break;
 			case 2:
 				configFilePath = argv[1];
-				parser.parseConfigFile(configFilePath);
-				parser.printServers();
+				// parser.parseConfigFile(configFilePath);
+				// parser.printServers();
 				// After parsing setup all needed info
 				// Run the servers
 				break;
