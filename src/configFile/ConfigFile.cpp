@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 17:07:47 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:39:51 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 17:35:35 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,26 +56,25 @@ std::string ConfigFile::getFileContent(std::string const path) {
 
 // !Getters
 std::string ConfigFile::getPath() {
-	// std::cout << GREEN BLD "ConfigFile getPath called" RST << std::endl;
+	std::cout << GREEN BLD "ConfigFile getPath called" RST << std::endl;
 	return (this->_configFilePath); 
 }
 
 int ConfigFile::getNumOfServers() {
-	// std::cout << GREEN BLD "ConfigFile getNumOfServers called" RST << std::endl;
+	std::cout << GREEN BLD "ConfigFile getNumOfServers called" RST << std::endl;
 	return (this->_numOfServers); 
 }
 
 
 // !Setters
 void ConfigFile::setNumOfServers(int num) { 
-	// std::cout << GREEN BLD "ConfigFile setNumOfServers called" RST << std::endl;	
+	std::cout << GREEN BLD "ConfigFile setNumOfServers called" RST << std::endl;	
 	this->_numOfServers = num;
 }
 
 
-
+//! Checks if the file exists and has the required permissions
 int ConfigFile::checkFile(std::string const path, std::string const index) {
-	// std::cout << GREEN BLD "ConfigFile checkFile called" RST << std::endl;
 	if (checkFileExistence(index) == 1 && checkFilePermissons(index, READ_PERMISSION) == 0)
 		return 0;
 	if (!path.empty() && checkFileExistence(path + index) == 1 && checkFilePermissons(path + index, READ_PERMISSION) == 0)
@@ -83,17 +82,17 @@ int ConfigFile::checkFile(std::string const path, std::string const index) {
 	return -1;
 }
 
-// *Constructors 
+//! Constructors 
 
 ConfigFile::ConfigFile() : _configFilePath("configs/default.conf"), _numOfServers(0) {
-	// std::cout << GREEN BLD "ConfigFile default constructor called" RST << std::endl;
+	std::cout << GREEN BLD "ConfigFile default constructor called" RST << std::endl;
 }
 
 ConfigFile::ConfigFile(std::string const path) : _configFilePath(path), _numOfServers(0) {
-	// std::cout << GREEN BLD "ConfigFile PATH constructor called" RST << std::endl;
+	std::cout << GREEN BLD "ConfigFile PATH constructor called" RST << std::endl;
 }
 
-// *Destructor
+//! Destructor
 ConfigFile::~ConfigFile() {
-	// std::cout << RED BLD "ConfigFile destructor called" RST << std::endl;
+	std::cout << RED BLD "ConfigFile destructor called" RST << std::endl;
 }

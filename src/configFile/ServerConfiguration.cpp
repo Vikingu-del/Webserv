@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 20:30:05 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 17:15:59 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ void ServerConfig::setHost(std::string parametr)
 	if (parametr == "localhost")
 		parametr = "127.0.0.1";
 	if (!isValidHost(parametr))
-		std::cerr << "Wrong syntax: host" << std::endl;
+		throw ServerConfigException("Wrong syntax: host");
 	this->_host = inet_addr(parametr.data());
 }
 
@@ -180,7 +180,7 @@ void ServerConfig::setRoot(std::string root)
 	getcwd(dir, 1024);
 	std::string full_root = dir + root;
 	if (ConfigFile::checkFileExistence(full_root) != 2)
-		std::cerr << "Wrong syntax: root" << std::endl;
+		throw ServerConfigException("Root directory does not exist: " + full_root);
 	this->_root = full_root;
 }
 
@@ -188,17 +188,16 @@ void ServerConfig::setPort(std::string parametr)
 {
 	// std::cout << PINK BLD "ServerConfig setPort called" RST << std::endl;
 	unsigned int port;
-	
 	port = 0;
 	checkToken(parametr);
-	for (size_t i = 0; i < parametr.length(); i++)
+	for (size_t i = 0; i < parametr.length() ; i++)
 	{
 		if (!std::isdigit(parametr[i]))
-			std::cerr << "Wrong syntax: port" << std::endl;
+			throw ServerConfigException("Wrong syntax: port");
 	}
 	port = ft_stoi((parametr));
 	if (port < 1 || port > 65636)
-		std::cerr << "Wrong syntax: port" << std::endl;
+		throw ServerConfigException("Wrong syntax: port");
 	this->_port = (uint16_t) port;
 }
 
@@ -212,10 +211,10 @@ void ServerConfig::setClientMaxBodySize(std::string parametr)
 	for (size_t i = 0; i < parametr.length(); i++)
 	{
 		if (parametr[i] < '0' || parametr[i] > '9')
-			std::cerr << "Wrong syntax: client_max_body_size" << std::endl;
+			throw ServerConfigException("Wrong syntax: client_max_body_size");
 	}
 	if (!ft_stoi(parametr))
-		std::cerr << "Wrong syntax: client_max_body_size" << std::endl;
+		throw ServerConfigException("Wrong syntax: client_max_body_size");
 	body_size = ft_stoi(parametr);
 	this->_client_max_body_size = body_size;
 }
@@ -232,40 +231,40 @@ void ServerConfig::setAutoindex(std::string autoindex)
 	// std::cout << PINK BLD "ServerConfig setAutoindex called" RST << std::endl;
 	checkToken(autoindex);
 	if (autoindex != "on" && autoindex != "off")
-		std::cerr << "Wrong syntax: autoindex" << std::endl;
+		throw ServerConfigException("Wrong syntax: autoindex");
 	if (autoindex == "on")
 		this->_autoindex = true;
 }
 
 /* checks if there is such a default error code. If there is, it overwrites the path to the file,
 otherwise it creates a new pair: error code - path to the file */
-void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
+void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 {
 	// std::cout << PINK BLD "ServerConfig setErrorPages called" RST << std::endl;
 	if (parametr.empty())
 		return;
 	if (parametr.size() % 2 != 0)
-		std::cerr << "Error page initialization faled" << std::endl;
+		throw ServerConfigException("Error page initialization failed");
 	for (size_t i = 0; i < parametr.size() - 1; i++)
 	{
 		for (size_t j = 0; j < parametr[i].size(); j++) {
 			if (!std::isdigit(parametr[i][j]))
-				std::cerr << "Error code is invalid" << std::endl;
+				throw ServerConfigException("Error code is invalid");
 		}
 		if (parametr[i].size() != 3)
-			std::cerr << "Error code is invalid" << std::endl;
+			throw ServerConfigException("Error code is invalid");
 		short code_error = ft_stoi(parametr[i]);
 		if (statusCodeString(code_error)  == "Undefined" || code_error < 400)
-			std::cerr << ("Incorrect error co : " + parametr[i]) << std::endl;
+			throw ServerConfigException("Incorrect error co : " + parametr[i]);
 		i++;
 		std::string path = parametr[i];
 		checkToken(path);
 		if (ConfigFile::checkFileExistence(path) != 2)
 		{
 			if (ConfigFile::checkFileExistence(this->_root + path) != 1)
-				std::cerr << ("Incorrect path for err << std::endl; page file: " + this->_root + path);
-			if (ConfigFile::checkFile(this->_root + path, 0) == -1 || ConfigFile::checkFilePermissons(this->_root + path, 4) == -1)
-				std::cerr << "Error page file" <<  this->_root + path << "is not accessible" << std::endl;
+				throw ServerConfigException("Incorrect path for error page file: " + this->_root + path); //TODO: CHECK THIS ONE MOREW TIME NO PERSSIONS
+			if (ConfigFile::checkFile(this->_root + path, NO_PERMISSIONS) == -1 || ConfigFile::checkFilePermissons(this->_root + path, READ_PERMISSION) == -1)
+				throw ServerConfigException("Error page file is not accessible: " + this->_root + path); //TODO: CHECK THIS ONE MOREW TIME NO PERSSIONS
 		}
 		std::map<short, std::string>::iterator it = this->_error_pages.find(code_error);
 		if (it != _error_pages.end())
@@ -292,7 +291,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		if (parametr[i] == "root" && (i + 1) < parametr.size())
 		{
 			if (!new_location.getRootLocation().empty())
-				std::cerr << "Root of location  << std::endl; duplicated";
+				throw ServerConfigException("Root of location  duplicated");
 			checkToken(parametr[++i]);
 			if (ConfigFile::checkFileExistence(parametr[i]) == 2)
 				new_location.setRootLocation(parametr[i]);
@@ -302,7 +301,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		else if ((parametr[i] == "allow_methods" || parametr[i] == "methods") && (i + 1) < parametr.size())
 		{
 			if (flag_methods)
-				std::cerr << "Allow_methods of location duplicated" << std::endl;
+				throw ServerConfigException("Allow_methods of location duplicated");
 			std::vector<std::string> methods;
 			while (++i < parametr.size())
 			{
@@ -316,7 +315,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 				{
 					methods.push_back(parametr[i]);
 					if (i + 1 >= parametr.size())
-						std::cerr << "Token is invalid" << std::endl;
+						throw ServerConfigException("Token is invalid");
 				}
 			}
 			new_location.setMethods(methods);
@@ -325,10 +324,10 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		else if (parametr[i] == "autoindex" && (i + 1) < parametr.size())
 		{
 			if (path == "/cgi-bin")
-				std::cerr << "Parametr autoindex not all for CGI" << std::endl;
+				throw ServerConfigException("Parametr autoindex not all for CGI");
 
 			if (flag_autoindex)
-				std::cerr << "Autoindex of location  duplicated" << std::endl;
+				throw ServerConfigException("Autoindex of location  duplicated");
 
 			checkToken(parametr[++i]);
 			new_location.setAutoindex(parametr[i]);
@@ -337,25 +336,25 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		else if (parametr[i] == "index" && (i + 1) < parametr.size())
 		{
 			if (!new_location.getIndexLocation().empty())
-				std::cerr << "Index of location  duplicated" << std::endl;
+				throw ServerConfigException("Index of location  duplicated");
 			checkToken(parametr[++i]);
 			new_location.setIndexLocation(parametr[i]);
 		}
 		else if (parametr[i] == "return" && (i + 1) < parametr.size())
 		{
 			if (path == "/cgi-bin")
-				std::cerr << "Parametr return not all << std::endl; for CGI";
+				throw ServerConfigException("Parametr return not all for CGI");
 			if (!new_location.getReturn().empty())
-				std::cerr << "Return of location  << std::endl; duplicated";
+				throw ServerConfigException("Return of location duplicated");
 			checkToken(parametr[++i]);
 			new_location.setReturn(parametr[i]);
 		}
 		else if (parametr[i] == "alias" && (i + 1) < parametr.size())
 		{
 			if (path == "/cgi-bin")
-				std::cerr << "Parametr alias not all << std::endl; for CGI";
+				throw ServerConfigException("Parametr alias not all for CGI");
 			if (!new_location.getAlias().empty())
-				std::cerr << "Alias of location  << std::endl; duplicated";
+				throw ServerConfigException("Alias of location duplicated");
 			checkToken(parametr[++i]);
 			new_location.setAlias(parametr[i]);
 		}
@@ -374,7 +373,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 				{
 					extension.push_back(parametr[i]);
 					if (i + 1 >= parametr.size())
-						std::cerr << "Token is invalid" << std::endl;
+						throw ServerConfigException("Token is invalid");
 				}
 			}
 			new_location.setCgiExtension(extension);
@@ -394,23 +393,23 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 				{
 					path.push_back(parametr[i]);
 					if (i + 1 >= parametr.size())
-						std::cerr << "Token is invalid" << std::endl;
+						throw ServerConfigException("Token is invalid");
 				}
 				if (parametr[i].find("/python") == std::string::npos && parametr[i].find("/bash") == std::string::npos)	
-					std::cerr << "cgi_path is invalid" << std::endl;
-				}
+					throw ServerConfigException("cgi_path is invalid");
+			}
 			new_location.setCgiPath(path);
 		}
 		else if (parametr[i] == "client_max_body_size" && (i + 1) < parametr.size())
 		{
 			if (flag_max_size)
-				std::cerr << "Maxbody_size of location duplicated" << std::endl;
+				throw ServerConfigException("Maxbody_size of location duplicated");
 			checkToken(parametr[++i]);
 			new_location.setMaxBodySize(parametr[i]);
 			flag_max_size = true;
 		}
 		else if (i < parametr.size())
-			std::cerr << "Parametr in a locati is invalid" << std::endl;
+			throw ServerConfigException("Parametr in a locati is invalid");
 	}
 	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
 		new_location.setIndexLocation(this->_index);
@@ -418,19 +417,18 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		new_location.setMaxBodySize(this->_client_max_body_size);
 	valid = isValidLocation(new_location);
 	if (valid == 1)
-		std::cerr << "Failed CGI validation" << std::endl;
+		throw ServerConfigException("Failed CGI validation");
 	if (valid == 2)
-		std::cerr << "Failed path in locaiti validation" << std::endl;
+		throw ServerConfigException("Failed path in locatio validation");
 	else if (valid == 3)
-		std::cerr << "Failed redirection file locaition validation" << std::endl;
+		throw ServerConfigException("Failed return file location validation");
 	else if (valid == 4)
-		std::cerr << "Failed alias file locaition validation" << std::endl;
+		throw ServerConfigException("Failed alias file location validation");
 	this->_locations.push_back(new_location);
 }
 
 void ServerConfig::setFd(int fd)
 {
-	// std::cout << PINK BLD "ServerConfig setFd called" RST << std::endl;
 	this->_listen_fd = fd;
 }
 
@@ -439,7 +437,6 @@ void ServerConfig::setFd(int fd)
 
 void ServerConfig::initErrorPages(void)
 {
-	// std::cout << PINK BLD "ServerConfig initErrorPages called" RST << std::endl;
 	_error_pages[301] = "";
 	_error_pages[302] = "";
 	_error_pages[400] = "";
@@ -550,14 +547,14 @@ bool ServerConfig::isValidErrorPages()
 	return (true);
 }
 
-/* check is a properly end of parametr */
+//! Check that Token is properly formatted
 void ServerConfig::checkToken(std::string &parametr)
 {
 	// std::cout << PINK BLD "ServerConfig checkToken called" RST << std::endl;
 	std::cout << "parametr: " << parametr << std::endl;
 	size_t pos = parametr.rfind(';');
 	if (pos != parametr.size() - 1)
-		std::cerr << "Token is invalid" << std::endl;
+		throw ServerConfigException("Token is invalid");
 	parametr.erase(pos);
 }
 
@@ -586,7 +583,7 @@ void	ServerConfig::bindServer(void)
     {
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
         // exit(EXIT_FAILURE);
-		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		//!std::cerr << "ERR BINDING SOCKET" << std::endl;
 		exit(1);
     }
 
@@ -600,7 +597,7 @@ void	ServerConfig::bindServer(void)
     {
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
         // exit(EXIT_FAILURE);
-		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		//!std::cerr << "ERR BINDING SOCKET" << std::endl;
 		exit(1);
     }
 }

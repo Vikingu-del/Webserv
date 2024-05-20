@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:26:26 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 13:32:11 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,29 @@ class ConfigFileParser
 	// !Methods
 		int parseConfigFile(std::string & configFilePath);
 		std::vector<ServerConfig> getServers() const;
-		void checkServers();
-	public:
-	//! Removing methods
+	//! Parsing auxiliar methods
 		void removeComments(std::string & someString);
 		void removeWhiteSpace(std::string &content);
-	public:
 	//! Split servers
 		size_t findStartServer(size_t start, std::string &content);
 		size_t findEndServer(size_t start, std::string &content);
-		void splitServers(std::string &content);
+		void findAndSplitServers(std::string &content);
+	//! Server creation
 		void createServer(std::string &config, ServerConfig &server);
+		void handleListenDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
+		void handleLocationDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_loc);
+		void handleHostDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
+		void handleRootDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
+		void handleErrorPageDirective(std::vector<std::string> &parametrs, size_t &i, std::vector<std::string> &error_codes);
+		void handleClientMaxBodySizeDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_max_size);
+		void handleServerNameDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
+		void handleIndexDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
+		void handleAutoindexDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_autoindex);
+		void handleUnsupportedDirective(bool flag_loc);
+		void finalizeServerConfig(ServerConfig &server, const std::vector<std::string> &error_codes);
+		
+	//! Check for duplicate servers
+		void checkForDuplicateServers();
 	//! Debugging
 		int printServers();
 	public: 
