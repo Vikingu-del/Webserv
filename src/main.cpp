@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/21 16:11:28 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 16:29:40 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ int main(int argc, char **argv)
 				break;
 			case 2:
 				configFilePath = argv[1];
-				// parser.parseConfigFile(configFilePath);
-				// parser.printServers();
+				parser.parseConfigFile(configFilePath);
+				parser.printServers();
 				// After parsing setup all needed info
 				// Run the servers
 				break;

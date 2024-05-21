@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 15:46:14 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/20 16:37:51 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/21 16:02:01 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 //! Because stoi is not available in c++98
 int ft_stoi(std::string str)
 {
+    std::cout << "ft_stoi" << std::endl;
     std::stringstream ss(str);
     if (str.length() > 10)
         throw std::exception();
@@ -30,9 +31,8 @@ int ft_stoi(std::string str)
 }
 
 std::string statusCodeString(short statusCode) {
+    std::cout << "statusCodeString" << std::endl;
     switch (statusCode) {
-        case 100: return STATUS_100;
-        case 101: return STATUS_101;
         case 200: return STATUS_200;
         case 201: return STATUS_201;
         case 202: return STATUS_202;
