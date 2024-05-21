@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSocket.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:03:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/16 19:32:17 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 15:23:06 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class ServerSocket
         void checkTimeout();
         void listenServer();
         void readRequest(const int &fd, Client &client);
-        void handleReqBody(Client &client);
+        // void handleReqBody(Client &client);
         void sendResponse(const int &fd, Client &client);
         // void sendCgiBody(Client &, CgiHandler &);
         // void readCgiResponse(Client &, CgiHandler &);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/16 19:51:52 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 15:17:04 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ class Client
         struct sockaddr_in  _client_address;
         time_t              _last_msg;
         int                 _client_socket;
-        HTTP::Request       _request;
-        HTTP::Response      _response;
         
     public:
         /*ORTDOX*/
@@ -46,5 +44,7 @@ class Client
         /*Another*/
         void                        clearClient();
         ServerConfig                server;
+        HTTP::Request               request;
+        HTTP::Response              response;
         
 };
