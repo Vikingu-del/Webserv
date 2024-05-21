@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 20:29:15 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 13:17:14 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,12 @@ Location::Location()
 	_return(""),
 	_alias(""),
 	_client_max_body_size(MAX_CONTENT_LENGTH)
-	// _methods{1, 0, 0, 0, 0}
 {
 	_methods.push_back(1);
     _methods.push_back(0);
     _methods.push_back(0);
     _methods.push_back(0);
     _methods.push_back(0);
-	// note by erik: I changed the initialization of _methods to use push_back instead of the initializer list because std ++98 does not support this feature
-	// std::cout << BLUE << "Location default constructor" << RST << std::endl;
 }
 
 Location::Location(const Location &other)
@@ -48,7 +45,7 @@ Location::Location(const Location &other)
 
 Location &Location::operator=(const Location &other) {
 	// std::cout << BLUE << "Location assignation operator" << RST << std::endl;
-	if (this != &other) // !Check for self-assignment
+	if (this != &other)
 	{
 		_path = other._path;
 		_root = other._root;
@@ -57,7 +54,7 @@ Location &Location::operator=(const Location &other) {
 		_return = other._return;
 		_alias = other._alias;
 		_client_max_body_size = other._client_max_body_size;
-		_methods = other._methods; // !Deep copy of the methods vector
+		_methods = other._methods;
 	}
 	return *this;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:35:11 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 14:19:03 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ class ServerConfig {
 		void setFd(int fd);
 		void setPort(std::string parametr);
 		void setClientMaxBodySize(std::string parametr);
-		void setErrorPages(std::vector<std::string> &parametr);
+		void setErrorPages(const std::vector<std::string> &parametr);
 		void setIndex(std::string index);
 		void setLocation(std::string nameLocation, std::vector<std::string> parametr);
 		void setAutoindex(std::string autoindex);
@@ -78,7 +78,23 @@ class ServerConfig {
 		void bindServer();
 		bool checkLocaitons() const;
 		bool isValidErrorPages();
-	//! Here 		
+	// !Exceptions
+	public:
+		class ServerConfigException : public std::exception
+		{
+			private:
+				std::string _message;
+			public:
+				ServerConfigException(std::string message) throw()
+				{
+					_message = RED "Server Config Error: " RST + message;
+				}
+				virtual const char* what() const throw()
+				{
+					return (_message.c_str());
+				}
+				virtual ~ServerConfigException() throw() {}
+		};
 };
 
 #endif

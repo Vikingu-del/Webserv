@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CofigFileUtils.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 15:46:14 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:39:46 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/20 16:37:51 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,114 +29,59 @@ int ft_stoi(std::string str)
     return (res);
 }
 
-std::string statusCodeString(short statusCode)
-{
-    // std::cout << GREEN << "entered statusCodeString" RST << std::endl;
-    switch (statusCode)
-    {
-        case 100:
-            return "Continue";
-        case 101:
-            return "Switching Protocol";
-        case 200:
-            return "OK";
-        case 201:
-            return "Created";
-        case 202:
-            return "Accepted";
-        case 203:
-            return "Non-Authoritative Information";
-        case 204:
-            return "No Content";
-        case 205:
-            return "Reset Content";
-        case 206:
-            return "Partial Content";
-        case 300:
-            return "Multiple Choice";
-        case 301:
-            return "Moved Permanently";
-        case 302:
-            return "Moved Temporarily";
-        case 303:
-            return "See Other";
-        case 304:
-            return "Not Modified";
-        case 307:
-            return "Temporary Redirect";
-        case 308:
-            return "Permanent Redirect";
-        case 400:
-            return "Bad Request";
-        case 401:
-            return "Unauthorized";
-        case 403:
-            return "Forbidden";
-        case 404:
-            return "Not Found";
-        case 405:
-            return "Method Not Allowed";
-        case 406:
-            return "Not Acceptable";
-        case 407:
-            return "Proxy Authentication Required";
-        case 408:
-            return "Request Timeout";
-        case 409:
-            return "Conflict";
-        case 410:
-            return "Gone";
-        case 411:
-            return "Length Required";
-        case 412:
-            return "Precondition Failed";
-        case 413:
-            return "Payload Too Large";
-        case 414:
-            return "URI Too Long";
-        case 415:
-            return "Unsupported Media Type";
-        case 416:
-            return "Requested Range Not Satisfiable";
-        case 417:
-            return "Expectation Failed";
-        case 418:
-            return "I'm a teapot";
-        case 421:
-            return "Misdirected Request";
-        case 425:
-            return "Too Early";
-        case 426:
-            return "Upgrade Required";
-        case 428:
-            return "Precondition Required";
-        case 429:
-            return "Too Many Requests";
-        case 431:
-            return "Request Header Fields Too Large";
-        case 451:
-            return "Unavailable for Legal Reasons";
-        case 500:
-            return "Internal Server Error";
-        case 501:
-            return "Not Implemented";
-        case 502:
-            return "Bad Gateway";
-        case 503:
-            return "Service Unavailable";
-        case 504:
-            return "Gateway Timeout";
-        case 505:
-            return "HTTP Version Not Supported";
-        case 506:
-            return "Variant Also Negotiates";
-        case 507:
-            return "Insufficient Storage";
-        case 510:
-            return "Not Extended";
-        case 511:
-            return "Network Authentication Required";
-        default:
-            return "Undefined";
-        }
+std::string statusCodeString(short statusCode) {
+    switch (statusCode) {
+        case 100: return STATUS_100;
+        case 101: return STATUS_101;
+        case 200: return STATUS_200;
+        case 201: return STATUS_201;
+        case 202: return STATUS_202;
+        case 203: return STATUS_203;
+        case 204: return STATUS_204;
+        case 205: return STATUS_205;
+        case 206: return STATUS_206;
+        case 300: return STATUS_300;
+        case 301: return STATUS_301;
+        case 302: return STATUS_302;
+        case 303: return STATUS_303;
+        case 304: return STATUS_304;
+        case 307: return STATUS_307;
+        case 308: return STATUS_308;
+        case 400: return STATUS_400;
+        case 401: return STATUS_401;
+        case 403: return STATUS_403;
+        case 404: return STATUS_404;
+        case 405: return STATUS_405;
+        case 406: return STATUS_406;
+        case 407: return STATUS_407;
+        case 408: return STATUS_408;
+        case 409: return STATUS_409;
+        case 410: return STATUS_410;
+        case 411: return STATUS_411;
+        case 412: return STATUS_412;
+        case 413: return STATUS_413;
+        case 414: return STATUS_414;
+        case 415: return STATUS_415;
+        case 416: return STATUS_416;
+        case 417: return STATUS_417;
+        case 418: return STATUS_418;
+        case 421: return STATUS_421;
+        case 425: return STATUS_425;
+        case 426: return STATUS_426;
+        case 428: return STATUS_428;
+        case 429: return STATUS_429;
+        case 431: return STATUS_431;
+        case 451: return STATUS_451;
+        case 500: return STATUS_500;
+        case 501: return STATUS_501;
+        case 502: return STATUS_502;
+        case 503: return STATUS_503;
+        case 504: return STATUS_504;
+        case 505: return STATUS_505;
+        case 506: return STATUS_506;
+        case 507: return STATUS_507;
+        case 510: return STATUS_510;
+        case 511: return STATUS_511;
+        default: return STATUS_UNDEFINED;
+    }
 }
