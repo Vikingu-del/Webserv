@@ -280,12 +280,19 @@ HTTP::Response		HTTP::Response::deserialize(const std::string &response) {
 
 //         REQUEST HANDLER             */
 
-HTTP::Response HTTP::getHome(const HTTP::Request& req) {
+std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& HTTP::getRoutes() {
+    static std::map<std::string, std::pair<Method, Response(*)(/*const Request&*/)> > routes;
+    return routes;
+}
+
+HTTP::Response HTTP::getHome(/*const HTTP::Request& req*/) {
 	std::string body;
-	std::ifstream file("Home.html");
-	if (file) {
+	std::ifstream file("gameHub/srcs/indexes/home.html");
+	std::cout << "here is the file" << file.is_open() << std::endl;
+	if (file.is_open()) {
 		std::stringstream buffer;
 		buffer << file.rdbuf();
+		// std::cout << "\n here is the buffer" << buffer.str() << std::endl;
 		body = buffer.str();
 		return HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), body);
 	}
@@ -293,29 +300,27 @@ HTTP::Response HTTP::getHome(const HTTP::Request& req) {
 }
 
 void HTTP::initRoutes() {
-	HTTP::routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
-	HTTP::routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
+    std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = HTTP::getRoutes();
+    routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
+    routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
 }
 
-// std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(const HTTP::Request&)> > HTTP::routes = {
-//     {"/", {HTTP::GET, getHome}}
-// };
+std::string	HTTP::handleRequest(const std::string &request, const std::string &/*serverName*/) {
+    try {
+        // 1. Parse the request:
+        HTTP::Request req = HTTP::Request::deserialize(request);
 
-std::string	HTTP::handleRequest(const std::string &request) {
-	try {
-		// 1. Parse the request:
-		HTTP::Request req = HTTP::Request::deserialize(request);
-
-		// 2. Determine the response based on the parsed request:
-		HTTP::initRoutes();
-		std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(const HTTP::Request&)> >::const_iterator it = HTTP::routes.find(req.getResource());
-		if (it != HTTP::routes.end() && it->second.first == req.getMethod()) {
-			HTTP::Response res = it->second.second(req);
-			return res.serialize();
-		} else
-			return HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "").serialize();
-	} catch (const std::exception &e) {
-		std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
-	}
-	return Response(HTTP::INTERNAL_SERVER_ERROR, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "").serialize();
+        // 2. Determine the response based on the parsed request:
+        HTTP::initRoutes();
+        std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = HTTP::getRoutes();
+        std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >::const_iterator it = routes.find(req.getResource());
+        if (it != routes.end() && it->second.first == req.getMethod()) {
+            HTTP::Response res = it->second.second(/*req*/);
+            return res.serialize();
+        } else
+            return HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "").serialize();
+    } catch (const std::exception &e) {
+        std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
+    }
+    return Response(HTTP::INTERNAL_SERVER_ERROR, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "").serialize();
 }
