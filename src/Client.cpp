@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/16 18:41:46 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 16:39:05 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ Client::Client(const Client &copy)
         this->_last_msg = copy._last_msg;
         this->_client_socket = copy._client_socket;
         this->server = copy.server;
+        this->response = copy.response;
+        this->request = copy.request;
     }
     return ;
 }
@@ -42,6 +44,8 @@ Client &Client::operator=(const Client &copy)
         this->_last_msg = copy._last_msg;
         this->_client_socket = copy._client_socket;
         this->server = copy.server;
+        this->response = copy.response;
+        this->request = copy.request;
     }
     return (*this);    
 }
@@ -49,6 +53,7 @@ Client &Client::operator=(const Client &copy)
 Client::Client(ServerConfig &server)
 {
     setServer(server);
+    //need max body size
     _last_msg = time(NULL);
 }
 
@@ -67,10 +72,10 @@ const time_t &Client::getLastTime() const
     return (_last_msg);
 }
 
-// const HTTP::Request   &Client::getRequest() const
-// {
-//     return (request);
-// }
+const HTTP::Request   &Client::getRequest() const
+{
+    return (request);
+}
 
 void Client::setSocket(int &socket)
 {
