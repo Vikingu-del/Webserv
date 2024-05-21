@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/21 16:20:26 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/21 17:40:57 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,4 +394,9 @@ int ConfigFileParser::printServers()
 		std::cout << BLD << "-----------------------------" << RST << std::endl;
 	}
 	return (0);
+}
+
+std::vector<ServerConfig>	ConfigFileParser::getServers() const
+{
+	return (this->_servers);
 }

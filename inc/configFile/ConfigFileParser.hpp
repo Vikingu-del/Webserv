@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/20 13:32:11 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/21 17:40:42 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ class ConfigFileParser
 		
 	//! Check for duplicate servers
 		void checkForDuplicateServers();
+	
 	//! Debugging
 		int printServers();
 	public: 
