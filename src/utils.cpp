@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:57:30 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/16 20:38:14 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 11:46:10 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,15 @@ int utils::strToInt(const std::string& str) {
         result = result * 10 + str[i] - '0';
     }
     return result;
+}
+
+std::string utils::toLower(const std::string& str)
+{
+    std::string lowerStr = str;
+    std::locale loc;
+    for (std::string::size_type i = 0; i < lowerStr.length(); ++i)
+    {
+        lowerStr[i] = std::use_facet<std::ctype<char> >(loc).tolower(lowerStr[i]);
+    }
+    return lowerStr;
 }

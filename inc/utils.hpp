@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/16 20:40:06 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 11:47:25 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <sstream>
 #include <cctype>
 #include <stdexcept>
+#include <locale>
+#include <algorithm>
 
 namespace utils
 {
@@ -28,5 +30,7 @@ namespace utils
         oss << value;
         return oss.str();
     }
+
     int strToInt(const std::string& str);
+    std::string toLower(const std::string& str);
 }

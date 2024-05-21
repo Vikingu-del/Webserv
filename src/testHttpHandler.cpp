@@ -46,4 +46,5 @@ void	testHttpHandler()
 		std::cout << CYAN <<  "Header " << i << ":     " << it->first << ": " << it->second.getValue() << "-----> " << RESET << "Type: " << HTTP::headerTypeToStr(it->second.getType())  << std::endl;
 	}
 	std::cout << YELLOW << "BODY: " << responseParser.getBody() << RESET << std::endl;
+	std::cout << utils::toLower("HÄasdf") << std::endl;
 }
