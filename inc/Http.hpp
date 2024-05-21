@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/21 11:31:03 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/21 14:55:43 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "defines.h"
 #include <vector>
 #include "utils.hpp"
+#include <fstream>
 
 namespace   HTTP
 {
@@ -216,4 +217,10 @@ namespace   HTTP
             std::string							serialize() const;
             static Response						deserialize(const std::string &response);
     };
+
+	// Request Handlers
+	Response getHome(const HTTP::Request &req);
+	std::map<std::string, std::pair<Method, Response(*)(const Request&)> > routes;
+	void initRoutes();
+	std::string	handleRequest(const std::string &request);
 }

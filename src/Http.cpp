@@ -18,7 +18,6 @@
 
 // METHODS
 
-// this function converts the HTTP Method enum to a string
 std::string		HTTP::methodToString(Method method) {
 	static const std::pair<Method, std::string> methodPairs[] = {
 		std::make_pair(GET, "GET"), std::make_pair(HEAD, "HEAD"), std::make_pair(POST, "POST"), 
@@ -31,7 +30,6 @@ std::string		HTTP::methodToString(Method method) {
 	return "UNKNOWN";
 }
 
-// this function converts the HTTP Method string to an enum
 HTTP::Method	HTTP::stringToMethod(const std::string& method) {
 	static const std::pair<std::string, Method> methodPairs[] = {
 		std::make_pair("GET", GET), std::make_pair("HEAD", HEAD), std::make_pair("POST", POST), std::make_pair("PUT", PUT),
@@ -276,4 +274,48 @@ HTTP::Response		HTTP::Response::deserialize(const std::string &response) {
 		headers.insert(std::make_pair(header.getKey(), header));
 	}
 	return Response(StatusCode(responseCode), version, headers, body);
+}
+
+//            RESPONSE                 */
+
+//         REQUEST HANDLER             */
+
+HTTP::Response HTTP::getHome(const HTTP::Request& req) {
+	std::string body;
+	std::ifstream file("Home.html");
+	if (file) {
+		std::stringstream buffer;
+		buffer << file.rdbuf();
+		body = buffer.str();
+		return HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), body);
+	}
+	return (HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), ""));
+}
+
+void HTTP::initRoutes() {
+	HTTP::routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
+	HTTP::routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
+}
+
+// std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(const HTTP::Request&)> > HTTP::routes = {
+//     {"/", {HTTP::GET, getHome}}
+// };
+
+std::string	HTTP::handleRequest(const std::string &request) {
+	try {
+		// 1. Parse the request:
+		HTTP::Request req = HTTP::Request::deserialize(request);
+
+		// 2. Determine the response based on the parsed request:
+		HTTP::initRoutes();
+		std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(const HTTP::Request&)> >::const_iterator it = HTTP::routes.find(req.getResource());
+		if (it != HTTP::routes.end() && it->second.first == req.getMethod()) {
+			HTTP::Response res = it->second.second(req);
+			return res.serialize();
+		} else
+			return HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "").serialize();
+	} catch (const std::exception &e) {
+		std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
+	}
+	return Response(HTTP::INTERNAL_SERVER_ERROR, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "").serialize();
 }
