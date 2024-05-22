@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSocket.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:03:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/21 15:23:06 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/22 18:47:15 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_SOCKET_HPP
 # define SERVER_SOCKET_HPP
-# include "Webserv.hpp"
+
+#include <sys/socket.h>
+#include "ServerConfig.hpp"
+#include "Client.hpp"
 
 class ServerSocket
 {

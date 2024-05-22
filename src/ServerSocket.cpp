@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 17:58:21 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 19:54:07 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <cstdlib>  // note by erik: added this include to use exit(1)
 #include <unistd.h>
 #include <fcntl.h>
+#include "RequestHandler.hpp"
 
 ServerSocket::ServerSocket()
 {
@@ -155,7 +156,8 @@ void ServerSocket::readRequest(const int &fd, Client &client)
     {
         client.request += buf;
         client.setTime();
-        client.response = HTTP::handleRequest(client.request, client.server);
+        RequestHandler handler(client.server, client.request);
+        client.response = handler.getResponse();
         memset(buf, 0, sizeof(buf));
     }
     //check error code or if pars completed

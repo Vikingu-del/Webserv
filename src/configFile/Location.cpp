@@ -6,11 +6,12 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 17:45:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 18:39:20 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
+#include "ServerConfig.hpp"
 
 // !Constructors
 
