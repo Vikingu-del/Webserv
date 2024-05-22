@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 15:46:14 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/21 16:02:01 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 16:57:19 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int ft_stoi(std::string str)
     return (res);
 }
 
+//! Returns the status code string
 std::string statusCodeString(short statusCode) {
     std::cout << "statusCodeString" << std::endl;
     switch (statusCode) {
@@ -82,6 +83,6 @@ std::string statusCodeString(short statusCode) {
         case 507: return STATUS_507;
         case 510: return STATUS_510;
         case 511: return STATUS_511;
-        default: return STATUS_UNDEFINED;
+        default: return  STATUS_UNDEFINED;
     }
 }

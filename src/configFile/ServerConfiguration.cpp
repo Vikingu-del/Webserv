@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 15:00:02 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:03:34 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -575,7 +575,7 @@ bool ServerConfig::checkLocaitons() const
 	return (false);
 }
 
-/* socket setup and binding */
+//! Bind server
 void	ServerConfig::bindServer(void)
 {
 	// std::cout << PINK BLD "ServerConfig bindServer called" RST << std::endl;
