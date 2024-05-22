@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/21 16:27:45 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/22 15:35:28 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,25 +25,31 @@ ServerSocket::~ServerSocket()
 
 }
 
+// need to check
 void ServerSocket::setupServer(std::vector<ServerConfig> serv)
 {
     _servers = serv;
     // char buf[INET_ADDRSTRLEN];
-    bool serverDup;
+    // bool serverDup;
 
+    std::cout << "Setting up server" << std::endl;
+    std::cout << "Server port: " << _servers[0].getPort() << std::endl;
     for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
     {
-        serverDup = false;
-        for (std::vector<ServerConfig>::iterator i2 = _servers.begin(); i2 != i; ++i2)
-        {
-            if(i2->getHost() == i->getHost() && i2->getPort() == i->getPort())
-            {
-                i->setFd(i2->getListenFd());
-                serverDup = true;
-            }
-        }
-        if (!serverDup)
-            i->bindServer();
+        // serverDup = false;
+        // for (std::vector<ServerConfig>::iterator i2 = _servers.begin(); i2 != i; ++i2)
+        // {
+        //     std::cout << "i: " << i->getPort() << " i2: " << i2->getPort() << std::endl; 
+        //     if(i2->getHost() == i->getHost() && i2->getPort() == i->getPort())
+        //     {
+        //         i->setFd(i2->getListenFd());
+        //         serverDup = true;
+        //     }
+        // }
+        // // which server you are sending to bind
+        // if (!serverDup)
+        std::cout << "Binding server with port" << i->getPort() << std::endl;
+        i->bindServer();
         std::cout << "Server created" << std::endl;
     }
 }
@@ -56,6 +62,7 @@ void ServerSocket::runServer()
     int     selected;
     struct timeval timer;
     listenServer();
+    std::cout << RED << "Server is running" << RESET << std::endl;
     while (true)
     {
         timer.tv_sec = 1;
@@ -67,15 +74,18 @@ void ServerSocket::runServer()
             std::cerr << "select error" << std::endl;
             exit (1);
         }
-    for (int fd = 0; fd <= _biggest_fd; ++fd)
-    {
-        if (FD_ISSET(fd, &read_cpy) && _servers_map.count(fd))
-            acceptNewConnection(_servers_map.find(fd)->second);
-        else if (FD_ISSET(fd, &read_cpy) && _clients_map.count(fd))
-            readRequest(fd, _clients_map[fd]);
-        //need cgi part for response runing
-    }
-    checkTimeout();
+        for (int fd = 3; fd <= _biggest_fd; ++fd)
+        {
+            // std::cout << "_biggest_fd: " << _biggest_fd << std::endl;
+            if (FD_ISSET(fd, &read_cpy) && _servers_map.count(fd)) {
+                acceptNewConnection(_servers_map.find(fd)->second);
+                std::cout << YELLOW << "New Connection" << RESET << std::endl;
+            }
+            else if (FD_ISSET(fd, &read_cpy) && _clients_map.count(fd))
+                readRequest(fd, _clients_map[fd]);
+            //need cgi part for response runing
+        }
+        checkTimeout();
     }
 }
 
@@ -112,7 +122,6 @@ void ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allo
         std::cerr << "accept error" << std::endl;
         return ;
     }
-    std::cout << "New Connection" << std::endl;
     addToSet(client_socket, _read_fd);
     if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0)
     {
@@ -156,8 +165,9 @@ void ServerSocket::readRequest(const int &fd, Client &client)
     }
     else
     {
+        client.request += buf;
         client.setTime();
-        //client.request() //send buf to request
+        // client.response = HTTP::handleRequest(client.request, client.server);
         memset(buf, 0, sizeof(buf));
     }
     //check error code or if pars completed

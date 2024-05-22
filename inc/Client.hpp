@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/21 15:17:04 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/22 13:51:50 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 #include "Http.hpp"
 #include <netinet/in.h>
-#include "ServerConfiguration.hpp"
-
+#include "ConfigFileParser.hpp"
 
 class Client
 {
@@ -35,7 +34,7 @@ class Client
         const int                   &getSocket() const;
         const struct sockaddr_in    &getAddress() const;
         const time_t                &getLastTime() const;
-        const HTTP::Request         &getRequest() const;
+        // const HTTP::Request         &getRequest() const;
         /*Seters*/
         void                        setSocket(int &socket);
         void                        setAddress(sockaddr_in &address);
@@ -44,7 +43,7 @@ class Client
         /*Another*/
         void                        clearClient();
         ServerConfig                server;
-        HTTP::Request               request;
-        HTTP::Response              response;
+        std::string                 request;
+        std::string                 response;
         
 };

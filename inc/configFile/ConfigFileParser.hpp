@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/21 17:40:42 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 13:49:50 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class ConfigFileParser
 	private:
 		std::vector<std::string>	_serversConfig;
 		size_t						_numOfServers;
-		std::vector<ServerConfig> _servers;
+		std::vector<ServerConfig>	_servers;
 	public:
 	// !Methods
 		int parseConfigFile(std::string & configFilePath);

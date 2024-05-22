@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/21 16:39:05 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/05/22 13:25:18 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,10 @@ const time_t &Client::getLastTime() const
     return (_last_msg);
 }
 
-const HTTP::Request   &Client::getRequest() const
-{
-    return (request);
-}
+// const HTTP::Request   &Client::getRequest() const
+// {
+//     return (request);
+// }
 
 void Client::setSocket(int &socket)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 17:07:47 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/21 16:13:41 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 13:56:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //! Checks if a file or directory exists at the given path.
 int ConfigFile::checkFileExistence(std::string const path) {
-	std::cout << GREEN BLD "ConfigFile checkFileExistence called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile checkFileExistence called" RST << std::endl;
 	struct stat buffer;
 
 	if (stat(path.c_str(), &buffer) == 0) {
@@ -32,13 +32,13 @@ int ConfigFile::checkFileExistence(std::string const path) {
 
 //! Check if the file has specified permission
 int ConfigFile::checkFilePermissons(std::string const path, int mode) {
-	std::cout << GREEN BLD "ConfigFile checkFilePermissons called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile checkFilePermissons called" RST << std::endl;
 	return (access(path.c_str(), mode));
 }
 
 //! Get the content of the file at the given path
 std::string ConfigFile::getFileContent(std::string const path) {
-	std::cout << GREEN BLD "ConfigFile getFileContent called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile getFileContent called" RST << std::endl;
 	if (path.empty() || path.length() == 0)
 		throw ConfigFileException("Path cannot be empty");
 	
@@ -57,26 +57,26 @@ std::string ConfigFile::getFileContent(std::string const path) {
 
 // !Getters
 std::string ConfigFile::getPath() {
-	std::cout << GREEN BLD "ConfigFile getPath called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile getPath called" RST << std::endl;
 	return (this->_configFilePath); 
 }
 
 int ConfigFile::getNumOfServers() {
-	std::cout << GREEN BLD "ConfigFile getNumOfServers called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile getNumOfServers called" RST << std::endl;
 	return (this->_numOfServers); 
 }
 
 
 // !Setters
 void ConfigFile::setNumOfServers(int num) { 
-	std::cout << GREEN BLD "ConfigFile setNumOfServers called" RST << std::endl;	
+	// std::cout << GREEN BLD "ConfigFile setNumOfServers called" RST << std::endl;	
 	this->_numOfServers = num;
 }
 
 
 //! Checks if the file exists and has the required permissions
 int ConfigFile::checkFile(std::string const path, std::string const index) {
-	std::cout << GREEN BLD "ConfigFile checkFile called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile checkFile called" RST << std::endl;
 	if (checkFileExistence(index) == 1 && checkFilePermissons(index, READ_PERMISSION) == 0)
 		return 0;
 	if (!path.empty() && checkFileExistence(path + index) == 1 && checkFilePermissons(path + index, READ_PERMISSION) == 0)
@@ -87,11 +87,11 @@ int ConfigFile::checkFile(std::string const path, std::string const index) {
 //! Constructors 
 
 ConfigFile::ConfigFile() : _configFilePath("configs/default.conf"), _numOfServers(0) {
-	std::cout << GREEN BLD "ConfigFile default constructor called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile default constructor called" RST << std::endl;
 }
 
 ConfigFile::ConfigFile(std::string const path) : _configFilePath(path), _numOfServers(0) {
-	std::cout << GREEN BLD "ConfigFile PATH constructor called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile PATH constructor called" RST << std::endl;
 }
 
 //! Destructor

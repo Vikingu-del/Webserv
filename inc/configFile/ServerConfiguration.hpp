@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/20 14:19:03 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 11:52:59 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ class ServerConfig {
 	public:
 		void initErrorPages();
 		void checkToken(std::string & parametr);
-		int isValidLocation(Location & location) const;
+		int	isValidLocation(Location & location) const;
 		bool isValidHost(std::string host) const;
 		void bindServer();
 		bool checkLocaitons() const;

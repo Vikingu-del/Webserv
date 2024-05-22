@@ -6,11 +6,13 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/21 16:29:40 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 13:56:03 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
+#include "ServerSocket.hpp"
+
 
 void	testHttpHandler();
 
@@ -19,21 +21,25 @@ int main(int argc, char **argv)
 
 	std::string configFilePath;
 	ConfigFileParser parser;
-
+	ServerSocket socket;
 	try {
 		switch (argc) 
 		{
 			case 1:
 				configFilePath = "configs/siege.conf";
-				// parser.parseConfigFile(configFilePath);
-				// parser.printServers();
+				parser.parseConfigFile(configFilePath);
+				parser.printServers();
 				// After parsing setup all needed info
+				socket.setupServer(parser.getServers());
 				// Run the servers
+				socket.runServer();
 				break;
 			case 2:
 				configFilePath = argv[1];
 				parser.parseConfigFile(configFilePath);
-				parser.printServers();
+				// parser.printServers();
+				socket.setupServer(parser.getServers());
+				socket.runServer();
 				// After parsing setup all needed info
 				// Run the servers
 				break;
@@ -41,7 +47,7 @@ int main(int argc, char **argv)
 				throw std::invalid_argument("Wrong number arguments");
 				return 1;
 		}
-		testHttpHandler();
+		// testHttpHandler();
 	}
 	catch (std::exception & ex) {
 		std::cerr << ex.what() << std::endl;

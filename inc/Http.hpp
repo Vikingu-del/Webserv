@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/21 16:08:41 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 13:53:54 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <vector>
 #include "utils.hpp"
 #include <fstream>
+// #include "ServerConfiguration.hpp"
 
 namespace   HTTP
 {
@@ -219,8 +220,8 @@ namespace   HTTP
     };
 
 	// Request Handlers
-	Response getHome(/*const HTTP::Request &req*/);
-	std::map<std::string, std::pair<Method, Response(*)(/*const Request&*/)> >& getRoutes();
-	void initRoutes();
-	std::string	handleRequest(const std::string &request, const std::string &serverName);
+	// Response getHome(/*const HTTP::Request &req*/);
+	// std::map<std::string, std::pair<Method, Response(*)(/*const Request&*/)> >& getRoutes();
+	// void initRoutes();
+	// std::string	handleRequest(const std::string &request/*, const ServerConfig &server*/);
 }
