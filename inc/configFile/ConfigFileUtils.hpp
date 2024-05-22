@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileUtils.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 15:23:48 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:26:22 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 16:54:51 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,7 @@
 
 #include "Webserv.hpp"
 
-namespace configFileParsingUtils {
-	
-}
-
-int ft_stoi(std::string str);
-
-
-std::string statusCodeString(short statusCode);
+int			ft_stoi(std::string str);
+std::string	statusCodeString(short statusCode);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 14:59:32 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:03:12 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,13 +135,12 @@ void Location::setPath(std::string value) {
 void Location::setRootLocation(std::string value) {
 	// std::cout << BLUE "Location setRootLocation called" RST << std::endl;
 	if (ConfigFile::checkFileExistence(value) != 2)
-		std::cerr << "Root of location" << std::endl; // TODO: Exception Class in ServerConfig
+		throw ServerConfig::ServerConfigException("Root path does not exist");
 	this->_root = value;
 }
 
 void Location::setMethods(std::vector<std::string> methods) {
 	// std::cout << BLUE "Location setMethods called" RST << std::endl;
-	// !Init all elements of _methods to 0.
 	std::fill(this->_methods.begin(), this->_methods.end(), 0);
 	
 	for(size_t i = 0; i < methods.size(); i++)
@@ -157,7 +156,7 @@ void Location::setMethods(std::vector<std::string> methods) {
 		else if (methods[i] == "HEAD")
 			this->_methods[0] = 1;
 		else
-			std::cerr << "Allow method not supported " << methods[i] << std::endl; // TODO: Exception Class in ServerConfig
+			throw ServerConfig::ServerConfigException("Allow method not supported: " + methods[i]);
 	}
 }
 
@@ -166,7 +165,7 @@ void Location::setAutoindex(std::string value) {
 	if (value == "on" || value == "off")
 		this->_autoindex = (value == "on");
 	else
-		std::cerr << "Wrong autoindex" << std::endl; // TODO: Exception Class in ServerConfig
+		throw ServerConfig::ServerConfigException("Wrong syntax: autoindex");
 }
 
 void Location::setIndexLocation(std::string value) {
@@ -200,10 +199,10 @@ void Location::setMaxBodySize(std::string string_value) {
 
 	for (size_t i = 0; i < string_value.length(); i++) {
 		if (string_value[i] < '0' || string_value[i] > '9')
-			std::cerr << "Wrong syntax: client_max_body_size" << std::endl; // TODO: Exception Class in ServerConfig
+			throw ServerConfig::ServerConfigException("Wrong syntax: client_max_body_size");
 	}
 	if (!ft_stoi(string_value))
-		std::cerr << "Wrong syntax: client_max_body_size" << std::endl;
+		throw ServerConfig::ServerConfigException("Wrong syntax: client_max_body_size");
 	body_size = ft_stoi(string_value);
 	this->_client_max_body_size = body_size;
 }
@@ -213,7 +212,7 @@ void Location::setMaxBodySize(unsigned long value) {
 	this->_client_max_body_size = value;
 }
 
-/* for printing allowed methods*/
+//! Debugging method
 std::string Location::getPrintMethods() const {
 	
 	// std::cout << BLUE "Location getPrintMethods called" RST << std::endl;
