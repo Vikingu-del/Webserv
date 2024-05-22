@@ -6,14 +6,15 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 13:49:50 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:48:33 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_FILE_PARSER_HPP
 #define CONFIG_FILE_PARSER_HPP
 
-#include "Webserv.hpp"
+#include "ServerConfiguration.hpp"
+#include "ConfigFile.hpp"
 
 class ServerConfig;
 

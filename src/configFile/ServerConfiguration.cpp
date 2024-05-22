@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfiguration.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 17:03:34 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:46:35 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,7 @@ void ServerConfig::setPort(std::string parametr)
 		if (!std::isdigit(parametr[i]))
 			throw ServerConfigException("Wrong syntax: port");
 	}
-	port = ft_stoi((parametr));
+	port = utils::strToInt((parametr));
 	if (port < 1 || port > 65636)
 		throw ServerConfigException("Wrong syntax: port");
 	this->_port = (uint16_t) port;
@@ -213,9 +213,9 @@ void ServerConfig::setClientMaxBodySize(std::string parametr)
 		if (parametr[i] < '0' || parametr[i] > '9')
 			throw ServerConfigException("Wrong syntax: client_max_body_size");
 	}
-	if (!ft_stoi(parametr))
+	if (!utils::strToInt(parametr))
 		throw ServerConfigException("Wrong syntax: client_max_body_size");
-	body_size = ft_stoi(parametr);
+	body_size = utils::strToInt(parametr);
 	this->_client_max_body_size = body_size;
 }
 
@@ -253,8 +253,8 @@ void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 		}
 		if (parametr[i].size() != 3)
 			throw ServerConfigException("Error code is invalid");
-		short code_error = ft_stoi(parametr[i]);
-		if (statusCodeString(code_error)  == "Undefined" || code_error < 400)
+		short code_error = utils::strToInt(parametr[i]);
+		if (utils::statusCodeString(code_error)  == "Undefined" || code_error < 400)
 			throw ServerConfigException("Incorrect error co : " + parametr[i]);
 		i++;
 		std::string path = parametr[i];

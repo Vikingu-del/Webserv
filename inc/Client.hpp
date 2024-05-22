@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 13:51:50 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:54:06 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Http.hpp"
 #include <netinet/in.h>
 #include "ConfigFileParser.hpp"
+#include "ServerConfiguration.hpp"
 
 class Client
 {
@@ -44,6 +45,6 @@ class Client
         void                        clearClient();
         ServerConfig                server;
         std::string                 request;
-        std::string                 response;
+        HTTP::Response              response;
         
 };

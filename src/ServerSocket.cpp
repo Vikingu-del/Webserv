@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 17:14:59 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:58:21 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,6 @@ void ServerSocket::setupServer(std::vector<ServerConfig> serv)
     std::cout << "Server port: " << _servers[0].getPort() << std::endl;
     for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
     {
-        // serverDup = false;
-        // for (std::vector<ServerConfig>::iterator i2 = _servers.begin(); i2 != i; ++i2)
-        // {
-        //     std::cout << "i: " << i->getPort() << " i2: " << i2->getPort() << std::endl; 
-        //     if(i2->getHost() == i->getHost() && i2->getPort() == i->getPort())
-        //     {
-        //         i->setFd(i2->getListenFd());
-        //         serverDup = true;
-        //     }
-        // }
-        // // which server you are sending to bind
-        // if (!serverDup)
         std::cout << "Binding server with port" << i->getPort() << std::endl;
         i->bindServer();
         std::cout << "Server created" << std::endl;
@@ -167,7 +155,7 @@ void ServerSocket::readRequest(const int &fd, Client &client)
     {
         client.request += buf;
         client.setTime();
-        // client.response = HTTP::handleRequest(client.request, client.server);
+        client.response = HTTP::handleRequest(client.request, client.server);
         memset(buf, 0, sizeof(buf));
     }
     //check error code or if pars completed
@@ -180,17 +168,17 @@ void ServerSocket::readRequest(const int &fd, Client &client)
     
 // }
 
-void ServerSocket::assignServer(Client &client)
-{
-    for(std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
-    {
-        if (client.server.getHost() == i->getHost() && client.server.getPort() == i->getPort() /*&& client.request == i->getServerName()*/) //!
-        {
-            client.setServer(*i);
-            return ;
-        }
-    }
-}
+// void ServerSocket::assignServer(Client &client)
+// {
+//     for(std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
+//     {
+//         if (client.server.getHost() == i->getHost() && client.server.getPort() == i->getPort() /*&& client.request == i->getServerName()*/) //!
+//         {
+//             client.setServer(*i);
+//             return ;
+//         }
+//     }
+// }
 
 void ServerSocket::checkTimeout()
 {

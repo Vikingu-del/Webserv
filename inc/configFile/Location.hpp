@@ -6,14 +6,20 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/16 18:34:10 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:45:40 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
-#include "Webserv.hpp"
+#include "ConfigFile.hpp"
+#include <vector>
+#include <map>
+#include <string>
+#include <exception>
+#include "utils.hpp"
+#include "ServerConfiguration.hpp"
 
 class Location 
 {

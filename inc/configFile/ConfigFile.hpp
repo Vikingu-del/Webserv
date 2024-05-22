@@ -3,17 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 11:52:45 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/20 13:16:27 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:37:23 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_FILE_HPP
 #define CONFIG_FILE_HPP
 
-#include "Webserv.hpp"
+#include <iostream>
+#include <sys/stat.h>
+#include "defines.h"
+#include <unistd.h>
+#include <fstream>
+#include <sstream>
 
 class ConfigFile {
     

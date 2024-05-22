@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/21 11:47:25 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/22 17:47:42 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <stdexcept>
 #include <locale>
 #include <algorithm>
+#include <iostream>
+#include "defines.h"
 
 namespace utils
 {
@@ -33,4 +35,5 @@ namespace utils
 
     int strToInt(const std::string& str);
     std::string toLower(const std::string& str);
+    std::string	statusCodeString(short statusCode);
 }

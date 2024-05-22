@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 17:03:12 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:45:23 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,9 +201,9 @@ void Location::setMaxBodySize(std::string string_value) {
 		if (string_value[i] < '0' || string_value[i] > '9')
 			throw ServerConfig::ServerConfigException("Wrong syntax: client_max_body_size");
 	}
-	if (!ft_stoi(string_value))
+	if (!utils::strToInt(string_value))
 		throw ServerConfig::ServerConfigException("Wrong syntax: client_max_body_size");
-	body_size = ft_stoi(string_value);
+	body_size = utils::strToInt(string_value);
 	this->_client_max_body_size = body_size;
 }
 
