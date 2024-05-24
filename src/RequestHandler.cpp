@@ -4,15 +4,15 @@ RequestHandler::RequestHandler() {}
 
 RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(request), _response() {}
 
-const ServerConfig & RequestHandler::getServer() const {
+const ServerConfig& RequestHandler::getServer() const {
     return this->_server;
 }
 
-const std::string & RequestHandler::getRequest() const {
+const std::string& RequestHandler::getRequest() const {
     return this->_request;
 }
 
-const HTTP::Response & RequestHandler::getResponse() const {
+const HTTP::Response& RequestHandler::getResponse() const {
     return this->_response;
 }
 
@@ -28,7 +28,7 @@ void RequestHandler::setResponse(const HTTP::Response &response) {
     this->_response = response;
 }
 
-std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& getRoutes() {
+std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& RequestHandler::getRoutes() {
     static std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const Request&*/)> > routes;
     return routes;
 }
@@ -49,8 +49,8 @@ HTTP::Response RequestHandler::getHome(/*const HTTP::Request& req*/) {
 
 void RequestHandler::initRoutes() {
     std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = getRoutes();
-    routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome())));
-    routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome())));
+    routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
+    routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
 }
 
 void    RequestHandler::handleRequest(const std::string &request, const ServerConfig &server) {
@@ -79,7 +79,7 @@ void    RequestHandler::handleRequest(const std::string &request, const ServerCo
 		// string that can be sent over the network.
 
         // 2. Determine the response based on the parsed request:
-        this->initRoutes();
+        initRoutes();
         std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = this->getRoutes();
         std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >::const_iterator it = routes.find(req.getResource());
         if (it != routes.end() && it->second.first == req.getMethod()) {
