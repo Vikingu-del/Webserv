@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 17:54:19 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/25 16:35:34 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ Client::Client(const Client &copy)
         this->_last_msg = copy._last_msg;
         this->_client_socket = copy._client_socket;
         this->server = copy.server;
-        this->response = copy.response;
+        this->responses = copy.responses;
         this->request = copy.request;
     }
     return ;
@@ -44,7 +44,7 @@ Client &Client::operator=(const Client &copy)
         this->_last_msg = copy._last_msg;
         this->_client_socket = copy._client_socket;
         this->server = copy.server;
-        this->response = copy.response;
+        this->responses = copy.responses;
         this->request = copy.request;
     }
     return (*this);    
@@ -70,6 +70,25 @@ const sockaddr_in &Client::getAddress() const
 const time_t &Client::getLastTime() const
 {
     return (_last_msg);
+}
+
+void   Client::addResponse(const std::string& response)
+{
+    responses.push(response);
+}
+
+std::string Client::getNextResponse()
+{
+    if (responses.empty())
+        return "";
+    std::string response = responses.front();
+    responses.pop();
+    return response;
+}
+
+bool    Client::hasResponse()
+{
+    return !responses.empty();
 }
 
 // const HTTP::Request   &Client::getRequest() const

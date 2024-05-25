@@ -12,6 +12,7 @@ class	RequestHandler {
 	public:
 		RequestHandler(const ServerConfig &server, const std::string &request);
 
+		// int             _binary;
 		// Getters
 		const ServerConfig&		getServer() const;
 		const HTTP::Request&	getRequest() const;
@@ -27,6 +28,7 @@ class	RequestHandler {
 		static std::string		getHomeIndex();
 		static std::string      getHomeStyle();
 		static std::string      getLogo();
+		static std::string		getBouncingBalls();
 		static void				initRoutes();
 		void					handleRequest();
 		void				    handleGetRequest();

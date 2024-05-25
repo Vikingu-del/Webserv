@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/25 15:36:15 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/25 17:23:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,12 @@ void ServerSocket::runServer()
             }
             else if (FD_ISSET(fd, &read_cpy) && _clients_map.count(fd)) {
                 readRequest(fd, _clients_map[fd]);
-                std::string response = _clients_map[fd].response.serialize();
-                std::cout << "Response: " << response << std::endl;
-                write(fd, response.c_str(), response.size());
+                while (_clients_map[fd].hasResponse())
+                {
+                    std::string response = _clients_map[fd].getNextResponse();
+                    // std::cout << "Response: " << response << std::endl;
+                    write(fd, response.c_str(), response.size());
+                }
             }
             //need cgi part for response runing
         }
@@ -160,11 +163,25 @@ void ServerSocket::readRequest(const int &fd, Client &client)
     }
     else
     {
-        client.request += buf;
-        client.setTime();
-        RequestHandler handler(client.server, client.request);
-        handler.handleRequest();
-        client.response = handler.getResponse();
+        std::string temp = client.request + std::string(buf, readed);
+        size_t pos;
+        while ((pos = temp.find("\r\n\r\n")) != std::string::npos) 
+        {
+            std::string request = temp.substr(0, pos);
+            temp = temp.substr(pos + 4);
+            client.setTime();
+            RequestHandler handler(client.server, request);
+            handler.handleRequest();
+            std::string res = handler.getResponse().serialize();
+            std::ofstream file("output.txt", std::ios::app);
+            if (file.is_open())
+            {
+                file << res << "\n\n\n\n\n\n\n\n";
+                file.close();
+            }
+            client.addResponse(handler.getResponse().serialize());
+        }
+        client.request = temp;
         memset(buf, 0, sizeof(buf));
     }
     //check error code or if pars completed

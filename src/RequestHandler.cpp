@@ -50,7 +50,7 @@ std::string RequestHandler::getHomeStyle() {
     if (file.is_open()) {
         std::stringstream buffer;
         buffer << file.rdbuf();
-		std::cout << "Buffer: " << buffer.str() << std::endl;
+		// std::cout << "Buffer: " << buffer.str() << std::endl;
         return buffer.str();
     }
     return ("");
@@ -58,7 +58,18 @@ std::string RequestHandler::getHomeStyle() {
 
 std::string RequestHandler::getLogo() {
 	std::string body;
-	std::ifstream file("gameHub/srcs/imgs/games/logo.png");
+	std::ifstream file("gameHub/imgs/games/logo.png", std::ios::binary);
+	if (file.is_open()) {
+		std::stringstream buffer;
+		buffer << file.rdbuf();
+		return buffer.str();
+	}
+	return ("");
+}
+
+std::string RequestHandler::getBouncingBalls() {
+	std::string body;
+	std::ifstream file("gameHub/imgs/games/bouncingBalls.png", std::ios::binary);
 	if (file.is_open()) {
 		std::stringstream buffer;
 		buffer << file.rdbuf();
@@ -82,20 +93,18 @@ void	RequestHandler::handleGetRequest() {
 		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
 		responseBody = RequestHandler::getHomeIndex();
 	}
-	std::vector<std::string> body = utils::split(_request.getBody(), "\r\n");
-	std::string firstLine = body[0];
-	if (firstLine == "GET /styles/home.css HTTP/1.1") {
+	else if (_request.getResource() == "/styles/home.css") {
 		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/css");
 		responseBody = RequestHandler::getHomeStyle();
 		// std::cout << "Response body for css: " << responseBody << std::endl;
 	}
-	else if (firstLine == "GET /imgs/games/logo.png HTTP/1.1") {
+	else if (_request.getResource() == "/imgs/games/bouncingBalls.png") {
+		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "image/png");
+		responseBody = RequestHandler::getBouncingBalls();
+	}
+	else if (_request.getResource() == "/imgs/games/logo.png") {
 		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "image/png");
 		responseBody = RequestHandler::getLogo();
-	}
-	else if (firstLine == "GET /styles/home.css HTTP/1.1") {
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/css");
-		responseBody = RequestHandler::getHomeStyle();
 	}
 	
 	// else if (firsLine == )
@@ -114,7 +123,6 @@ void RequestHandler::handleBadRequest() {
 void    RequestHandler::handleRequest() {
     try {
 		std::cout << YELLOW << "Request: " << this->getRequest().serialize() << RESET << std::endl;
-		std::cout << RED << "Request body : " << this->getRequest().getBody() << RESET << std::endl;
         // !1. Parse the request:
         switch (this->_request.getMethod()) {
             case HTTP::GET:

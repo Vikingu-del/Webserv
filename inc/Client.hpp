@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 18:33:55 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/25 16:33:53 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <netinet/in.h>
 #include "ConfigFileParser.hpp"
 #include "ServerConfig.hpp"
+#include <queue>
 
 class Client
 {
@@ -41,10 +42,13 @@ class Client
         void                        setAddress(sockaddr_in &address);
         void                        setServer(ServerConfig &serv);
         void                        setTime(); //update time
+        void                        addResponse(const std::string& response);
+        std::string                 getNextResponse();
+        bool                        hasResponse(); 
         /*Another*/
         void                        clearClient();
         ServerConfig                server;
         std::string                 request;
-        HTTP::Response              response;
+        std::queue<std::string>     responses;
         
 };
