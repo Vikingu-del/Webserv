@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:57:30 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/22 17:46:52 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/25 13:33:58 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,4 +112,13 @@ std::string utils::statusCodeString(short statusCode) {
         case 511: return STATUS_511;
         default: return  STATUS_UNDEFINED;
     }
+}
+
+std::string utils::getCurrentDateTime() {
+    std::time_t now = std::time(0);
+    std::tm *gmt = std::gmtime(&now);
+    
+    char buffer[100];
+    strftime(buffer, 100, "%a, %d %b %Y %H:%M:%S GMT", gmt);
+    return std::string(buffer);
 }

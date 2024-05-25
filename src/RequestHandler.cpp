@@ -2,13 +2,13 @@
 
 RequestHandler::RequestHandler() {}
 
-RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(request), _response() {}
+RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response() {}
 
 const ServerConfig& RequestHandler::getServer() const {
     return this->_server;
 }
 
-const std::string& RequestHandler::getRequest() const {
+const HTTP::Request& RequestHandler::getRequest() const {
     return this->_request;
 }
 
@@ -20,7 +20,7 @@ void RequestHandler::setServer(const ServerConfig &server) {
     this->_server = server;
 }
 
-void RequestHandler::setRequest(const std::string &request) {
+void RequestHandler::setRequest(const HTTP::Request &request) {
     this->_request = request;
 }
 
@@ -28,38 +28,125 @@ void RequestHandler::setResponse(const HTTP::Response &response) {
     this->_response = response;
 }
 
-std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& RequestHandler::getRoutes() {
-    static std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const Request&*/)> > routes;
+std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)()> >& RequestHandler::getRoutes() {
+    static std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)()> > routes;
     return routes;
 }
 
-HTTP::Response RequestHandler::getHome(/*const HTTP::Request& req*/) {
+std::string RequestHandler::getHomeIndex() {
 	std::string body;
 	std::ifstream file("gameHub/srcs/indexes/home.html");
-	std::cout << "here is the file" << file.is_open() << std::endl;
 	if (file.is_open()) {
 		std::stringstream buffer;
 		buffer << file.rdbuf();
-		// std::cout << "\n here is the buffer" << buffer.str() << std::endl;
-		body = buffer.str();
-		return HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), body);
+		return buffer.str();
 	}
-	return (HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), ""));
+	return ("");
 }
 
-void RequestHandler::initRoutes() {
-    std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = getRoutes();
-    routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
-    routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
+std::string RequestHandler::getHomeStyle() {
+    std::string body;
+    std::ifstream file("gameHub/srcs/styles/home.css");
+    if (file.is_open()) {
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+		std::cout << "Buffer: " << buffer.str() << std::endl;
+        return buffer.str();
+    }
+    return ("");
 }
 
-void    RequestHandler::handleRequest(const std::string &request, const ServerConfig &server) {
+std::string RequestHandler::getLogo() {
+	std::string body;
+	std::ifstream file("gameHub/srcs/imgs/games/logo.png");
+	if (file.is_open()) {
+		std::stringstream buffer;
+		buffer << file.rdbuf();
+		return buffer.str();
+	}
+	return ("");
+}
+
+// void RequestHandler::initRoutes() {
+//     std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = getRoutes();
+//     routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
+//     routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
+// }
+
+void	RequestHandler::handleGetRequest() {
+	std::map<std::string, HTTP::Header> responseHeaders;
+	std::string responseBody;
+	responseHeaders["Date"] = HTTP::Header("Date", utils::getCurrentDateTime());
+	responseHeaders["Server"] = HTTP::Header("Server", "Webserv");
+	if (_request.getResource() == "indexes/home.html" || _request.getResource() == "/" || _request.getResource() == "/home") {
+		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
+		responseBody = RequestHandler::getHomeIndex();
+	}
+	std::vector<std::string> body = utils::split(_request.getBody(), "\r\n");
+	std::string firstLine = body[0];
+	if (firstLine == "GET /styles/home.css HTTP/1.1") {
+		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/css");
+		responseBody = RequestHandler::getHomeStyle();
+		// std::cout << "Response body for css: " << responseBody << std::endl;
+	}
+	else if (firstLine == "GET /imgs/games/logo.png HTTP/1.1") {
+		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "image/png");
+		responseBody = RequestHandler::getLogo();
+	}
+	else if (firstLine == "GET /styles/home.css HTTP/1.1") {
+		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/css");
+		responseBody = RequestHandler::getHomeStyle();
+	}
+	
+	// else if (firsLine == )
+	int length = responseBody.size();
+	std::stringstream ss;
+	ss << length;
+	responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
+	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody);
+	// std::cout << "Response: " << RED <<_response.serialize() << RESET << std::endl;
+}
+
+void RequestHandler::handleBadRequest() {
+    this->_response = HTTP::Response(HTTP::BAD_REQUEST, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "Bad request");
+}
+
+void    RequestHandler::handleRequest() {
     try {
-		ServerConfig newServer = server;
-		std::cout << newServer.getPort() << std::endl;
+		std::cout << YELLOW << "Request: " << this->getRequest().serialize() << RESET << std::endl;
+		std::cout << RED << "Request body : " << this->getRequest().getBody() << RESET << std::endl;
         // !1. Parse the request:
-        HTTP::Request req = HTTP::Request::deserialize(request);
-
+        switch (this->_request.getMethod()) {
+            case HTTP::GET:
+                handleGetRequest();
+                break;
+            // case HTTP::POST:
+            //     this->_response = handlePostRequest(req, server);
+            //     break;
+            // case HTTP::PUT:
+            //     this->_response = handlePutRequest(req, server);
+            //     break;
+            // case HTTP::DELETE:
+            //     this->_response = handleDeleteRequest(req, server);
+            //     break;
+            // case HTTP::HEAD:
+            //     this->_response = handleHeadRequest(req, server);
+            //     break;
+            // case HTTP::CONNECT:
+            //     this->_response = handleConnectRequest(req, server);
+            //     break;
+            // case HTTP::OPTIONS:
+            //     this->_response = handleOptionsRequest(req, server);
+            //     break;
+            // case HTTP::TRACE:
+            //     this->_response = handleTraceRequest(req, server);
+            //     break;
+            // case HTTP::PATCH:
+            //     this->_response = handlePatchRequest(req, server);
+            //     break;
+            default:
+                handleBadRequest();
+    }
 		// !2. Determine the server:
 		// Since we're passing a ServerConfig object to the function, we already have the server
 		// information. We can use this information as needed in the following steps.
@@ -79,16 +166,20 @@ void    RequestHandler::handleRequest(const std::string &request, const ServerCo
 		// string that can be sent over the network.
 
         // 2. Determine the response based on the parsed request:
-        initRoutes();
-        std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = this->getRoutes();
-        std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >::const_iterator it = routes.find(req.getResource());
-        if (it != routes.end() && it->second.first == req.getMethod()) {
-            HTTP::Response res = it->second.second(/*req*/);
-            _response = res;
-        } else
-            _response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "");
+    //     initRoutes();
+    //     std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = getRoutes();
+    //     std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >::const_iterator it = routes.find(_request.getResource());
+    //     if (it != routes.end() && it->second.first == _request.getMethod()) {
+    //         HTTP::Response res = it->second.second(/*req*/);
+    //         _response = res;
+    //     } else
+    //         _response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "");
+    // } catch (const std::exception &e) {
+    //     std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
+    // }
+    // _response =  HTTP::Response(HTTP::INTERNAL_SERVER_ERROR, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "");
     } catch (const std::exception &e) {
         std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
     }
-    _response =  HTTP::Response(HTTP::INTERNAL_SERVER_ERROR, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "");
+
 }

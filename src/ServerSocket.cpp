@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 19:54:07 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/25 15:36:15 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void ServerSocket::runServer()
     int     selected;
     struct timeval timer;
     listenServer();
-    std::cout << RED << "Server is running" << RESET << std::endl;
+    // std::cout << RED << "Server is running" << RESET << std::endl;
     while (true)
     {
         timer.tv_sec = 1;
@@ -63,15 +63,21 @@ void ServerSocket::runServer()
             std::cerr << "select error" << std::endl;
             exit (1);
         }
-        for (int fd = 3; fd <= _biggest_fd; ++fd)
+        for (int fd = 0; fd <= _biggest_fd; ++fd)
         {
+            // std::cout << RED << "fd: " << fd << RESET << std::endl;
+            // std::cout << YELLOW << "selected: " << selected << RED << "fd: " << fd << RESET << std::endl;
             // std::cout << "_biggest_fd: " << _biggest_fd << std::endl;
             if (FD_ISSET(fd, &read_cpy) && _servers_map.count(fd)) {
                 acceptNewConnection(_servers_map.find(fd)->second);
                 std::cout << YELLOW << "New Connection" << RESET << std::endl;
             }
-            else if (FD_ISSET(fd, &read_cpy) && _clients_map.count(fd))
+            else if (FD_ISSET(fd, &read_cpy) && _clients_map.count(fd)) {
                 readRequest(fd, _clients_map[fd]);
+                std::string response = _clients_map[fd].response.serialize();
+                std::cout << "Response: " << response << std::endl;
+                write(fd, response.c_str(), response.size());
+            }
             //need cgi part for response runing
         }
         checkTimeout();
@@ -157,6 +163,7 @@ void ServerSocket::readRequest(const int &fd, Client &client)
         client.request += buf;
         client.setTime();
         RequestHandler handler(client.server, client.request);
+        handler.handleRequest();
         client.response = handler.getResponse();
         memset(buf, 0, sizeof(buf));
     }

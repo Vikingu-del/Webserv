@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/22 19:56:06 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/25 14:33:36 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,68 +60,14 @@ namespace   HTTP
 		HTTP_2_0
 	};
 
-	enum HeaderType
-	{
-		NONE,
-		// Request Headers
-		ACCEPT,
-		ACCEPT_CHARSET,
-		ACCEPT_ENCODING,
-		ACCEPT_LANGUAGE,
-		AUTHORIZATION,
-		EXPECT,
-		FROM,
-		HOST,
-		IF_MATCH,
-		IF_MODIFIED_SINCE,
-		IF_NONE_MATCH,
-		IF_RANGE,
-		IF_UNMODIFIED_SINCE,
-		MAX_FORWARDS,
-		PROXY_AUTHORIZATION,
-		RANGE,
-		REFERER,
-		TE,
-		USER_AGENT,
-		// Response Headers
-		ACCEPT_RANGES,
-		AGE,
-		ETAG,
-		LOCATION,
-		PROXY_AUTHENTICATE,
-		RETRY_AFTER,
-		SERVER,
-		VARY,
-		WWW_AUTHENTICATE,
-		// General Headers
-		CACHE_CONTROL,
-		CONNECTION,
-		DATE,
-		PRAGMA,
-		TRAILER,
-		TRANSFER_ENCODING,
-		UPGRADE,
-		VIA,
-		WARNING,
-		// Entity Headers
-		ALLOW,
-		CONTENT_ENCODING,
-		CONTENT_LANGUAGE,
-		CONTENT_LENGTH,
-		CONTENT_LOCATION,
-		CONTENT_MD5,
-		CONTENT_RANGE,
-		CONTENT_TYPE,
-		LAST_MODIFIED
-	};
-
 	// METHODS
 	std::string	methodToString(Method method);
 	Method		stringToMethod(const std::string& method);
 	std::string	versionToString(Version version);
 	Version		stringToVersion(const std::string& version);
-	std::string headerTypeToStr(HeaderType header);
-	HeaderType	strToHeaderType(const std::string& header);
+	std::string	statusCodeToString(StatusCode code);
+	// std::string headerTypeToStr(HeaderType header);
+	// HeaderType	strToHeaderType(const std::string& header);
 
     // CLASSES
 	class	Header
@@ -129,7 +75,7 @@ namespace   HTTP
 		private:
 			std::string		_key;
 			std::string		_value;
-			HeaderType		_type;
+			// HeaderType		_type;
 		public:
 			Header();
 			Header(const std::string &key, const std::string &value);
@@ -138,16 +84,16 @@ namespace   HTTP
 			// Setters
 			void			setKey(const std::string &key);
 			void			setValue(const std::string &value);
-			void			setType(HeaderType type);
+			// void			setType(HeaderType type);
 
 			// Getters
 			const			std::string &getKey() const;
 			const			std::string &getValue() const;
-			const			HeaderType &getType() const;
+			// const			HeaderType &getType() const;
 
 			// Overload
 			bool			operator==(const std::string &key) const;
-			bool			operator==(const HeaderType &type) const;
+			// bool			operator==(const HeaderType &type) const;
 
 			// methods
 			std::string		serialize() const;

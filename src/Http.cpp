@@ -64,64 +64,39 @@ HTTP::Version	HTTP::stringToVersion(const std::string& version) {
 	throw std::invalid_argument("Invalid HTTP Version: " + version);
 }
 
-static const std::pair<HTTP::HeaderType, std::string> headerPairs[] = {
-	std::make_pair(HTTP::ACCEPT, "accept"), std::make_pair(HTTP::ACCEPT_CHARSET, "accept-charset"), std::make_pair(HTTP::ACCEPT_ENCODING, "accept-encoding"),
-	std::make_pair(HTTP::ACCEPT_LANGUAGE, "accept-language"), std::make_pair(HTTP::AUTHORIZATION, "authorization"), std::make_pair(HTTP::EXPECT, "expect"),
-	std::make_pair(HTTP::FROM, "from"), std::make_pair(HTTP::HOST, "host"), std::make_pair(HTTP::IF_MATCH, "if-match"),
-	std::make_pair(HTTP::IF_MODIFIED_SINCE, "if-modified-since"), std::make_pair(HTTP::IF_NONE_MATCH, "if-none-match"), std::make_pair(HTTP::IF_RANGE, "if-range"),
-	std::make_pair(HTTP::IF_UNMODIFIED_SINCE, "if-unmodified-since"), std::make_pair(HTTP::MAX_FORWARDS, "max-forwards"), std::make_pair(HTTP::PROXY_AUTHORIZATION, "proxy-authorization"),
-	std::make_pair(HTTP::RANGE, "range"), std::make_pair(HTTP::REFERER, "referer"), std::make_pair(HTTP::TE, "te"),
-	std::make_pair(HTTP::USER_AGENT, "user-agent"), std::make_pair(HTTP::ACCEPT_RANGES, "accept-ranges"), std::make_pair(HTTP::AGE, "age"),
-	std::make_pair(HTTP::ETAG, "etag"), std::make_pair(HTTP::LOCATION, "location"), std::make_pair(HTTP::PROXY_AUTHENTICATE, "proxy-authenticate"),
-	std::make_pair(HTTP::RETRY_AFTER, "retry-after"), std::make_pair(HTTP::SERVER, "server"), std::make_pair(HTTP::VARY, "vary"),
-	std::make_pair(HTTP::WWW_AUTHENTICATE, "www-authenticate"), std::make_pair(HTTP::NONE, "none"),
-	std::make_pair(HTTP::CACHE_CONTROL, "cache-control"), std::make_pair(HTTP::CONNECTION, "connection"),
-	std::make_pair(HTTP::DATE, "date"), std::make_pair(HTTP::PRAGMA, "pragma"), std::make_pair(HTTP::TRAILER, "trailer"),
-	std::make_pair(HTTP::TRANSFER_ENCODING, "transfer-encoding"), std::make_pair(HTTP::UPGRADE, "upgrade"), std::make_pair(HTTP::VIA, "via"),
-	std::make_pair(HTTP::CONTENT_LANGUAGE, "content-language"), std::make_pair(HTTP::CONTENT_LENGTH, "content-length"), std::make_pair(HTTP::CONTENT_LOCATION, "content-location"),
-	std::make_pair(HTTP::CONTENT_MD5, "content-md5"), std::make_pair(HTTP::CONTENT_RANGE, "content-range"), std::make_pair(HTTP::CONTENT_TYPE, "content-type"),
-	std::make_pair(HTTP::LAST_MODIFIED, "last-modified")
-};
-
-static const std::map<HTTP::HeaderType, std::string> headers(headerPairs, headerPairs + sizeof(headerPairs) / sizeof(headerPairs[0]));
-
-// this function convers the RequestHeaderType enum to a string
-std::string HTTP::headerTypeToStr(HTTP::HeaderType header)
-{
-	std::map<HTTP::HeaderType, std::string>::const_iterator it = headers.find(header);
-	if (it != headers.end()) return it->second;
+// this function converts the HTTP StatusCode enum to a string
+std::string		HTTP::statusCodeToString(StatusCode statusCode) {
+	static const std::pair<StatusCode, std::string> statusCodePairs[] = {
+		std::make_pair(OK, "200 OK"), std::make_pair(MOVED_PERMANENTLY, "301 Moved Permanently"), std::make_pair(MOVED_TEMPORARILY, "302 Moved Temporarily"),
+		std::make_pair(NOT_MODIFIED, "304 Not Modified"), std::make_pair(BAD_REQUEST, "400 Bad Request"), std::make_pair(UNAUTHORIZED, "401 Unauthorized"),
+		std::make_pair(FORBIDDEN, "403 Forbidden"), std::make_pair(NOT_FOUND, "404 Not Found"), std::make_pair(INTERNAL_SERVER_ERROR, "500 Internal Server Error"),
+		std::make_pair(NOT_IMPLEMENTED, "501 Not Implemented"), std::make_pair(BAD_GATEWAY, "502 Bad Gateway"), std::make_pair(SERVICE_UNAVAILABLE, "503 Service Unavailable")
+	};
+	static const std::map<StatusCode, std::string> statusCodes(statusCodePairs, statusCodePairs + sizeof(statusCodePairs) / sizeof(statusCodePairs[0]));
+	std::map<StatusCode, std::string>::const_iterator it = statusCodes.find(statusCode);
+	if (it != statusCodes.end()) return it->second;
 	return "UNKNOWN";
 }
-
-// this function converts the RequestHeaderType string to an enum
-HTTP::HeaderType HTTP::strToHeaderType(const std::string& header)
-{
-	std::string lowerHeader = utils::toLower(header);
-	for (std::map<HTTP::HeaderType, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it)
-		if (it->second == lowerHeader) return it->first;
-	return HTTP::NONE;
-}
-
 
 // CLASSES
 /*                HEADER                  */
 
-HTTP::Header::Header() : _key(""), _value(""), _type(NONE) {}
-HTTP::Header::Header(const std::string &key, const std::string &value) : _key(key), _value(value), _type(strToHeaderType(key)) {}
+HTTP::Header::Header() : _key(""), _value("") {}
+HTTP::Header::Header(const std::string &key, const std::string &value) : _key(key), _value(value) {}
 
 // seters
-void	HTTP::Header::setKey(const std::string &key) { _key = key; _type = strToHeaderType(key);}
+void	HTTP::Header::setKey(const std::string &key) { _key = key; }
 void	HTTP::Header::setValue(const std::string &value) { _value = value; }
-void	HTTP::Header::setType(HeaderType type) { _type = type; }
+// void	HTTP::Header::setType(HeaderType type) { _type = type; }
 
 // getters
 const std::string		&HTTP::Header::getKey() const { return _key; }
 const std::string		&HTTP::Header::getValue() const { return _value; }
-const HTTP::HeaderType	&HTTP::Header::getType() const { return _type; }
+// const HTTP::HeaderType	&HTTP::Header::getType() const { return _type; }
 
 // overload
 bool	HTTP::Header::operator==(const std::string &key) const { return _key == key; }
-bool	HTTP::Header::operator==(const HTTP::HeaderType &header) const { return _type == header; }
+// bool	HTTP::Header::operator==(const HTTP::HeaderType &header) const { return _type == header; }
 
 
 // methods
@@ -165,7 +140,8 @@ void	HTTP::Request::setHeaders(const std::map<std::string, Header> &headers) { _
 void	HTTP::Request::setBody(const std::string &body) { _body = body; }
 
 // Getters
-HTTP::Version	HTTP::Request::getVersion() const { return _version; }
+// HTTP::Version	HTTP::Request::getVersion() const bool			operator==(const HeaderType &type) const;
+// { return _version; }
 HTTP::Method	HTTP::Request::getMethod() const { return _method; }
 const			std::string &HTTP::Request::getResource() const { return _resource; }
 const			std::map<std::string, HTTP::Header> &HTTP::Request::getHeaders() const { return _headers; }
@@ -247,7 +223,7 @@ const				std::string &HTTP::Response::getBody() const { return _body; }
 
 // Methods
 std::string		HTTP::Response::serialize() const {
-	std::string response = versionToString(_version) + " " + utils::toString(_responseCode) + LINE_END;
+	std::string response = versionToString(_version) + " " + statusCodeToString(_responseCode) + LINE_END;
 	for (std::map<std::string, HTTP::Header>::const_iterator it = _headers.begin(); it != _headers.end(); ++it)
     	response += it->second.serialize();
 	response += LINE_END;
