@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 18:05:36 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 19:57:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ class ServerConfig {
 		std::string						_index;
 		bool							_autoindex;
 		std::vector<Location> 			_locations;
-		int     						_listen_fd;
+		int								_listen_fd;
 		struct sockaddr_in 				_server_address;
 		std::map<short, std::string>	_error_pages;
 

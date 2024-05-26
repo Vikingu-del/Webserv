@@ -6,15 +6,17 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/26 19:30:29 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 19:51:56 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerSocket.hpp"
-#include <cstdlib>  // note by erik: added this include to use exit(1)
+#include <cstdlib>
 #include <unistd.h>
 #include <fcntl.h>
 #include "RequestHandler.hpp"
+
+// Did you ever tested with scripts from evaluation shit? (ERIK)
 
 ServerSocket::ServerSocket()
 {

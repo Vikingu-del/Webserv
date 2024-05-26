@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 18:28:13 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 19:49:00 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,7 +294,7 @@ void ConfigFileParser::finalizeServerConfig(ServerConfig &server, const std::vec
 	if (server.getHost() == 0)
 		server.setHost("localhost;");
 	if (server.getIndex().empty())
-		server.setIndex("index.html;");
+		server.setIndex("index.html;");    // why is index.html the default index? (ERIK)
 	if (ConfigFile::checkFile(server.getRoot(), server.getIndex()))
 		throw ParsingErrorException("Index from config file not found or unreadable");
 	if (server.checkLocaitons())
