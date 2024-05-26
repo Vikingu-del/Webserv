@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 14:30:08 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 19:23:26 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ int main(int argc, char **argv)
 				return 1;
 		}
 		parser.parseConfigFile(configFilePath);
-		// socket.setupServer(parser.getServers());
-		// socket.runServer();
+		socket.setupServer(parser.getServers());
+		socket.runServer();
 	}
 	catch (std::exception & ex) {
 		std::cerr << ex.what() << std::endl;

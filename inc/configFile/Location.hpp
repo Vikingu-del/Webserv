@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 18:33:45 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 18:01:05 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,43 +37,43 @@ class Location
 
 	// !Public Attributes
 	public:
-		std::map<std::string, std::string> _ext_path;
+		std::map<std::string, std::string>	_ext_path;
 
 	// !Constructors / Destructor
 	public:
 		Location();
 		Location(const Location & other);
-		Location &operator=(const Location & other);
+		Location	&operator=(const Location & other);
 		~Location();
 
 	// !Getters
 	public:
-		const std::string &getPath() const;
-		const std::string &getRootLocation() const;
-		const bool &getAutoindex() const;
-		const std::string &getIndexLocation() const;
-		const std::vector<short> &getMethods() const;
-		const std::string &getReturn() const;
-		const std::string &getAlias() const;
-		const std::vector<std::string> &getCgiPath() const;
-		const std::vector<std::string> &getCgiExtension() const; 
-		const std::map<std::string, std::string> &getExtensionPath() const;
-		const unsigned long &getMaxBodySize() const;
-		std::string getPrintMethods() const;
+		const std::string							&getPath() const;
+		const std::string							&getRootLocation() const;
+		const bool									&getAutoindex() const;
+		const std::string							&getIndexLocation() const;
+		const std::vector<short> 					&getMethods() const;
+		const std::string 							&getReturn() const;
+		const std::string 							&getAlias() const;
+		const std::vector<std::string>				&getCgiPath() const;
+		const std::vector<std::string>				&getCgiExtension() const; 
+		const std::map<std::string, std::string>	&getExtensionPath() const;
+		const unsigned long							&getMaxBodySize() const;
+		std::string									getPrintMethods() const;
 
 	// !Setters
 	public:
-		void setPath(std::string value);
-		void setRootLocation(std::string value);
-		void setMethods(std::vector<std::string> methods);
-		void setAutoindex(std::string value);
-		void setIndexLocation(std::string value);
-		void setReturn(std::string value);
-		void setAlias(std::string value);		
-		void setCgiPath(std::vector<std::string> path);
-		void setCgiExtension(std::vector<std::string> extension);
-		void setMaxBodySize(std::string string_value);
-		void setMaxBodySize(unsigned long value);
+		void	setPath(std::string value);
+		void	setRootLocation(std::string value);
+		void	setMethods(std::vector<std::string> methods);
+		void	setAutoindex(std::string value);
+		void	setIndexLocation(std::string value);
+		void	setReturn(std::string value);
+		void	setAlias(std::string value);		
+		void	setCgiPath(std::vector<std::string> path);
+		void	setCgiExtension(std::vector<std::string> extension);
+		void	setMaxBodySize(std::string string_value);
+		void	setMaxBodySize(unsigned long value);
 };
 
 #endif

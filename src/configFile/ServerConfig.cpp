@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 14:31:05 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 18:20:59 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,12 +277,12 @@ void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 void ServerConfig::setLocation(std::string path, std::vector<std::string> parametr)
 {
 	// std::cout << PINK BLD "ServerConfig setLocation called" RST << std::endl;
-	Location new_location;
-	std::vector<std::string> methods;
-	bool flag_methods = false;
-	bool flag_autoindex = false;
-	bool flag_max_size = false;
-	int valid;
+	Location					new_location;
+	std::vector<std::string>	methods;
+	bool						flag_methods = false;
+	bool						flag_autoindex = false;
+	bool						flag_max_size = false;
+	int							valid;
 
 	new_location.setPath(path);
 	for (size_t i = 0; i < parametr.size(); i++)
@@ -549,8 +549,6 @@ bool ServerConfig::isValidErrorPages()
 //! Check that Token is properly formatted
 void ServerConfig::checkToken(std::string &parametr)
 {
-	// std::cout << PINK BLD "ServerConfig checkToken called" RST << std::endl;
-	std::cout << "parametr: " << parametr << std::endl;
 	size_t pos = parametr.rfind(';');
 	if (pos != parametr.size() - 1)
 		throw ServerConfigException("Token is invalid");

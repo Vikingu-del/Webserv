@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 17:41:24 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 18:28:13 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 // !Main method && Starting point of parsing
 int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
-	std::cout << PURPLE << "parseConfigFile" << RESET << std::endl;
+	// std::cout << PURPLE << "parseConfigFile" << RESET << std::endl;
 	std::string		content;
 	ConfigFile		file(configFilePath);
 
@@ -28,21 +28,21 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 	removeComments(content);
 	removeWhiteSpace(content);
 	// Also here we need to catch the exceptions from findAndSplitServers and throw them (ERIK)
-	try {
+	try { // I put this try catch block here because we need to catch the exceptions from the functions used here and throw them (ERIK)
 		findAndSplitServers(content);
+		if (this->_serversConfig.size() != this->_numOfServers) // Does this condition ever happen? (ERIK)
+			throw ParsingErrorException("Number of servers in configuration does not match expected count.");
+		for (size_t i = 0; i < this->_numOfServers; i++)
+		{
+			ServerConfig server;
+			createServer(this->_serversConfig[i], server);
+			this->_servers.push_back(server);
+		}
+		if (this->_numOfServers > 1)
+			checkForDuplicateServers();
 	} catch (ParsingErrorException & e) {
 		throw ParsingErrorException(e.what());
 	}
-	if (this->_serversConfig.size() != this->_numOfServers) // Does this condition ever happen? (ERIK)
-		throw ParsingErrorException("Number of servers in configuration does not match expected count.");
-	for (size_t i = 0; i < this->_numOfServers; i++)
-	{
-		ServerConfig server;
-		createServer(this->_serversConfig[i], server);
-		this->_servers.push_back(server);
-	}
-	if (this->_numOfServers > 1)
-		checkForDuplicateServers();
 	std::cout << GREEN BLD "Success" RST << std::endl;
 	return (0);
 }
@@ -160,12 +160,8 @@ std::vector<std::string> splitParametrs(std::string line, std::string sep)
 
 //! Creating server by parametrs
 void ConfigFileParser::createServer(std::string &config, ServerConfig &server) {
-	std::cout << RED << "createServer" << RESET << std::endl;
+	// std::cout << RED << "createServer" << RESET << std::endl;
 	std::vector<std::string> parametrs = splitParametrs(config += ' ', std::string(" \n\t")); // Is the space here appended so you can split correctly the last element? (ERIK)
-	for (size_t i = 0; i < parametrs.size(); i++)
-	{
-		std::cout << BLUE << "parametrs[" << i << "] = " << parametrs[i] << RESET << std::endl;
-	}
 	if (parametrs.size() < 3) {
 		throw ParsingErrorException("Failed server validation");
 		return;   // Is this return necessary? Usually when you thrown an exception you don't need to return anything because the function will stop executing (ERIK)
@@ -174,41 +170,43 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server) {
 	bool flag_autoindex = false;
 	bool flag_max_size = false;
 	std::vector<std::string> error_codes;
-	for (size_t i = 0; i < parametrs.size(); i++) {
-		if (parametrs[i] == "listen" && (i + 1) < parametrs.size() && flag_loc) {
-			handleListenDirective(server, parametrs, i);
-		} else if (parametrs[i] == "location" && (i + 1) < parametrs.size()) {
-			handleLocationDirective(server, parametrs, i, flag_loc);
-		} else if (parametrs[i] == "host" && (i + 1) < parametrs.size() && flag_loc) {
-			handleHostDirective(server, parametrs, i);
-		} else if (parametrs[i] == "root" && (i + 1) < parametrs.size() && flag_loc) {
-			handleRootDirective(server, parametrs, i);
-		} else if (parametrs[i] == "error_page" && (i + 1) < parametrs.size() && flag_loc) {
-			handleErrorPageDirective(parametrs, i, error_codes);
-		} else if (parametrs[i] == "client_max_body_size" && (i + 1) < parametrs.size() && flag_loc) {
-			handleClientMaxBodySizeDirective(server, parametrs, i, flag_max_size);
-		} else if (parametrs[i] == "server_name" && (i + 1) < parametrs.size() && flag_loc) {
-			handleServerNameDirective(server, parametrs, i);
-		} else if (parametrs[i] == "index" && (i + 1) < parametrs.size() && flag_loc) {
-			handleIndexDirective(server, parametrs, i);
-		} else if (parametrs[i] == "autoindex" && (i + 1) < parametrs.size() && flag_loc) {
-			handleAutoindexDirective(server, parametrs, i, flag_autoindex);
-		} else if (parametrs[i] != "}" && parametrs[i] != "{") {
-			handleUnsupportedDirective(flag_loc);
+	try {  // I put this try catch block here because we need to catch the exceptions from handlers and throw them (ERIK)
+		for (size_t i = 0; i < parametrs.size(); i++) {
+			if (parametrs[i] == "listen" && (i + 1) < parametrs.size() && flag_loc) {
+				handleListenDirective(server, parametrs, i);
+			} else if (parametrs[i] == "location" && (i + 1) < parametrs.size()) {
+				handleLocationDirective(server, parametrs, i, flag_loc);
+			} else if (parametrs[i] == "host" && (i + 1) < parametrs.size() && flag_loc) {
+				handleHostDirective(server, parametrs, i);
+			} else if (parametrs[i] == "root" && (i + 1) < parametrs.size() && flag_loc) {
+				handleRootDirective(server, parametrs, i);
+			} else if (parametrs[i] == "error_page" && (i + 1) < parametrs.size() && flag_loc) {
+				handleErrorPageDirective(parametrs, i, error_codes);
+			} else if (parametrs[i] == "client_max_body_size" && (i + 1) < parametrs.size() && flag_loc) {
+				handleClientMaxBodySizeDirective(server, parametrs, i, flag_max_size);
+			} else if (parametrs[i] == "server_name" && (i + 1) < parametrs.size() && flag_loc) {
+				handleServerNameDirective(server, parametrs, i);
+			} else if (parametrs[i] == "index" && (i + 1) < parametrs.size() && flag_loc) {
+				handleIndexDirective(server, parametrs, i);
+			} else if (parametrs[i] == "autoindex" && (i + 1) < parametrs.size() && flag_loc) {
+				handleAutoindexDirective(server, parametrs, i, flag_autoindex);
+			} else if (parametrs[i] != "}" && parametrs[i] != "{") {
+				handleUnsupportedDirective(flag_loc);
+			}
 		}
+		finalizeServerConfig(server, error_codes);
+	} catch (ParsingErrorException & e) {
+		throw ParsingErrorException(e.what());
 	}
-	finalizeServerConfig(server, error_codes);
 }
 
 void ConfigFileParser::handleListenDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i) {
-	std::cout << "handleListenDirective" << std::endl;
 	if (server.getPort())
 		throw ParsingErrorException("Port is duplicated");
 	server.setPort(parametrs[++i]);
 }
 
 void ConfigFileParser::handleLocationDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_loc) {
-	// std::cout << "handleLocationDirective" << std::endl;
 	std::string path;
 	i++;
 	if (parametrs[i] == "{" || parametrs[i] == "}")
