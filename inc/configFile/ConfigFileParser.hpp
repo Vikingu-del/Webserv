@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 18:33:33 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 16:45:06 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class ConfigFileParser
 		int parseConfigFile(std::string & configFilePath);
 		std::vector<ServerConfig> getServers() const;
 	//! Parsing auxiliar methods
-		void removeComments(std::string & someString);
+		void removeComments(std::string &str);
 		void removeWhiteSpace(std::string &content);
 	//! Split servers
 		size_t findStartServer(size_t start, std::string &content);

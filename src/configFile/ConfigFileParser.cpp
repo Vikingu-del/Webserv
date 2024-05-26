@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 15:01:07 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 17:41:24 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,13 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 		throw ParsingErrorException("File is empty"); 
 	removeComments(content);
 	removeWhiteSpace(content);
-	findAndSplitServers(content);
-	if (this->_serversConfig.size() != this->_numOfServers)
+	// Also here we need to catch the exceptions from findAndSplitServers and throw them (ERIK)
+	try {
+		findAndSplitServers(content);
+	} catch (ParsingErrorException & e) {
+		throw ParsingErrorException(e.what());
+	}
+	if (this->_serversConfig.size() != this->_numOfServers) // Does this condition ever happen? (ERIK)
 		throw ParsingErrorException("Number of servers in configuration does not match expected count.");
 	for (size_t i = 0; i < this->_numOfServers; i++)
 	{
@@ -45,6 +50,7 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 //! This method just remove all the commets , fm: '#' to '\n'
 void ConfigFileParser::removeComments(std::string &str)
 {
+	// Do you think is better to use for loop instead of while loop? (ERIK)
 	for (size_t hashPos = str.find('#'); hashPos != std::string::npos; hashPos = str.find('#', hashPos)) {
         size_t newLineCharPos = str.find('\n', hashPos);
         if (newLineCharPos != std::string::npos)
@@ -73,21 +79,26 @@ void ConfigFileParser::removeWhiteSpace(std::string &content) {
 //! Spliting servers by server{} and push to vector
 void ConfigFileParser::findAndSplitServers(std::string &content)
 {
-	std::cout << RED << "find And Split Servers" << RESET << std::endl;
 	size_t start = 0;
 	size_t end = 1;
 
 	if (content.find("server", 0) == std::string::npos)
 		throw ParsingErrorException("'server' keyword not found");
+	// Changed this part since we have to catch the exceptions from findStartServer and throw them (ERIK)
 	while (start != end && start < content.length())
 	{
-		start = findStartServer(start, content);
-		end = findEndServer(start, content);
-		if (start == end)
-			throw ParsingErrorException("problem with scope");
-		this->_serversConfig.push_back(content.substr(start, end - start + 1));
-		this->_numOfServers++;
-		start = end + 1;
+		try {
+			start = findStartServer(start, content);
+			end = findEndServer(start, content);
+			if (start == end)
+				throw ParsingErrorException("problem with scope");
+			this->_serversConfig.push_back(content.substr(start, end - start + 1));
+			this->_numOfServers++;
+			start = end + 1;
+		}
+		catch (ParsingErrorException & e) {
+			throw ParsingErrorException(e.what());
+		}
 	}
 }
 
@@ -96,23 +107,18 @@ void ConfigFileParser::findAndSplitServers(std::string &content)
 //! Finding a server start and return the index of { start of server
 size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 {
-	std::cout << "findStartServer" << std::endl;
 	size_t serverPos = content.find("server", start);
-	
 	if (serverPos == std::string::npos)
 		throw ParsingErrorException("Server keyword not found");
-
 	size_t openBracePos = content.find_first_not_of(" \t\n", serverPos + 6);
 	if (openBracePos == std::string::npos || content[openBracePos] != '{')
 		throw ParsingErrorException("Expected '{' after server keyword");
-
 	return openBracePos;
 }
 
 //! Finding a server end and return the index of } end of server
 size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
 {
-	std::cout << "findEndServer" << std::endl;
 	size_t	i;
 	size_t	scope;
 	
@@ -134,7 +140,6 @@ size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
 //! Spliting parametrs by separator
 std::vector<std::string> splitParametrs(std::string line, std::string sep)
 {
-	// std::cout << "splitParametrs" << std::endl;
 	std::vector<std::string>	str;
 	std::string::size_type		start, end;
 
@@ -155,19 +160,20 @@ std::vector<std::string> splitParametrs(std::string line, std::string sep)
 
 //! Creating server by parametrs
 void ConfigFileParser::createServer(std::string &config, ServerConfig &server) {
-	// std::cout << "createServer" << std::endl;
-	std::vector<std::string> parametrs = splitParametrs(config += ' ', std::string(" \n\t"));
-
+	std::cout << RED << "createServer" << RESET << std::endl;
+	std::vector<std::string> parametrs = splitParametrs(config += ' ', std::string(" \n\t")); // Is the space here appended so you can split correctly the last element? (ERIK)
+	for (size_t i = 0; i < parametrs.size(); i++)
+	{
+		std::cout << BLUE << "parametrs[" << i << "] = " << parametrs[i] << RESET << std::endl;
+	}
 	if (parametrs.size() < 3) {
 		throw ParsingErrorException("Failed server validation");
-		return;
+		return;   // Is this return necessary? Usually when you thrown an exception you don't need to return anything because the function will stop executing (ERIK)
 	}
-
 	bool flag_loc = true;
 	bool flag_autoindex = false;
 	bool flag_max_size = false;
 	std::vector<std::string> error_codes;
-
 	for (size_t i = 0; i < parametrs.size(); i++) {
 		if (parametrs[i] == "listen" && (i + 1) < parametrs.size() && flag_loc) {
 			handleListenDirective(server, parametrs, i);
@@ -191,12 +197,11 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server) {
 			handleUnsupportedDirective(flag_loc);
 		}
 	}
-
 	finalizeServerConfig(server, error_codes);
 }
 
 void ConfigFileParser::handleListenDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i) {
-	// std::cout << "handleListenDirective" << std::endl;
+	std::cout << "handleListenDirective" << std::endl;
 	if (server.getPort())
 		throw ParsingErrorException("Port is duplicated");
 	server.setPort(parametrs[++i]);
