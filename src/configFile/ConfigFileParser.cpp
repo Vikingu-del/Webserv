@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 13:56:36 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 15:01:07 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 // !Main method && Starting point of parsing
 int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
-	// std::cout << "parseConfigFile" << std::endl;
+	std::cout << PURPLE << "parseConfigFile" << RESET << std::endl;
 	std::string		content;
 	ConfigFile		file(configFilePath);
 
 	if (file.checkFileExistence(file.getPath()) != THIS_IS_FILE)
 		throw ParsingErrorException("File is invalid");
-	if (file.checkFilePermissons(file.getPath(), READ_PERMISSION) == -1)
+	if (file.checkFilePermissons(file.getPath(), R_OK) == -1)
 		throw ParsingErrorException("File is not accessible");
 	content = file.getFileContent(configFilePath);
 	if (content.empty())
@@ -38,55 +38,42 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 	}
 	if (this->_numOfServers > 1)
 		checkForDuplicateServers();
-	// std::cout << GREEN BLD "Success" RST << std::endl;
+	std::cout << GREEN BLD "Success" RST << std::endl;
 	return (0);
 }
 
 //! This method just remove all the commets , fm: '#' to '\n'
 void ConfigFileParser::removeComments(std::string &str)
 {
-	// std::cout << "removeComments" << std::endl;
-	size_t hashPos = str.find('#');
-	
-	while (hashPos != std::string::npos) {
-		size_t newLineCharPos = str.find('\n', hashPos);
-		
-		if (newLineCharPos != std::string::npos) {
-			str.erase(hashPos, newLineCharPos - hashPos);
-		} else {
-			str.erase(hashPos);
-			break;
-		}
-		
-		hashPos = str.find('#', hashPos);
-	}
+	for (size_t hashPos = str.find('#'); hashPos != std::string::npos; hashPos = str.find('#', hashPos)) {
+        size_t newLineCharPos = str.find('\n', hashPos);
+        if (newLineCharPos != std::string::npos)
+            str.erase(hashPos, newLineCharPos - hashPos);
+        else {
+            str.erase(hashPos);
+            break;
+        }
+    }
 }
 
 //! This method deletes all whitespaces in 
 void ConfigFileParser::removeWhiteSpace(std::string &content) {
-	// std::cout << "removeWhiteSpace" << std::endl;
-	//? Remove leading whitespace
 	size_t firstNonSpace = content.find_first_not_of(" \t\n\r");
-	if (firstNonSpace != std::string::npos) {
+	if (firstNonSpace != std::string::npos)
 		content = content.substr(firstNonSpace);
-	} else {
+	else {
 		content.clear();
 		return;
 	}
-
-	//? Remove trailing whitespace
 	size_t lastNonSpace = content.find_last_not_of(" \t\n\r");
-	if (lastNonSpace != std::string::npos) {
+	if (lastNonSpace != std::string::npos)
 		content = content.substr(0, lastNonSpace + 1);
-	}
 }
-
-
 
 //! Spliting servers by server{} and push to vector
 void ConfigFileParser::findAndSplitServers(std::string &content)
 {
-	// std::cout << "findAndSplitServers" << std::endl;
+	std::cout << RED << "find And Split Servers" << RESET << std::endl;
 	size_t start = 0;
 	size_t end = 1;
 
@@ -109,7 +96,7 @@ void ConfigFileParser::findAndSplitServers(std::string &content)
 //! Finding a server start and return the index of { start of server
 size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 {
-	// std::cout << "findStartServer" << std::endl;
+	std::cout << "findStartServer" << std::endl;
 	size_t serverPos = content.find("server", start);
 	
 	if (serverPos == std::string::npos)
@@ -125,7 +112,7 @@ size_t ConfigFileParser::findStartServer(size_t start, std::string &content)
 //! Finding a server end and return the index of } end of server
 size_t ConfigFileParser::findEndServer (size_t start, std::string &content)
 {
-	// std::cout << "findEndServer" << std::endl;
+	std::cout << "findEndServer" << std::endl;
 	size_t	i;
 	size_t	scope;
 	

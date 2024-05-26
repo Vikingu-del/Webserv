@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 17:07:47 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 16:56:53 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:32:48 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,43 +14,35 @@
 
 //! Checks if a file or directory exists at the given path.
 int ConfigFile::checkFileExistence(std::string const path) {
-	// std::cout << GREEN BLD "ConfigFile checkFileExistence called" RST << std::endl;
+	std::cout << GREEN BLD "ConfigFile checkFileExistence called" RST << std::endl;
 	struct stat buffer;
-
 	if (stat(path.c_str(), &buffer) == 0) {
-		if (buffer.st_mode & S_IFREG) //? Check if it's a regular file
+		if (buffer.st_mode & S_IFREG)
 			return THIS_IS_FILE;
-		else if (buffer.st_mode & S_IFDIR) //? Check if it's a directory
+		else if (buffer.st_mode & S_IFDIR)
 			return THIS_IS_DIR;
-		else if (buffer.st_mode & S_IFLNK) //? Check if it's a symbolic link
+		else if (buffer.st_mode & S_IFLNK)
 			return THIS_IS_LINK;
 		else
 			return THIS_FILE_DOESNT_EXIST;
 	}
-	return THIS_FILE_DOESNT_EXIST; //? File does not exist
+	return THIS_FILE_DOESNT_EXIST;
 }
 
 //! Check if the file has specified permission
 int ConfigFile::checkFilePermissons(std::string const path, int mode) {
-	// std::cout << GREEN BLD "ConfigFile checkFilePermissons called" RST << std::endl;
 	return (access(path.c_str(), mode));
 }
 
 //! Get the content of the file at the given path
 std::string ConfigFile::getFileContent(std::string const path) {
-	// std::cout << GREEN BLD "ConfigFile getFileContent called" RST << std::endl;
 	if (path.empty() || path.length() == 0)
 		throw ConfigFileException("Path cannot be empty");
-	
 	std::ifstream config_file(path.c_str());
-	
 	if (!config_file || !config_file.is_open())
 		throw  ConfigFileException("Could not open file at path: " + path);
-	
 	std::stringstream stream_buffer;
-	
 	stream_buffer << config_file.rdbuf();
-
 	return (stream_buffer.str());
 }
 
@@ -77,9 +69,9 @@ void ConfigFile::setNumOfServers(int num) {
 //! Checks if the file exists and has the required permissions
 int ConfigFile::checkFile(std::string const path, std::string const index) {
 	// std::cout << GREEN BLD "ConfigFile checkFile called" RST << std::endl;
-	if (checkFileExistence(index) == 1 && checkFilePermissons(index, READ_PERMISSION) == 0)
+	if (checkFileExistence(index) == 1 && checkFilePermissons(index, R_OK) == 0)
 		return 0;
-	if (!path.empty() && checkFileExistence(path + index) == 1 && checkFilePermissons(path + index, READ_PERMISSION) == 0)
+	if (!path.empty() && checkFileExistence(path + index) == 1 && checkFilePermissons(path + index, R_OK) == 0)
 		return 0;
 	return -1;
 }

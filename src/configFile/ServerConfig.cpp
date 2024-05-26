@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 18:43:32 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/26 14:31:05 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,7 +262,7 @@ void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 		{
 			if (ConfigFile::checkFileExistence(this->_root + path) != 1)
 				throw ServerConfigException("Incorrect path for error page file: " + this->_root + path); //TODO: CHECK THIS ONE MOREW TIME NO PERSSIONS
-			if (ConfigFile::checkFile(this->_root + path, NO_PERMISSIONS) == -1 || ConfigFile::checkFilePermissons(this->_root + path, READ_PERMISSION) == -1)
+			if (ConfigFile::checkFile(this->_root + path, NO_PERMISSIONS) == -1 || ConfigFile::checkFilePermissons(this->_root + path, R_OK) == -1)
 				throw ServerConfigException("Error page file is not accessible: " + this->_root + path); //TODO: CHECK THIS ONE MOREW TIME NO PERSSIONS
 		}
 		std::map<short, std::string>::iterator it = this->_error_pages.find(code_error);

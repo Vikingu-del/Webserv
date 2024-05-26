@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/20 16:37:28 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:30:34 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 #define THIS_FILE_DOESNT_EXIST 4
 
 //! checkFilePermissons return values
-#define READ_PERMISSION 4
 #define WRITE_PERMISSION 2
 #define EXECUTE_PERMISSION 1
 #define NO_PERMISSIONS 0
