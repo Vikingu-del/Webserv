@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 19:49:00 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 12:58:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ int ConfigFileParser::parseConfigFile(std::string & configFilePath) {
 	// Also here we need to catch the exceptions from findAndSplitServers and throw them (ERIK)
 	try { // I put this try catch block here because we need to catch the exceptions from the functions used here and throw them (ERIK)
 		findAndSplitServers(content);
-		if (this->_serversConfig.size() != this->_numOfServers) // Does this condition ever happen? (ERIK)
-			throw ParsingErrorException("Number of servers in configuration does not match expected count.");
 		for (size_t i = 0; i < this->_numOfServers; i++)
 		{
 			ServerConfig server;
@@ -161,16 +159,14 @@ std::vector<std::string> splitParametrs(std::string line, std::string sep)
 //! Creating server by parametrs
 void ConfigFileParser::createServer(std::string &config, ServerConfig &server) {
 	// std::cout << RED << "createServer" << RESET << std::endl;
-	std::vector<std::string> parametrs = splitParametrs(config += ' ', std::string(" \n\t")); // Is the space here appended so you can split correctly the last element? (ERIK)
-	if (parametrs.size() < 3) {
+	std::vector<std::string> parametrs = splitParametrs(config += ' ', std::string(" \n\t"));
+	if (parametrs.size() < 3)
 		throw ParsingErrorException("Failed server validation");
-		return;   // Is this return necessary? Usually when you thrown an exception you don't need to return anything because the function will stop executing (ERIK)
-	}
 	bool flag_loc = true;
 	bool flag_autoindex = false;
 	bool flag_max_size = false;
 	std::vector<std::string> error_codes;
-	try {  // I put this try catch block here because we need to catch the exceptions from handlers and throw them (ERIK)
+	try {
 		for (size_t i = 0; i < parametrs.size(); i++) {
 			if (parametrs[i] == "listen" && (i + 1) < parametrs.size() && flag_loc) {
 				handleListenDirective(server, parametrs, i);
@@ -294,7 +290,7 @@ void ConfigFileParser::finalizeServerConfig(ServerConfig &server, const std::vec
 	if (server.getHost() == 0)
 		server.setHost("localhost;");
 	if (server.getIndex().empty())
-		server.setIndex("index.html;");    // why is index.html the default index? (ERIK)
+		server.setIndex("home.html;");
 	if (ConfigFile::checkFile(server.getRoot(), server.getIndex()))
 		throw ParsingErrorException("Index from config file not found or unreadable");
 	if (server.checkLocaitons())

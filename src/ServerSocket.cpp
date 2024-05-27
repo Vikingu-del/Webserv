@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/26 19:51:56 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 13:13:33 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include "RequestHandler.hpp"
 
 // Did you ever tested with scripts from evaluation shit? (ERIK)
+// Clear inside client
+// try to execute while server is open with this command in terminal siege -c50 -t30S http://localhost:8002
+
 
 ServerSocket::ServerSocket()
 {
