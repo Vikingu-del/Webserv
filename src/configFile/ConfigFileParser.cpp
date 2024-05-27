@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/27 12:58:47 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 14:09:39 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,7 +343,7 @@ int ConfigFileParser::printServers()
 	std::cout << "------------- Config -------------" << std::endl;
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
-		std::cout << GREEN << BLD << "Server #" << RST << i + 1 << std::endl;
+		std::cout << GREEN << BLD << "Server # " << RST BLD << i + 1 << RST << std::endl;
 		std::cout << GREEN << "Server name: " << RST << _servers[i].getServerName() << std::endl;
 		std::cout << GREEN << "Host: " << RST << _servers[i].getHost() << std::endl;
 		std::cout << GREEN << "Root: " << RST << _servers[i].getRoot() << std::endl;

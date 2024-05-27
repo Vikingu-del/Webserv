@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 19:23:26 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 14:39:42 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 				return 1;
 		}
 		parser.parseConfigFile(configFilePath);
+		// parser.printServers();
 		socket.setupServer(parser.getServers());
 		socket.runServer();
 	}

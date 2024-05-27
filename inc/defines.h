@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/26 14:30:34 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 14:27:31 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 //! checkFilePermissons return values
 #define WRITE_PERMISSION 2
 #define EXECUTE_PERMISSION 1
-#define NO_PERMISSIONS 0
+#define NO_PERMISSIONS "000"
 #define THIS_FILE_HAS_PERMISSION 0
 #define THIS_FILE_DOESNT_HAVE_PERMISSION -1
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 20:04:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 14:27:27 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,11 +235,11 @@ void ServerConfig::setAutoindex(std::string autoindex)
 		this->_autoindex = true;
 }
 
-/* checks if there is such a default error code. If there is, it overwrites the path to the file,
-otherwise it creates a new pair: error code - path to the file */
 void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 {
 	// std::cout << PINK BLD "ServerConfig setErrorPages called" RST << std::endl;
+
+	
 	if (parametr.empty())
 		return;
 	if (parametr.size() % 2 != 0)
@@ -260,10 +260,10 @@ void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 		checkToken(path);
 		if (ConfigFile::checkFileExistence(path) != 2)
 		{
-			if (ConfigFile::checkFileExistence(this->_root + path) != 1)
-				throw ServerConfigException("Incorrect path for error page file: " + this->_root + path); //TODO: CHECK THIS ONE MOREW TIME NO PERSSIONS
+			if (ConfigFile::checkFileExistence(this->_root + path) != THIS_IS_FILE)
+				throw ServerConfigException("Incorrect path for error page file: " + this->_root + path);
 			if (ConfigFile::checkFile(this->_root + path, NO_PERMISSIONS) == -1 || ConfigFile::checkFilePermissons(this->_root + path, R_OK) == -1)
-				throw ServerConfigException("Error page file is not accessible: " + this->_root + path); //TODO: CHECK THIS ONE MOREW TIME NO PERSSIONS
+				throw ServerConfigException("Error page file is not accessible: " + this->_root + path);
 		}
 		std::map<short, std::string>::iterator it = this->_error_pages.find(code_error);
 		if (it != _error_pages.end())
@@ -436,20 +436,11 @@ void ServerConfig::setFd(int fd)
 
 void ServerConfig::initErrorPages(void)
 {
-	_error_pages[301] = "";
-	_error_pages[302] = "";
 	_error_pages[400] = "";
-	_error_pages[401] = "";
-	_error_pages[402] = "";
 	_error_pages[403] = "";
 	_error_pages[404] = "";
 	_error_pages[405] = "";
-	_error_pages[406] = "";
 	_error_pages[500] = "";
-	_error_pages[501] = "";
-	_error_pages[502] = "";
-	_error_pages[503] = "";
-	_error_pages[505] = "";
 	_error_pages[505] = "";
 }
 

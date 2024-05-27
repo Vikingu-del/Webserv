@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/22 18:39:20 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/27 14:30:44 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,21 +141,31 @@ void Location::setRootLocation(std::string value) {
 }
 
 void Location::setMethods(std::vector<std::string> methods) {
-	// std::cout << BLUE "Location setMethods called" RST << std::endl;
+	std::cout << BLUE "Location setMethods called" RST << std::endl;
 	std::fill(this->_methods.begin(), this->_methods.end(), 0);
-	
+
 	for(size_t i = 0; i < methods.size(); i++)
 	{
-		if (methods[i] == "GET")
+		if (methods[i] == "GET") {
 			this->_methods[0] = 1;
-		else if (methods[i] == "POST")
-			this->_methods[0] = 1;
-		else if (methods[i] == "DELETE")
-			this->_methods[0] = 1;
-		else if (methods[i] == "PUT")
-			this->_methods[0] = 1;
-		else if (methods[i] == "HEAD")
-			this->_methods[0] = 1;
+			std::cout << PURPLE BLD << "GET" << RST <<std::endl;
+		}
+		else if (methods[i] == "POST") {
+			this->_methods[1] = 1;
+			std::cout << PURPLE BLD << "POST" << RST <<std::endl;
+		}
+		else if (methods[i] == "DELETE") {
+			this->_methods[2] = 1;
+			std::cout << PURPLE BLD << "DELETE" << RST <<std::endl;
+		}
+		else if (methods[i] == "PUT") {
+			this->_methods[3] = 1;
+			std::cout << PURPLE BLD << "PUT" << RST <<std::endl;
+		}
+		else if (methods[i] == "HEAD") {
+			this->_methods[4] = 1;
+			std::cout << PURPLE BLD << "HEAD" << RST <<std::endl;
+		}
 		else
 			throw ServerConfig::ServerConfigException("Allow method not supported: " + methods[i]);
 	}
@@ -216,9 +226,8 @@ void Location::setMaxBodySize(unsigned long value) {
 //! Debugging method
 std::string Location::getPrintMethods() const {
 	
-	// std::cout << BLUE "Location getPrintMethods called" RST << std::endl;
-	
 	std::string res;
+	
 	if (_methods[4])
 		res.insert(0, "HEAD");
 	if (_methods[3])
@@ -245,5 +254,6 @@ std::string Location::getPrintMethods() const {
 			res.insert(0, ", ");
 		res.insert(0, "GET");
 	}
+	
 	return (res);
 }
