@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/25 16:33:53 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 10:01:49 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,38 +17,45 @@
 #include "ConfigFileParser.hpp"
 #include "ServerConfig.hpp"
 #include <queue>
+#include "defines.h"
 
 class Client
 {
-    private:
-        struct sockaddr_in  _client_address;
-        time_t              _last_msg;
-        int                 _client_socket;
-        
-    public:
-        /*ORTDOX*/
-        Client();
-        Client(const Client &copy);
-        Client  &operator=(const Client &copy);
-        Client(ServerConfig & server);
-        ~Client();
-        /*Geters*/
-        const int                   &getSocket() const;
-        const struct sockaddr_in    &getAddress() const;
-        const time_t                &getLastTime() const;
-        // const HTTP::Request         &getRequest() const;
-        /*Seters*/
-        void                        setSocket(int &socket);
-        void                        setAddress(sockaddr_in &address);
-        void                        setServer(ServerConfig &serv);
-        void                        setTime(); //update time
-        void                        addResponse(const std::string& response);
-        std::string                 getNextResponse();
-        bool                        hasResponse(); 
-        /*Another*/
-        void                        clearClient();
-        ServerConfig                server;
-        std::string                 request;
-        std::queue<std::string>     responses;
-        
+	private:
+		ServerConfig			_server;
+		int						_clientSocket;
+		struct sockaddr_in		_clientAddress;
+		time_t					_lastMsg;
+		std::string				_incompleteRequest;
+		std::queue<std::string>	_requests;
+		std::queue<std::string>	_responses;
+		std::string 		   	_emptyResponse;
+		
+	public:
+		/*ORTDOX*/
+		Client();
+		Client(const Client &copy);
+		Client(ServerConfig & serv);
+		Client  &operator=(const Client &copy);
+		~Client();
+		/*Geters*/
+		const int                   &getSocket() const;
+		const struct sockaddr_in    &getAddress() const;
+		const time_t                &getLastTime() const;
+		const std::string			&getIncompleteRequest() const;
+		/*Seters*/
+		void						setSocket(int &socket);
+		void						setAddress(sockaddr_in &address);
+		void						setServer(ServerConfig &serv);
+		void						setTime(); //update time
+		void						setIncompleteRequest(const std::string &req);
+		/*Methods*/
+		void						addRequest(const std::string& req);
+		bool						hasRequests();
+		std::string					getNextRequest();
+		void						addResponse(const std::string& resp);
+		bool						hasResponses();
+		std::string					&getCurrentResponse();
+		void						removeCurrentResponse();
+		void						clearClient();
 };

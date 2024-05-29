@@ -6,119 +6,83 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/25 16:35:34 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 10:01:59 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client()
-{
-    _last_msg = time(NULL);
-}
-
-Client::~Client()
-{
-
-}
+/* Constructors, destructors and ansignment operator*/
+Client::Client() : _clientSocket(-1), _lastMsg(0) {}
+Client::Client(ServerConfig &serv) : _server(serv), _clientSocket(-1), _lastMsg(0) {}
+Client::~Client() {}
 
 Client::Client(const Client &copy)
 {
     if (this != &copy)
     {
-        this->_client_address = copy._client_address;
-        this->_last_msg = copy._last_msg;
-        this->_client_socket = copy._client_socket;
-        this->server = copy.server;
-        this->responses = copy.responses;
-        this->request = copy.request;
+        this->_clientAddress = copy._clientAddress;
+        this->_lastMsg = copy._lastMsg;
+        this->_clientSocket = copy._clientSocket;
+        this->_server = copy._server;
+        this->_requests = copy._requests;
+        this->_responses = copy._responses;
+        this->_incompleteRequest = copy._incompleteRequest;
     }
-    return ;
 }
 
 Client &Client::operator=(const Client &copy)
 {
-    if (this != &copy)
+     if (this != &copy)
     {
-        this->_client_address = copy._client_address;
-        this->_last_msg = copy._last_msg;
-        this->_client_socket = copy._client_socket;
-        this->server = copy.server;
-        this->responses = copy.responses;
-        this->request = copy.request;
+        this->_clientAddress = copy._clientAddress;
+        this->_lastMsg = copy._lastMsg;
+        this->_clientSocket = copy._clientSocket;
+        this->_server = copy._server;
+        this->_requests = copy._requests;
+        this->_responses = copy._responses;
+        this->_incompleteRequest = copy._incompleteRequest;
     }
     return (*this);    
 }
 
-Client::Client(ServerConfig &server)
-{
-    setServer(server);
-    //need max body size
-    _last_msg = time(NULL);
+/* Geters */
+const int 	&Client::getSocket() const { return _clientSocket; }
+const sockaddr_in	&Client::getAddress() const { return _clientAddress; }
+const time_t	&Client::getLastTime() const { return _lastMsg; }
+const std::string	&Client::getIncompleteRequest() const { return _incompleteRequest; }
+
+/* Setters */
+void	Client::setSocket(int &socket) { _clientSocket = socket; }
+void	Client::setAddress(sockaddr_in &address) { _clientAddress = address; }
+void	Client::setServer(ServerConfig &serv) { _server = serv; }
+void	Client::setTime() { _lastMsg = time(NULL); }
+void	Client::setIncompleteRequest(const std::string &req) { _incompleteRequest = req; }
+
+/* Methods */
+void	Client::addRequest(const std::string& req) { _requests.push(req); }
+bool	Client::hasRequests() { return !_requests.empty(); }
+
+std::string Client::getNextRequest() {
+    if (_requests.empty()) return "";
+    std::string req = _requests.front();
+    _requests.pop();
+    return req;
 }
 
-const int &Client::getSocket() const
-{
-    return (_client_socket);
+void	Client::addResponse(const std::string& resp) { _responses.push(resp); }
+bool	Client::hasResponses() { return !_responses.empty(); }
+std::string	&Client::getCurrentResponse() {
+	if (_responses.empty()) return _emptyResponse;
+	return _responses.front();
 }
-
-const sockaddr_in &Client::getAddress() const
-{
-    return (_client_address);
-}
-
-const time_t &Client::getLastTime() const
-{
-    return (_last_msg);
-}
-
-void   Client::addResponse(const std::string& response)
-{
-    responses.push(response);
-}
-
-std::string Client::getNextResponse()
-{
-    if (responses.empty())
-        return "";
-    std::string response = responses.front();
-    responses.pop();
-    return response;
-}
-
-bool    Client::hasResponse()
-{
-    return !responses.empty();
-}
-
-// const HTTP::Request   &Client::getRequest() const
-// {
-//     return (request);
-// }
-
-void Client::setSocket(int &socket)
-{
-    _client_socket = socket;
-}
-
-void Client::setAddress(sockaddr_in &address)
-{
-    _client_address = address;
-}
-
-void Client::setServer(ServerConfig &serv)
-{
-    server = serv;
-}
-
-void Client::setTime()
-{
-    _last_msg = time(NULL);
-}
+void	Client::removeCurrentResponse() {
+	if (!_responses.empty()) _responses.pop(); }
 
 
-void    Client::clearClient()
-{
-    // response.clear(); need func to clear all of it
-    // request.clear(); 
+void	Client::clearClient() {
+    // Clear all the data in the client object
+    while (!_requests.empty()) _requests.pop();
+    while (!_responses.empty()) _responses.pop();
+    _incompleteRequest.clear();
 }

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/28 13:11:59 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 14:04:32 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -581,7 +581,7 @@ void	ServerConfig::bindServer(void)
 	{
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
 		// exit(EXIT_FAILURE);
-		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		std::cerr << "Failed to create socket." << std::endl;
 		exit(1);
 	}
 
@@ -597,6 +597,7 @@ void	ServerConfig::bindServer(void)
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
 		// exit(EXIT_FAILURE);
 		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		close(_listen_fd);
 		exit(1);
 	}
 }
