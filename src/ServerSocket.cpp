@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 14:29:29 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 23:43:56 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ ServerSocket::ServerSocket() {
         perror("epoll_create1 error");
         exit(1);
     }
-    // Create a new client and add it to _clientsMap
 }
 
 ServerSocket::~ServerSocket() {
@@ -38,7 +37,6 @@ ServerSocket::~ServerSocket() {
 
 void	ServerSocket::addToEpoll(const int fd, uint32_t events)
 {
-	std::cout << "addet to epoll " << fd << std::endl;
 	struct epoll_event ev;
 	ev.events = events;
 	ev.data.fd = fd;
@@ -49,6 +47,7 @@ void	ServerSocket::addToEpoll(const int fd, uint32_t events)
 		close(epoll_fd);
 		exit(1);
 	}
+	std::cout << "addet to epoll " << fd << std::endl;
 }
 
 void	ServerSocket::modifyEpoll(int fd, uint32_t events) {
@@ -66,42 +65,40 @@ void	ServerSocket::removeFromEpoll(int fd) {
 		std::cerr << "epoll_ctl EPOLL_CTL_DEL error" << std::endl;
 	}
 	close(fd); // Close the file descriptor after removing it from epoll
+	std::cout << "Removed from epoll " << fd << std::endl;
 }
 
 void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allows the server to maintain an up-to-date record of connected clients and their associated sockets for further communication and management.
 {
-	std::cout << YELLOW << "Accepting new connection" << RESET << std::endl;
 	struct		sockaddr_in client_addr;
 	socklen_t	client_addr_len = sizeof(client_addr); 
 	int			client_socket = accept(serv.getListenFd(), (struct sockaddr *)&client_addr, &client_addr_len);
 	if (client_socket == -1) {
-		std::cerr << "accept error" << std::endl;
+		perror("accept error");
 		return ;
 	}
 	int flags = fcntl(client_socket, F_GETFL, 0);
 	if (flags == -1) {
-		std::cerr << "fcntl F_GETFL error" << std::endl;
+		perror("fcntl F_GETFL error");
 		close(client_socket);
 		return;
 	}
-	if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1) {
-		std::cerr << "fcntl F_SETFL error" << std::endl;
+	if (fcntl(client_socket, F_SETFL, flags | O_NONBLOCK) == -1) {
+		perror("fcntl F_SETFL error");
 		close(client_socket);
 		return;
 	}
 	// Instantiate Client with ServerConfig and set the socket
 	Client	new_client(serv);
 	new_client.setSocket(client_socket);
-
-	std::cout << "Client connected with socket " << new_client.getSocket() << std::endl;
-
+	new_client.setTime();
 	// Ensure the client socket is unique in _clients_map
 	if (_clientsMap.count(client_socket) != 0)
 		_clientsMap.erase(client_socket);
 	_clientsMap.insert(std::make_pair(client_socket, new_client));
-	std::cout << "inserting the client into the map with <" << client_socket << ", " << serv.getPort() << ">" << std::endl;
+    std::cout << "Client connected with the socket " << client_socket << std::endl;
 	// Add the client socket to the epoll instance
-	addToEpoll(client_socket, EPOLLIN);
+	addToEpoll(client_socket, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
 }
 
 void	ServerSocket::listenServer()
@@ -128,68 +125,31 @@ void	ServerSocket::listenServer()
 }
 
 void ServerSocket::readRequest(const int &fd, Client &client) {
-    std::cout << YELLOW << "Reading request" << RESET << std::endl;
-
     // Check if the client socket is properly initialized and connected
-    if (_serversMap.find(fd) != _serversMap.end()) {
-        acceptNewConnection(_serversMap[fd]);
-    }
-
-    // Check for socket error status
-    int error = 0;
-    socklen_t len = sizeof(error);
-    int retval = getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len);
-    if (retval != 0) {
-        // Log error getting socket error code
-        std::cerr << "error getting socket error code: " << strerror(retval) << std::endl;
-        removeFromEpoll(fd);
-        return;
-    }
-
-    // Handle socket error
-    if (error != 0) {
-        // Log socket error
-        std::cerr << "socket error: " << strerror(error) << std::endl;
-        removeFromEpoll(fd);
-        return;
-    }
-
-    // Read request from the client socket
-    char buf[MAX_CONTENT_LENGTH];
-    ssize_t count = read(fd, buf, MAX_CONTENT_LENGTH);
-    if (count == -1) {
-        // Handle read error
-        if (errno == ECONNRESET || errno == ENOTCONN) {
-			if (errno == ECONNRESET)
-				perror("Connection reset by peer");
-			else
-            // Connection reset by peer or socket not connected
-            perror("socket not connected");
-            removeFromEpoll(fd);
-            close(fd);
-        } else if (errno != EAGAIN) {
-            // Other read error
-            perror("read error");
-            removeFromEpoll(fd);
-        }
-    } else if (count == 0) {
-        // Handle socket closure
+	char buf[1024];
+	ssize_t count = recv(fd, buf, 1024, 0);
+	if (count == -1) {
+		if (errno == EAGAIN) {
+			perror("read error");
+			removeFromEpoll(fd);
+		}
+	} else if (count == 0) {
         removeFromEpoll(fd);
     } else {
-        // Process received data
-        std::string temp = client.getIncompleteRequest() + std::string(buf, count);
-        size_t pos;
-        while ((pos = temp.find("\r\n\r\n")) != std::string::npos) {
-            std::string request = temp.substr(0, pos + 4);
-            temp = temp.substr(pos + 4);
-            client.setTime();
-            client.addRequest(request);
-        }
-        // Store any incomplete request
-        client.setIncompleteRequest(temp);
-        // Modify the epoll instance to also monitor for writing
-        modifyEpoll(fd, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
-    }
+		std::string temp = client.getIncompleteRequest() + std::string(buf, count);
+		size_t pos;
+		while ((pos = temp.find("\r\n\r\n")) != std::string::npos) {
+			std::string request = temp.substr(0, pos + 4);
+			temp = temp.substr(pos + 4);
+			client.setTime();
+			RequestHandler handler(client.getServer(), request);
+			handler.handleRequest();
+			std::string response = handler.getResponse().serialize();
+			client.addResponse(response);
+		}
+		client.setIncompleteRequest(temp);
+		modifyEpoll(fd, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
+	}
 }
 
 void ServerSocket::sendResponse(const int &fd, Client &client) {
@@ -218,49 +178,38 @@ void ServerSocket::sendResponse(const int &fd, Client &client) {
 
 void ServerSocket::closeConnection(int fd)
 {
-	std::cout << YELLOW << "Closing connection" << RESET << std::endl;
 	removeFromEpoll(fd);
 	_clientsMap.erase(fd);
+	std::cout << YELLOW << "Connection with fd = " << fd <<  " closed" << RESET << std::endl;
 }
 
 void ServerSocket::runServer()
 {
-	std::cout << GREEN << "Server is running" << RESET << std::endl;
     listenServer();
-	const int MAX_EVENTS = 10;
+	const int MAX_EVENTS = 1000;
 	struct epoll_event events[MAX_EVENTS];
 	time_t last_check_time = time(NULL);
-	// sigset_t mask;
-	// sigemptyset(&mask);
-	// sigaddset(&mask, SIGINT); // Block SIGINT during epoll_pwait
+
     while (true) {
-		std::cout << "Waiting for events" << std::endl;
-        int numEvents = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        int numEvents = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
 		if (numEvents == -1) {
-			std::cerr << "Failed to wait for events." << std::endl;
-            break;
+			if (errno == EINTR) {
+				continue;
+			}
+			perror("epoll_wait error");
+			exit(1);
 		}
 		for (int i = 0; i < numEvents; ++i) {
 			int fd = events[i].data.fd;
 			if (fd == _servers[i].getListenFd()) {
 				acceptNewConnection(_serversMap[fd]);
-				continue;
-			}
-			if (events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
-				std::cerr << "Client disconnected or error occurred" << std::endl;
+			} else if (events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
 				closeConnection(fd);
-				epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL); // Remove fd from epoll instance
-				_clientsMap.erase(fd); // Remove fd from _clientsMap
-			}
-			else if (events[i].events & EPOLLIN) {
+			} else if (events[i].events & EPOLLIN) {
 				readRequest(fd, _clientsMap[fd]);
-				std::cout << "Request read" << std::endl;
-			}
-			else if (events[i].events & EPOLLOUT) {
-				sendResponse(fd, _clientsMap[fd]);
-				std::cout << "Response sent" << std::endl;
-			}
-			else {
+			} else if (events[i].events & EPOLLOUT) {
+				sendResponse(fd, _clientsMap[fd]);;
+			} else {
 				std::cerr << "Unknown event" << std::endl;
 			}
 		}
@@ -268,7 +217,7 @@ void ServerSocket::runServer()
 
 	// Check for timeouts every second
 	time_t currentTime = time(NULL);
-	if (difftime(currentTime, last_check_time) > 1) {
+	if (difftime(currentTime, last_check_time) > 1.0) {
 		checkTimeout();
 		last_check_time = currentTime;
 	}
@@ -277,12 +226,10 @@ void ServerSocket::runServer()
 
 void ServerSocket::setupServer(std::vector<ServerConfig> serv) {
 	_servers = serv;
-	std::cout << PURPLE << "Setting up server" << std::endl;
 	for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
     {
-        std::cout << "Binding server with port " << i->getPort() << std::endl;
         i->bindServer();
-        std::cout << "Server created" << std::endl;
+        std::cout << "Server created on port: " << i->getPort() << std::endl;
     }
 }
 
@@ -295,7 +242,9 @@ void ServerSocket::checkTimeout() {
             int fd = it->first;
             std::cerr << "Client Timeout, Closing Connection" << std::endl;
             removeFromEpoll(fd);
-            _clientsMap.erase(it++);
+			std::map<int, Client>::iterator temp = it;
+            ++it;
+			_clientsMap.erase(temp);
         } else {
             ++it;
         }

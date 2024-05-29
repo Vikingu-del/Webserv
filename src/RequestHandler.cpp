@@ -35,7 +35,7 @@ std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)()> >& RequestHan
 
 std::string RequestHandler::getHomeIndex() {
 	std::string body;
-	std::ifstream file("gameHub/srcs/indexes/home.html");
+	std::ifstream file("gameHub/srcs/indexes/hello.html");
 	if (file.is_open()) {
 		std::stringstream buffer;
 		buffer << file.rdbuf();

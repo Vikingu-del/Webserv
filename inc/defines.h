@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/29 11:49:47 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 23:31:34 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #define LINE_END "\r\n"
 #define MAX_CONTENT_LENGTH 3000000
-#define TIMEOUT_PERIOD 60.0
+#define TIMEOUT_PERIOD 30.0
 
 //! Parsing Definitions
 

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 10:01:49 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 22:42:38 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Client
 		const int                   &getSocket() const;
 		const struct sockaddr_in    &getAddress() const;
 		const time_t                &getLastTime() const;
+		const ServerConfig          &getServer() const;
 		const std::string			&getIncompleteRequest() const;
 		/*Seters*/
 		void						setSocket(int &socket);

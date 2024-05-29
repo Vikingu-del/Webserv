@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 10:01:59 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 22:42:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ const int 	&Client::getSocket() const { return _clientSocket; }
 const sockaddr_in	&Client::getAddress() const { return _clientAddress; }
 const time_t	&Client::getLastTime() const { return _lastMsg; }
 const std::string	&Client::getIncompleteRequest() const { return _incompleteRequest; }
+const ServerConfig	&Client::getServer() const { return _server; }
 
 /* Setters */
 void	Client::setSocket(int &socket) { _clientSocket = socket; }
