@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 20:04:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/28 13:11:59 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other)
 ServerConfig::~ServerConfig(){
 	// std::cout << RED BLD "ServerConfig destructor" RST << std::endl;
 	// ? no specific cleanup needed
+	
 }
 
 // !Getters

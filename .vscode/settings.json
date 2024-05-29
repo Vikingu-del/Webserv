@@ -55,6 +55,7 @@
         "map": "cpp",
         "set": "cpp",
         "sstream": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "netdb.h": "c"
     }
 }
