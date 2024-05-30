@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:03:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/22 18:47:15 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/29 14:12:36 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,31 +19,30 @@
 
 class ServerSocket
 {
-    private:
-        std::vector<ServerConfig> _servers;
-        std::map<int, ServerConfig> _servers_map;
-        std::map<int, Client> _clients_map;
-        fd_set     _read_fd;
-        fd_set     _write_fd;
-        int        _biggest_fd;
+	private:
+		std::vector<ServerConfig>	_servers;
+		std::map<int, ServerConfig>	_serversMap;
+		std::map<int, Client>		_clientsMap;
+		int							epoll_fd;
 
-        void acceptNewConnection(ServerConfig &serv);
-        void checkTimeout();
-        void listenServer();
-        void readRequest(const int &fd, Client &client);
-        // void handleReqBody(Client &client);
-        void sendResponse(const int &fd, Client &client);
-        // void sendCgiBody(Client &, CgiHandler &);
-        // void readCgiResponse(Client &, CgiHandler &);
-        void closeConnection(const int fd);
-        void assignServer(Client &client);
-        void addToSet(const int fd, fd_set &set);
-        void removeFromSet(const int fd, fd_set &set);
-    public:
-        ServerSocket();
-        ~ServerSocket();
-        void    setupServer(std::vector<ServerConfig> serv);
-        void    runServer();
+		// void sendCgiBody(Client &, CgiHandler &);
+		// void readCgiResponse(Client &, CgiHandler &);
+		// void	assignServer(Client &client);
+	public:
+		ServerSocket();
+		~ServerSocket();
+		void    setupServer(std::vector<ServerConfig> serv);
+		void    runServer();
+		void	acceptNewConnection(ServerConfig &serv);
+		void	listenServer();
+		void	readRequest(const int &fd, Client &client);
+		void	sendResponse(const int &fd, Client &client);
+		void	closeConnection(const int fd);
+		void	addToEpoll(const int fd, uint32_t events);
+		void	modifyEpoll(int fd, uint32_t events);
+		void	removeFromEpoll(const int fd);
+		void	checkTimeout();
+		int    	getEpollFd() const;
 };
 
 #endif

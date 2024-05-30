@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/27 14:27:31 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/30 15:30:08 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #define LINE_END "\r\n"
 #define MAX_CONTENT_LENGTH 3000000
+#define TIMEOUT_PERIOD 30.0
 
 //! Parsing Definitions
 

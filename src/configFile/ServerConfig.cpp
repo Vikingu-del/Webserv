@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/27 14:27:27 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/05/30 15:30:20 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other)
 ServerConfig::~ServerConfig(){
 	// std::cout << RED BLD "ServerConfig destructor" RST << std::endl;
 	// ? no specific cleanup needed
+	
 }
 
 // !Getters
@@ -571,7 +572,7 @@ void	ServerConfig::bindServer(void)
 	{
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
 		// exit(EXIT_FAILURE);
-		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		std::cerr << "Failed to create socket." << std::endl;
 		exit(1);
 	}
 
@@ -587,6 +588,7 @@ void	ServerConfig::bindServer(void)
 		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
 		// exit(EXIT_FAILURE);
 		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		close(_listen_fd);
 		exit(1);
 	}
 }

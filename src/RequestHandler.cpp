@@ -122,7 +122,7 @@ void RequestHandler::handleBadRequest() {
 
 void    RequestHandler::handleRequest() {
     try {
-		std::cout << YELLOW << "Request: " << this->getRequest().serialize() << RESET << std::endl;
+		// std::cout << YELLOW << "Request: " << this->getRequest().serialize() << RESET << std::endl;
         // !1. Parse the request:
         switch (this->_request.getMethod()) {
             case HTTP::GET:
