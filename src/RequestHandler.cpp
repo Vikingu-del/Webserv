@@ -35,7 +35,7 @@ std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)()> >& RequestHan
 
 std::string RequestHandler::getHomeIndex() {
 	std::string body;
-	std::ifstream file("gameHub/srcs/indexes/hello.html");
+	std::ifstream file("gameHub/srcs/indexes/home.html");
 	if (file.is_open()) {
 		std::stringstream buffer;
 		buffer << file.rdbuf();
@@ -122,7 +122,7 @@ void RequestHandler::handleBadRequest() {
 
 void    RequestHandler::handleRequest() {
     try {
-		std::cout << YELLOW << "Request: " << this->getRequest().serialize() << RESET << std::endl;
+		// std::cout << YELLOW << "Request: " << this->getRequest().serialize() << RESET << std::endl;
         // !1. Parse the request:
         switch (this->_request.getMethod()) {
             case HTTP::GET:

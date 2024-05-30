@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 23:43:56 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/30 15:16:14 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void	ServerSocket::listenServer()
 	std::cout << YELLOW << "Listening to server" << RESET << std::endl;
 	for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
 	{
-		if ( listen( i->getListenFd(), 10) == -1) {
+		if ( listen( i->getListenFd(), 200) == -1) {
 			perror("listen error");
 			exit(1);
 		}
@@ -137,6 +137,7 @@ void ServerSocket::readRequest(const int &fd, Client &client) {
         removeFromEpoll(fd);
     } else {
 		std::string temp = client.getIncompleteRequest() + std::string(buf, count);
+		std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
 		size_t pos;
 		while ((pos = temp.find("\r\n\r\n")) != std::string::npos) {
 			std::string request = temp.substr(0, pos + 4);
@@ -245,8 +246,7 @@ void ServerSocket::checkTimeout() {
 			std::map<int, Client>::iterator temp = it;
             ++it;
 			_clientsMap.erase(temp);
-        } else {
+        } else
             ++it;
-        }
     }
 }

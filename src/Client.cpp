@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 22:42:47 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/30 15:24:00 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,9 @@ std::string	&Client::getCurrentResponse() {
 	return _responses.front();
 }
 void	Client::removeCurrentResponse() {
-	if (!_responses.empty()) _responses.pop(); }
+	if (!_responses.empty())
+        _responses.pop();
+}
 
 
 void	Client::clearClient() {
