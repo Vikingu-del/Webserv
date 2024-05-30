@@ -8,8 +8,8 @@ class	RequestHandler {
 		ServerConfig	_server;
 		HTTP::Request   _request;
 		HTTP::Response	_response;
-		RequestHandler();
 	public:
+		RequestHandler();
 		RequestHandler(const ServerConfig &server, const std::string &request);
 
 		// int             _binary;

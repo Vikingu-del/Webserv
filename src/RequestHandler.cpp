@@ -1,6 +1,43 @@
 #include "RequestHandler.hpp"
 
-RequestHandler::RequestHandler() {}
+std::map<std::string, std::string> fileCache;
+
+std::string readFile(const std::string &path) {
+	if (fileCache.find(path) != fileCache.end()) {
+		return fileCache[path];
+	}
+	std::ifstream file(path.c_str(), std::ios::binary);
+	if (!file.is_open()) {
+		std::cerr << "Failed to open file: " << path << std::endl;
+		return "";
+	}
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	fileCache[path] = buffer.str();
+	return buffer.str();
+}
+
+std::string RequestHandler::getHomeIndex() {
+	return readFile("gameHub/srcs/indexes/home.html");
+}
+
+std::string RequestHandler::getHomeStyle() {
+	return readFile("gameHub/srcs/styles/home.css");
+}
+
+// std::string RequestHandler::getHomeScript() {
+// 	return readFile("gameHub/srcs/scripts/home.js");
+// }
+
+std::string RequestHandler::getLogo() {
+	return readFile("gameHub/imgs/games/logo.png");
+}
+
+std::string RequestHandler::getBouncingBalls() {
+	return readFile("gameHub/imgs/games/bouncingBalls.png");
+}
+
+RequestHandler::RequestHandler() : _server(), _request(), _response() {}
 
 RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response() {}
 
@@ -26,56 +63,6 @@ void RequestHandler::setRequest(const HTTP::Request &request) {
 
 void RequestHandler::setResponse(const HTTP::Response &response) {
     this->_response = response;
-}
-
-std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)()> >& RequestHandler::getRoutes() {
-    static std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)()> > routes;
-    return routes;
-}
-
-std::string RequestHandler::getHomeIndex() {
-	std::string body;
-	std::ifstream file("gameHub/srcs/indexes/home.html");
-	if (file.is_open()) {
-		std::stringstream buffer;
-		buffer << file.rdbuf();
-		return buffer.str();
-	}
-	return ("");
-}
-
-std::string RequestHandler::getHomeStyle() {
-    std::string body;
-    std::ifstream file("gameHub/srcs/styles/home.css");
-    if (file.is_open()) {
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-		// std::cout << "Buffer: " << buffer.str() << std::endl;
-        return buffer.str();
-    }
-    return ("");
-}
-
-std::string RequestHandler::getLogo() {
-	std::string body;
-	std::ifstream file("gameHub/imgs/games/logo.png", std::ios::binary);
-	if (file.is_open()) {
-		std::stringstream buffer;
-		buffer << file.rdbuf();
-		return buffer.str();
-	}
-	return ("");
-}
-
-std::string RequestHandler::getBouncingBalls() {
-	std::string body;
-	std::ifstream file("gameHub/imgs/games/bouncingBalls.png", std::ios::binary);
-	if (file.is_open()) {
-		std::stringstream buffer;
-		buffer << file.rdbuf();
-		return buffer.str();
-	}
-	return ("");
 }
 
 // void RequestHandler::initRoutes() {
@@ -107,7 +94,6 @@ void	RequestHandler::handleGetRequest() {
 		responseBody = RequestHandler::getLogo();
 	}
 	
-	// else if (firsLine == )
 	int length = responseBody.size();
 	std::stringstream ss;
 	ss << length;

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/30 15:16:14 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/30 19:36:06 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void	ServerSocket::listenServer()
 	}
 }
 
-void ServerSocket::readRequest(const int &fd, Client &client) {
+void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &handler) {
     // Check if the client socket is properly initialized and connected
 	char buf[1024];
 	ssize_t count = recv(fd, buf, 1024, 0);
@@ -137,16 +137,16 @@ void ServerSocket::readRequest(const int &fd, Client &client) {
         removeFromEpoll(fd);
     } else {
 		std::string temp = client.getIncompleteRequest() + std::string(buf, count);
-		std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
+		// std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
 		size_t pos;
 		while ((pos = temp.find("\r\n\r\n")) != std::string::npos) {
 			std::string request = temp.substr(0, pos + 4);
 			temp = temp.substr(pos + 4);
 			client.setTime();
-			RequestHandler handler(client.getServer(), request);
+			handler.setServer(client.getServer());
+			handler.setRequest(HTTP::Request::deserialize(request));
 			handler.handleRequest();
-			std::string response = handler.getResponse().serialize();
-			client.addResponse(response);
+			client.addResponse(handler.getResponse().serialize());
 		}
 		client.setIncompleteRequest(temp);
 		modifyEpoll(fd, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
@@ -190,6 +190,7 @@ void ServerSocket::runServer()
 	const int MAX_EVENTS = 1000;
 	struct epoll_event events[MAX_EVENTS];
 	time_t last_check_time = time(NULL);
+	RequestHandler handler;
 
     while (true) {
         int numEvents = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
@@ -207,7 +208,7 @@ void ServerSocket::runServer()
 			} else if (events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
 				closeConnection(fd);
 			} else if (events[i].events & EPOLLIN) {
-				readRequest(fd, _clientsMap[fd]);
+				readRequest(fd, _clientsMap[fd], handler);
 			} else if (events[i].events & EPOLLOUT) {
 				sendResponse(fd, _clientsMap[fd]);;
 			} else {

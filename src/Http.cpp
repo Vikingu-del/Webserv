@@ -117,7 +117,7 @@ HTTP::Header	HTTP::Header::deserialize(const std::string &header) {
 
 // Constructors
 HTTP::Request::Request()
-	: _method(HTTP::GET), _resource(0), _headers(), _version(HTTP::HTTP_1_1), _body(0) {};
+	: _method(HTTP::GET), _resource(""), _headers(), _version(HTTP::HTTP_1_1), _body("") {};
 HTTP::Request::Request(Method method, const std::string& resource, const std::map<std::string, HTTP::Header>& headers, Version version, const std::string& body)
     : _method(method), _resource(resource), _headers(headers), _version(version), _body(body) {}
 
