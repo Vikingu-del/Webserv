@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 18:01:05 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/01 13:50:23 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,13 @@ class Location
 {
 	// !Private Attributes 
 	private:
+		std::string					_type;   // added this so i can now the extenxion of the file
 		std::string					_path;
 		std::string					_root;
 		bool						_autoindex;
 		std::string					_index;
-		std::string					_return;
-		std::string					_alias;
+		std::string					_return;   // for what is return? (ERIK)
+		std::string					_alias;    // for what is alias? (ERIK)
 		unsigned long				_client_max_body_size;
 		std::vector<short>			_methods;
 		std::vector<std::string>	_cgi_path;
@@ -59,6 +60,7 @@ class Location
 		const std::vector<std::string>				&getCgiExtension() const; 
 		const std::map<std::string, std::string>	&getExtensionPath() const;
 		const unsigned long							&getMaxBodySize() const;
+		const std::string							&getType() const;
 		std::string									getPrintMethods() const;
 
 	// !Setters
@@ -74,6 +76,10 @@ class Location
 		void	setCgiExtension(std::vector<std::string> extension);
 		void	setMaxBodySize(std::string string_value);
 		void	setMaxBodySize(unsigned long value);
+		void    setType(std::string value);  // Just a setter that we problably dont even need (ERIK) 
+
+	// !Methods
+		void	parseType();  // Parsing the type of the file (ERIK)
 };
 
 #endif

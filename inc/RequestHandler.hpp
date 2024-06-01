@@ -8,6 +8,9 @@ class	RequestHandler {
 		ServerConfig	_server;
 		HTTP::Request   _request;
 		HTTP::Response	_response;
+
+		std::string normalizePath(const std::string &path);
+		std::string getFilePath(const std::string &resource, const std::string &root);
 	public:
 		RequestHandler();
 		RequestHandler(const ServerConfig &server, const std::string &request);
@@ -24,7 +27,6 @@ class	RequestHandler {
 		void	setResponse(const HTTP::Response &response);
 
 		// Methods
-		static					std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const Request&*/)> >& getRoutes();
 		static std::string		getHomeIndex();
 		static std::string      getHomeStyle();
 		static std::string      getLogo();

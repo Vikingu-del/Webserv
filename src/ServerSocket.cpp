@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/30 19:36:06 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/01 15:01:45 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	ServerSocket::addToEpoll(const int fd, uint32_t events)
 		close(epoll_fd);
 		exit(1);
 	}
-	std::cout << "addet to epoll " << fd << std::endl;
+	// std::cout << "addet to epoll " << fd << std::endl;
 }
 
 void	ServerSocket::modifyEpoll(int fd, uint32_t events) {
@@ -65,7 +65,7 @@ void	ServerSocket::removeFromEpoll(int fd) {
 		std::cerr << "epoll_ctl EPOLL_CTL_DEL error" << std::endl;
 	}
 	close(fd); // Close the file descriptor after removing it from epoll
-	std::cout << "Removed from epoll " << fd << std::endl;
+	// std::cout << "Removed from epoll " << fd << std::endl;
 }
 
 void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allows the server to maintain an up-to-date record of connected clients and their associated sockets for further communication and management.
@@ -96,7 +96,7 @@ void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allo
 	if (_clientsMap.count(client_socket) != 0)
 		_clientsMap.erase(client_socket);
 	_clientsMap.insert(std::make_pair(client_socket, new_client));
-    std::cout << "Client connected with the socket " << client_socket << std::endl;
+    // std::cout << "Client connected with the socket " << client_socket << std::endl;
 	// Add the client socket to the epoll instance
 	addToEpoll(client_socket, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
 }
@@ -181,7 +181,7 @@ void ServerSocket::closeConnection(int fd)
 {
 	removeFromEpoll(fd);
 	_clientsMap.erase(fd);
-	std::cout << YELLOW << "Connection with fd = " << fd <<  " closed" << RESET << std::endl;
+	// std::cout << YELLOW << "Connection with fd = " << fd <<  " closed" << RESET << std::endl;
 }
 
 void ServerSocket::runServer()
@@ -231,12 +231,12 @@ void ServerSocket::setupServer(std::vector<ServerConfig> serv) {
 	for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
     {
         i->bindServer();
-        std::cout << "Server created on port: " << i->getPort() << std::endl;
+        // std::cout << "Server created on port: " << i->getPort() << std::endl;
     }
 }
 
 void ServerSocket::checkTimeout() {
-	std::cout << YELLOW << "Checking for timeouts" << RESET << std::endl;
+	// std::cout << YELLOW << "Checking for timeouts" << RESET << std::endl;
 	time_t currentTime = time(NULL);
 	std::map<int, Client>::iterator it = _clientsMap.begin();
     while (it != _clientsMap.end()) {

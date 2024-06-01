@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/27 14:09:39 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/06/01 14:31:59 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,7 @@ void ConfigFileParser::handleLocationDirective(ServerConfig &server, std::vector
 	while (i < parametrs.size() && parametrs[i] != "}")
 		codes.push_back(parametrs[i++]);
 	server.setLocation(path, codes);
+	std::cout << PURPLE << "location: " << path << std::endl;
 	if (i < parametrs.size() && parametrs[i] != "}")
 		throw ParsingErrorException("Wrong character in server scope{}");
 	flag_loc = false;

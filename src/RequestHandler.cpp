@@ -4,6 +4,7 @@ std::map<std::string, std::string> fileCache;
 
 std::string readFile(const std::string &path) {
 	if (fileCache.find(path) != fileCache.end()) {
+		std::cout << "File found in cache" << std::endl;
 		return fileCache[path];
 	}
 	std::ifstream file(path.c_str(), std::ios::binary);
@@ -15,6 +16,19 @@ std::string readFile(const std::string &path) {
 	buffer << file.rdbuf();
 	fileCache[path] = buffer.str();
 	return buffer.str();
+}
+
+std::string RequestHandler::normalizePath(const std::string &path) {
+	std::string normalized = path;
+	size_t pos = 0;
+	while((pos = normalized.find("//", pos)) != std::string::npos) {
+		normalized.replace(pos, 2, "/");
+	}
+	return normalized;
+}
+
+std::string RequestHandler::getFilePath(const std::string &resource, const std::string &root) {
+	return root + resource;
 }
 
 std::string RequestHandler::getHomeIndex() {
@@ -65,41 +79,39 @@ void RequestHandler::setResponse(const HTTP::Response &response) {
     this->_response = response;
 }
 
-// void RequestHandler::initRoutes() {
-//     std::map<std::string, std::pair<HTTP::Method, HTTP::Response(*)(/*const HTTP::Request&*/)> >& routes = getRoutes();
-//     routes.insert(std::make_pair("/", std::make_pair(HTTP::GET, getHome)));
-//     routes.insert(std::make_pair("/home", std::make_pair(HTTP::GET, getHome)));
-// }
-
 void	RequestHandler::handleGetRequest() {
 	std::map<std::string, HTTP::Header> responseHeaders;
 	std::string responseBody;
 	responseHeaders["Date"] = HTTP::Header("Date", utils::getCurrentDateTime());
 	responseHeaders["Server"] = HTTP::Header("Server", "Webserv");
-	if (_request.getResource() == "indexes/home.html" || _request.getResource() == "/" || _request.getResource() == "/home") {
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
-		responseBody = RequestHandler::getHomeIndex();
+	std::vector<Location> locations = _server.getLocations();
+	std::string resource = _request.getResource();
+	std::string root = _server.getRoot();
+	for (std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); it++) {
+		if (it->getPath() == resource) {
+			std::string mimeType = _server.getMimeType(it->getType());
+			std::string path = it->getPath();
+			if (it->getAutoindex()) {
+				responseHeaders["Content-Type"] = HTTP::Header("Content-Type", mimeType);
+				responseBody = "Autoindex";
+			} else {
+				responseHeaders["Content-Type"] = HTTP::Header("Content-Type", mimeType);
+				if (path == "/")
+					responseBody = readFile(it->getIndexLocation());
+				else
+					responseBody = readFile(root + "srcs" + path);
+			}
+			int length = responseBody.size();
+			std::stringstream ss;
+			ss << length;
+			responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
+			_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody);
+			// if (mimeType != "image/png")
+			// 	std::cout << _response.serialize() << std::endl;
+		}
+		else if (it == locations.end())
+			handleBadRequest();
 	}
-	else if (_request.getResource() == "/styles/home.css") {
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/css");
-		responseBody = RequestHandler::getHomeStyle();
-		// std::cout << "Response body for css: " << responseBody << std::endl;
-	}
-	else if (_request.getResource() == "/imgs/games/bouncingBalls.png") {
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "image/png");
-		responseBody = RequestHandler::getBouncingBalls();
-	}
-	else if (_request.getResource() == "/imgs/games/logo.png") {
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "image/png");
-		responseBody = RequestHandler::getLogo();
-	}
-	
-	int length = responseBody.size();
-	std::stringstream ss;
-	ss << length;
-	responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
-	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody);
-	// std::cout << "Response: " << RED <<_response.serialize() << RESET << std::endl;
 }
 
 void RequestHandler::handleBadRequest() {
@@ -174,6 +186,7 @@ void    RequestHandler::handleRequest() {
     // _response =  HTTP::Response(HTTP::INTERNAL_SERVER_ERROR, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "");
     } catch (const std::exception &e) {
         std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
+		handleBadRequest();
     }
 
 }
