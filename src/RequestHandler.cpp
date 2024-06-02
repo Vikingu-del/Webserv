@@ -23,7 +23,7 @@ void RequestHandler::setResponse(const HTTP::Response &response) {
 }
 std::string RequestHandler::readFile(const std::string &path) {
 	if (fileCache.find(path) != fileCache.end()) {
-		std::cout << "File found in cache" << std::endl;
+		// std::cout << "File found in cache" << std::endl;
 		return fileCache[path];
 	}
 	std::ifstream file(path.c_str(), std::ios::binary);
@@ -67,7 +67,7 @@ void	RequestHandler::handleGetRequest() {
 			if (it->getAutoindex()) {
 				responseBody = "Autoindex";
 			} else {
-				std::string filePath = normalizePath(it->getRootLocation() + resource);
+				std::string filePath = normalizePath(it->getRootLocation() + "srcs/" + it->getPath());
 				responseBody = readFile(filePath);
 			}
 			handled = true;
