@@ -9,13 +9,17 @@ class	RequestHandler {
 		HTTP::Request   _request;
 		HTTP::Response	_response;
 
+		std::string readFile(const std::string &path);
 		std::string normalizePath(const std::string &path);
 		std::string getFilePath(const std::string &resource, const std::string &root);
+		void				    handleGetRequest();
+		void				    handleBadRequest();
+
+		static std::map<std::string, std::string> fileCache;
 	public:
 		RequestHandler();
 		RequestHandler(const ServerConfig &server, const std::string &request);
 
-		// int             _binary;
 		// Getters
 		const ServerConfig&		getServer() const;
 		const HTTP::Request&	getRequest() const;
@@ -27,21 +31,6 @@ class	RequestHandler {
 		void	setResponse(const HTTP::Response &response);
 
 		// Methods
-		static std::string		getHomeIndex();
-		static std::string      getHomeStyle();
-		static std::string      getLogo();
-		static std::string		getBouncingBalls();
-		static void				initRoutes();
 		void					handleRequest();
-		void				    handleGetRequest();
-		void				    handlePostRequest();
-		void				    handlePutRequest();
-		void				    handleDeleteRequest();
-		void				    handleOptionsRequest();
-		void				    handleTraceRequest();
-		void				    handleConnectRequest();
-		void				    handlePatchRequest();
-		void				    handleHeadRequest();
-		void				    handleBadRequest();
 
 };
