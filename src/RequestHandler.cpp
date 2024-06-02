@@ -61,6 +61,7 @@ void	RequestHandler::handleGetRequest() {
 	bool handled = false;
 	
 	for (std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
+		std::cout << RED << "returning: " << it->getReturn() << std::endl;
 		if (it->getPath() == resource) {
 			std::string mimeType = _server.getMimeType(it->getType());
 			responseHeaders["Content-Type"] = HTTP::Header("Content-Type", mimeType);

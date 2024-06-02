@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/01 14:54:22 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/02 23:29:05 by segfault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -486,7 +486,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 	else if (valid == 4)
 		throw ServerConfigException("Failed alias file location validation");
 	new_location.parseType();  // Only here changed (ERIK)
-	std::cout << RED << "Location type: " << new_location.getType() << std::endl; // Just to see if the types are set correctly
+	// std::cout << RED << "Location type: " << new_location.getType() << std::endl; // Just to see if the types are set correctly
 	this->_locations.push_back(new_location);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/01 13:50:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/02 23:49:32 by segfault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class Location
 		std::string					_path;
 		std::string					_root;
 		bool						_autoindex;
-		std::string					_index;
+		std::string					_index;    // why is every location having the same file index (ERIK)
 		std::string					_return;   // for what is return? (ERIK)
 		std::string					_alias;    // for what is alias? (ERIK)
 		unsigned long				_client_max_body_size;

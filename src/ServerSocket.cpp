@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/02 16:31:35 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/02 23:30:53 by segfault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	ServerSocket::addToEpoll(const int fd, uint32_t events)
 		close(epoll_fd);
 		exit(1);
 	}
-	// std::cout << "addet to epoll " << fd << std::endl;
+	std::cout << "addet to epoll " << fd << std::endl;
 }
 
 void	ServerSocket::modifyEpoll(int fd, uint32_t events) {
@@ -74,7 +74,7 @@ void	ServerSocket::removeFromEpoll(int fd) {
 		std::cerr << "epoll_ctl EPOLL_CTL_DEL error" << std::endl;
 	}
 	close(fd); // Close the file descriptor after removing it from epoll
-	// std::cout << "Removed from epoll " << fd << std::endl;
+	std::cout << "Removed from epoll " << fd << std::endl;
 }
 void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allows the server to maintain an up-to-date record of connected clients and their associated sockets for further communication and management.
 {
@@ -110,7 +110,7 @@ void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allo
 }
 void	ServerSocket::listenServer()
 {
-	// std::cout << YELLOW << "Listening to server" << RESET << std::endl;
+	std::cout << YELLOW << "Listening to server" << RESET << std::endl;
 	for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
 	{
 		if ( listen( i->getListenFd(), 200) == -1) {
@@ -143,7 +143,7 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
         removeFromEpoll(fd);
     } else {
 		std::string temp = client.getIncompleteRequest() + std::string(buf, count);
-		// std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
+		std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
 		size_t pos;
 		while ((pos = temp.find("\r\n\r\n")) != std::string::npos) {
 			std::string request = temp.substr(0, pos + 4);
@@ -159,7 +159,7 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
 	}
 }
 void ServerSocket::sendResponse(const int &fd, Client &client) {
-	// std::cout << YELLOW << "Sending response" << RESET << std::endl;
+	std::cout << YELLOW << "Sending response" << RESET << std::endl;
     while (client.hasResponses()) {
 		std::string &buffer = client.getCurrentResponse();
 		ssize_t count = write(fd, buffer.c_str(), buffer.size());
@@ -185,7 +185,7 @@ void ServerSocket::closeConnection(int fd)
 {
 	removeFromEpoll(fd);
 	_clientsMap.erase(fd);
-	// std::cout << YELLOW << "Connection with fd = " << fd <<  " closed" << RESET << std::endl;
+	std::cout << YELLOW << "Connection with fd = " << fd <<  " closed" << RESET << std::endl;
 }
 void ServerSocket::runServer()
 {
@@ -230,11 +230,11 @@ void ServerSocket::setupServer(std::vector<ServerConfig> serv) {
 	for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i)
     {
         i->bindServer();
-        // std::cout << "Server created on port: " << i->getPort() << std::endl;
+        std::cout << "Server created on port: " << i->getPort() << std::endl;
     }
 }
 void ServerSocket::checkTimeout() {
-	// std::cout << YELLOW << "Checking for timeouts" << RESET << std::endl;
+	std::cout << YELLOW << "Checking for timeouts" << RESET << std::endl;
 	time_t currentTime = time(NULL);
 	std::map<int, Client>::iterator it = _clientsMap.begin();
     while (it != _clientsMap.end()) {
