@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/27 14:30:44 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/06/02 23:28:07 by segfault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ Location::Location()
 }
 
 Location::Location(const Location &other)
-	: _path(other._path),
+	:  _type(other._type),
+	  _path(other._path),
       _root(other._root),
       _autoindex(other._autoindex),
       _index(other._index),
@@ -48,6 +49,7 @@ Location &Location::operator=(const Location &other) {
 	// std::cout << BLUE << "Location assignation operator" << RST << std::endl;
 	if (this != &other)
 	{
+		_type = other._type;
 		_path = other._path;
 		_root = other._root;
 		_autoindex = other._autoindex;
@@ -116,7 +118,7 @@ const std::vector<std::string> &Location::getCgiExtension() const {
 	return (this->_cgi_ext);
 }
 
-const std::map<std::string, std::string> &Location::getExtensionPath() const {
+const std::map<std::string, std::string> &Location::getExtensionPath() const {  // Where is in the class _ext_path (ERIK)
 	// std::cout << BLUE "Location getExtensionPath called" RST << std::endl;
 	return(this->_ext_path);
 }
@@ -124,6 +126,10 @@ const std::map<std::string, std::string> &Location::getExtensionPath() const {
 const unsigned long &Location::getMaxBodySize() const {
 	// std::cout << BLUE "Location getMaxBodySize called" RST << std::endl;
 	return(this->_client_max_body_size);
+}
+
+const std::string &Location::getType() const {
+	return(this->_type);
 }
 
 // !Setters
@@ -141,30 +147,30 @@ void Location::setRootLocation(std::string value) {
 }
 
 void Location::setMethods(std::vector<std::string> methods) {
-	std::cout << BLUE "Location setMethods called" RST << std::endl;
+	// std::cout << BLUE "Location setMethods called" RST << std::endl;
 	std::fill(this->_methods.begin(), this->_methods.end(), 0);
 
 	for(size_t i = 0; i < methods.size(); i++)
 	{
 		if (methods[i] == "GET") {
 			this->_methods[0] = 1;
-			std::cout << PURPLE BLD << "GET" << RST <<std::endl;
+			// std::cout << PURPLE BLD << "GET" << RST <<std::endl;
 		}
 		else if (methods[i] == "POST") {
 			this->_methods[1] = 1;
-			std::cout << PURPLE BLD << "POST" << RST <<std::endl;
+			// std::cout << PURPLE BLD << "POST" << RST <<std::endl;
 		}
 		else if (methods[i] == "DELETE") {
 			this->_methods[2] = 1;
-			std::cout << PURPLE BLD << "DELETE" << RST <<std::endl;
+			// std::cout << PURPLE BLD << "DELETE" << RST <<std::endl;
 		}
 		else if (methods[i] == "PUT") {
 			this->_methods[3] = 1;
-			std::cout << PURPLE BLD << "PUT" << RST <<std::endl;
+			// std::cout << PURPLE BLD << "PUT" << RST <<std::endl;
 		}
 		else if (methods[i] == "HEAD") {
 			this->_methods[4] = 1;
-			std::cout << PURPLE BLD << "HEAD" << RST <<std::endl;
+			// std::cout << PURPLE BLD << "HEAD" << RST <<std::endl;
 		}
 		else
 			throw ServerConfig::ServerConfigException("Allow method not supported: " + methods[i]);
@@ -221,6 +227,20 @@ void Location::setMaxBodySize(std::string string_value) {
 void Location::setMaxBodySize(unsigned long value) {
 	// std::cout << BLUE "Location setMaxBodySize called" RST << std::endl;
 	this->_client_max_body_size = value;
+}
+
+void Location::setType(std::string value) {
+	// std::cout << BLUE "Location setType called" RST << std::endl;
+	this->_type = value;
+}
+
+void Location::parseType() {
+	std::size_t it = _path.find_last_of(".");
+	if (it != std::string::npos)
+		_type = _path.substr(it + 1);
+	else
+		_type = "html";
+	// std::cout << YELLOW << "Type: " << _type << std::endl;
 }
 
 //! Debugging method

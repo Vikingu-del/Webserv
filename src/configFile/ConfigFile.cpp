@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 17:07:47 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/27 13:54:14 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/06/02 23:29:36 by segfault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //! Checks if a file or directory exists at the given path.
 int ConfigFile::checkFileExistence(std::string const path) {
-	std::cout << GREEN BLD "ConfigFile checkFileExistence called" RST << std::endl;
+	// std::cout << GREEN BLD "ConfigFile checkFileExistence called" RST << std::endl;
 	struct stat buffer;
 	if (stat(path.c_str(), &buffer) == 0) {
 		if (buffer.st_mode & S_IFREG)

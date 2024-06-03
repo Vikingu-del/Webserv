@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/30 15:24:00 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 10:23:39 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,9 @@ std::string Client::getNextRequest() {
 }
 
 void	Client::addResponse(const std::string& resp) { _responses.push(resp); }
+
 bool	Client::hasResponses() { return !_responses.empty(); }
+
 std::string	&Client::getCurrentResponse() {
 	if (_responses.empty()) return _emptyResponse;
 	return _responses.front();
@@ -81,7 +83,6 @@ void	Client::removeCurrentResponse() {
 	if (!_responses.empty())
         _responses.pop();
 }
-
 
 void	Client::clearClient() {
     // Clear all the data in the client object

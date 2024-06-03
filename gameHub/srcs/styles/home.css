@@ -10,7 +10,7 @@ html, body {
 }
 
 body {
-    background-image: url(../../imgs/games/bouncingBalls.png);
+    background-image: url(bouncingBalls.png);
     background-size: cover;
     background-position: top center;
     background-repeat: no-repeat;
@@ -173,7 +173,7 @@ nav .menu {
 /* Responsive Media Query */
 @media (max-width: 1200px) {
     body {
-        background-image: url(../../imgs/games/bouncingBalls.png);
+        background-image: url(bouncingBalls.png);
     }
     .menu ul li {
         margin-left: 7px;

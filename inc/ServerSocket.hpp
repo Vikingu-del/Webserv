@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:03:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 14:12:36 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/05/30 19:32:13 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include "ServerConfig.hpp"
 #include "Client.hpp"
+#include "RequestHandler.hpp"
 
 class ServerSocket
 {
@@ -35,7 +36,7 @@ class ServerSocket
 		void    runServer();
 		void	acceptNewConnection(ServerConfig &serv);
 		void	listenServer();
-		void	readRequest(const int &fd, Client &client);
+		void	readRequest(const int &fd, Client &client, RequestHandler &handler);
 		void	sendResponse(const int &fd, Client &client);
 		void	closeConnection(const int fd);
 		void	addToEpoll(const int fd, uint32_t events);

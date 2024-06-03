@@ -6,17 +6,17 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/29 14:14:05 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 10:03:29 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_CONFIGURATION_HPP
 #define SERVER_CONFIGURATION_HPP
 
-#include "Location.hpp"
 #include <cstring>
 #include <arpa/inet.h>
 #include <cstdlib> 
+#include "Location.hpp"
 
 class ServerConfig {
 
@@ -33,25 +33,28 @@ class ServerConfig {
 		int								_listen_fd;
 		struct sockaddr_in 				_server_address;
 		std::map<short, std::string>	_error_pages;
+		std::map<std::string, std::string> _mimeTypes; // I put this for finding the mime type of the files (ERIK)
 
 	// !Getters
 	public:
-		const uint16_t 						&getPort();
-		const in_addr_t 					&getHost();
-		const std::string 					&getServerName();
-		const std::string 					&getRoot();
-		const unsigned long 				&getClientMaxBody();
-		const std::string 					&getIndex();
-		const bool 							&getAutoindex();
-		const std::map<short, std::string> 	&getErrorPages();
-		const std::vector<Location> 		&getLocations();
-		const struct sockaddr_in 			&getServerArddres();
-		const int 							&getListenFd();
+		const uint16_t 						&getPort() const;
+		const in_addr_t 					&getHost() const;
+		const std::string 					&getServerName() const;
+		const std::string 					&getRoot() const;
+		const unsigned long 				&getClientMaxBody() const;
+		const std::string 					&getIndex() const;
+		const bool 							&getAutoindex() const;
+		const std::map<short, std::string> 	&getErrorPages() const;
+		const std::vector<Location> 		&getLocations() const;
+		const struct sockaddr_in 			&getServerArddres() const;
+		const int 							&getListenFd() const;
+		const std::string 					&getMimeType(std::string extension) const;  // Returns the exact mime for the specific extension (ERIK)
 
 
 	// !Setters
 	public:
 		void	setServerName(std::string server_name);
+		void	setMimeTypes();
 		void	setHost(std::string parametr);
 		void	setRoot(std::string root);
 		void	setFd(int fd);
@@ -79,6 +82,15 @@ class ServerConfig {
 		void	bindServer();
 		bool	checkLocaitons() const;
 		bool	isValidErrorPages();
+		
+		struct MatchLocation {
+			const std::string& resource;
+			MatchLocation(const std::string& resource) : resource(resource) {}
+			bool operator()(const Location& loc) const {
+				return loc.getPath() == resource;
+			}
+		};
+
 	// !Exceptions
 	public:
 		class ServerConfigException : public std::exception

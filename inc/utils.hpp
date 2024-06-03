@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/25 13:32:16 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 09:57:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include "defines.h"
 #include <ctime>
 #include <iomanip>
+#include "Location.hpp"
 
 namespace utils
 {
@@ -34,7 +35,6 @@ namespace utils
         oss << value;
         return oss.str();
     }
-
     int strToInt(const std::string& str);
     std::string toLower(const std::string& str);
     std::string	statusCodeString(short statusCode);

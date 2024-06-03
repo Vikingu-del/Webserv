@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/30 15:30:20 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 10:41:32 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ ServerConfig::ServerConfig()
 	_locations(0),
 	_listen_fd(0)
 {	
+	setMimeTypes();
 	// std::cout << PINK BLD "ServerConfig default constructor" RST << std::endl;
 	initErrorPages();
 }
@@ -37,7 +38,8 @@ ServerConfig::ServerConfig(const ServerConfig &other)
 	_autoindex(other._autoindex),
 	_locations(other._locations),
 	_listen_fd(other._listen_fd),
-	_error_pages(other._error_pages)
+	_error_pages(other._error_pages),
+	_mimeTypes(other._mimeTypes)
 {
 	// std::cout << PINK BLD "ServerConfig copy constructor" RST << std::endl;
 }
@@ -58,6 +60,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other)
 		this->_listen_fd = other._listen_fd;
 		this->_autoindex = other._autoindex;
 		this->_server_address = other._server_address;
+		this->_mimeTypes = other._mimeTypes;
 	}
 	return (*this);
 }
@@ -72,73 +75,130 @@ ServerConfig::~ServerConfig(){
 
 // !Getters
 
-const uint16_t &ServerConfig::getPort()
+const uint16_t &ServerConfig::getPort() const
 {
 	// std::cout << PINK BLD "ServerConfig getPort called" RST << std::endl;
 	return (this->_port);
 }
 
-const in_addr_t &ServerConfig::getHost()
+const in_addr_t &ServerConfig::getHost() const
 {
 	// std::cout << PINK BLD "ServerConfig getHost called" RST << std::endl;
 	return (this->_host);
 }
 
-const std::string &ServerConfig::getServerName()
+const std::string &ServerConfig::getServerName() const
 {
 	// std::cout << PINK BLD "ServerConfig getServerName called" RST << std::endl;
 	return (this->_server_name);
 }
 
-const std::string &ServerConfig::getRoot()
+const std::string &ServerConfig::getRoot() const
 {
 	// std::cout << PINK BLD "ServerConfig getRoot called" RST << std::endl;
 	return (this->_root);
 }
 
-const unsigned long &ServerConfig::getClientMaxBody()
+const unsigned long &ServerConfig::getClientMaxBody() const
 {
 	// std::cout << PINK BLD "ServerConfig getClientMaxBody called" RST << std::endl;
 	return (this->_client_max_body_size);
 }
 
-const std::string &ServerConfig::getIndex()
+const std::string &ServerConfig::getIndex() const
 {
 	// std::cout << PINK BLD "ServerConfig getIndex called" RST << std::endl;
 	return (this->_index);
 }
 
-const bool & ServerConfig::getAutoindex()
+const bool & ServerConfig::getAutoindex() const
 {
 	// std::cout << PINK BLD "ServerConfig getAutoindex called" RST << std::endl;
 	return (this->_autoindex);
 }
 
-const std::map<short, std::string> &ServerConfig::getErrorPages()
+const std::map<short, std::string> &ServerConfig::getErrorPages() const
 {
 	// std::cout << PINK BLD "ServerConfig getErrorPages called" RST << std::endl;
 	return (this->_error_pages);
 }
 
-const std::vector<Location> &ServerConfig::getLocations() {
+const std::vector<Location> &ServerConfig::getLocations() const {
 	// std::cout << PINK BLD "ServerConfig getLocations called" RST << std::endl;
 	return (this->_locations);
 }
 
-const sockaddr_in &ServerConfig::getServerArddres()
+const sockaddr_in &ServerConfig::getServerArddres() const
 {
 	// std::cout << PINK BLD "ServerConfig getServerArddres called" RST << std::endl;
 	return (this->_server_address);
 }
 
-const int &ServerConfig::getListenFd()
+const int &ServerConfig::getListenFd() const
 {
 	// std::cout << PINK BLD "ServerConfig getListenFd called" RST << std::endl;
 	return(this->_listen_fd);
 }
 
 
+const std::string &ServerConfig::getMimeType(std::string extension) const {
+	std::map<std::string, std::string>::const_iterator it = _mimeTypes.find(extension);
+	if (it != _mimeTypes.end())
+		return (it->second);
+	it = _mimeTypes.find("cgi");
+	return it->second;
+}
+
 // !Setters
+
+void ServerConfig::setMimeTypes()
+{
+	_mimeTypes.insert(std::make_pair("cgi", "cgi"));
+	_mimeTypes.insert(std::make_pair("html", "text/html"));
+	_mimeTypes.insert(std::make_pair("css", "text/css"));
+	_mimeTypes.insert(std::make_pair("js", "text/javascript"));
+	_mimeTypes.insert(std::make_pair("jpg", "image/jpeg"));
+	_mimeTypes.insert(std::make_pair("jpeg", "image/jpeg"));
+	_mimeTypes.insert(std::make_pair("png", "image/png"));
+	_mimeTypes.insert(std::make_pair("gif", "image/gif"));
+	_mimeTypes.insert(std::make_pair("bmp", "image/bmp"));
+	_mimeTypes.insert(std::make_pair("ico", "image/x-icon"));
+	_mimeTypes.insert(std::make_pair("svg", "image/svg+xml"));
+	_mimeTypes.insert(std::make_pair("mp3", "audio/mpeg"));
+	_mimeTypes.insert(std::make_pair("wav", "audio/wav"));
+	_mimeTypes.insert(std::make_pair("ogg", "audio/ogg"));
+	_mimeTypes.insert(std::make_pair("mp4", "video/mp4"));
+	_mimeTypes.insert(std::make_pair("webm", "video/webm"));
+	_mimeTypes.insert(std::make_pair("flv", "video/x-flv"));
+	_mimeTypes.insert(std::make_pair("avi", "video/x-msvideo"));
+	_mimeTypes.insert(std::make_pair("txt", "text/plain"));
+	_mimeTypes.insert(std::make_pair("pdf", "application/pdf"));
+	_mimeTypes.insert(std::make_pair("doc", "application/msword"));
+	_mimeTypes.insert(std::make_pair("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+	_mimeTypes.insert(std::make_pair("xls", "application/vnd.ms-excel"));
+	_mimeTypes.insert(std::make_pair("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+	_mimeTypes.insert(std::make_pair("ppt", "application/vnd.ms-powerpoint"));
+	_mimeTypes.insert(std::make_pair("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
+	_mimeTypes.insert(std::make_pair("zip", "application/zip"));
+	_mimeTypes.insert(std::make_pair("rar", "application/x-rar-compressed"));
+	_mimeTypes.insert(std::make_pair("tar", "application/x-tar"));
+	_mimeTypes.insert(std::make_pair("gz", "application/gzip"));
+	_mimeTypes.insert(std::make_pair("7z", "application/x-7z-compressed"));
+	_mimeTypes.insert(std::make_pair("exe", "application/x-msdownload"));
+	_mimeTypes.insert(std::make_pair("swf", "application/x-shockwave-flash"));
+	_mimeTypes.insert(std::make_pair("mpg", "video/mpeg"));
+	_mimeTypes.insert(std::make_pair("mpeg", "video/mpeg"));
+	_mimeTypes.insert(std::make_pair("webp", "image/webp"));
+	_mimeTypes.insert(std::make_pair("ttf", "font/ttf"));
+	_mimeTypes.insert(std::make_pair("otf", "font/otf"));
+	_mimeTypes.insert(std::make_pair("woff", "font/woff"));
+	_mimeTypes.insert(std::make_pair("woff2", "font/woff2"));
+	_mimeTypes.insert(std::make_pair("eot", "application/vnd.ms-fontobject"));
+	_mimeTypes.insert(std::make_pair("sfnt", "application/font-sfnt"));
+	_mimeTypes.insert(std::make_pair("json", "application/json"));
+	_mimeTypes.insert(std::make_pair("xml", "application/xml"));
+	_mimeTypes.insert(std::make_pair("csv", "text/csv"));
+}
 
 void ServerConfig::setServerName(std::string server_name)
 {
@@ -274,12 +334,13 @@ void ServerConfig::setErrorPages(const std::vector<std::string> &parametr)
 	}
 }
 
+
+
 /* parsing and set locations */
 void ServerConfig::setLocation(std::string path, std::vector<std::string> parametr)
 {
 	// std::cout << PINK BLD "ServerConfig setLocation called" RST << std::endl;
 	Location					new_location;
-	std::vector<std::string>	methods;
 	bool						flag_methods = false;
 	bool						flag_autoindex = false;
 	bool						flag_max_size = false;
@@ -419,11 +480,13 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 	if (valid == 1)
 		throw ServerConfigException("Failed CGI validation");
 	if (valid == 2)
-		throw ServerConfigException("Failed path in locatio validation");
+		throw ServerConfigException("Failed path in location validation");
 	else if (valid == 3)
 		throw ServerConfigException("Failed return file location validation");
 	else if (valid == 4)
 		throw ServerConfigException("Failed alias file location validation");
+	new_location.parseType();  // Only here changed (ERIK)
+	std::cout << RED << "Location type: " << new_location.getType() << std::endl; // Just to see if the types are set correctly
 	this->_locations.push_back(new_location);
 }
 
@@ -507,8 +570,9 @@ int ServerConfig::isValidLocation(Location & location) const
 		if (location.getRootLocation().empty()) {
 			location.setRootLocation(this->_root);
 		}
-		if (ConfigFile::checkFile(location.getRootLocation() + location.getPath() + "/", location.getIndexLocation()))
+		if (ConfigFile::checkFile(location.getRootLocation() + location.getPath() + "/", location.getIndexLocation())) {
 			return (5);
+		}
 		if (!location.getReturn().empty())
 		{
 			if (ConfigFile::checkFile(location.getRootLocation(), location.getReturn()))
