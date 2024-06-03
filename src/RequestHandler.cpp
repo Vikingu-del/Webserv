@@ -40,7 +40,7 @@ std::string RequestHandler::readFile(const std::string &path) {
 	if (!file.is_open()) {
 		std::cerr << "Failed to open file: " << path << std::endl;
 		std::string body = readFile("gameHub/error_pages/404.html");
-		return body;
+		return "";
 	}
 	std::stringstream buffer;
 	buffer << file.rdbuf();
@@ -48,26 +48,28 @@ std::string RequestHandler::readFile(const std::string &path) {
 	return buffer.str();
 }
 
-void	RequestHandler::handleGetRequest(std::string &responseBody, std::map<std::string, HTTP::Header> &responseHeaders, std::vector<Location>::const_iterator &i, std::string &resource) {
-	responseHeaders["Content-Type"] = HTTP::Header("Content-Type", _server.getMimeType(i->getType()));
+void RequestHandler::handleGetRequest(std::string &responseBody,
+									std::map<std::string, HTTP::Header> &responseHeaders,
+									std::vector<Location>::const_iterator &i,
+									std::string &resource) {
+	std::string contentType = _server.getMimeType(i->getType());
 	if (i->getAutoindex()) {
 		responseBody = "Autoindex";
+		contentType = "text/html";
 	} else {
 		std::string filePath = resource == "/" ? i->getIndexLocation() : i->getRootLocation() + resource;
 		std::cout << "File Path: " << filePath << std::endl;
 		responseBody = readFile(filePath);
 	}
-	// if (i->getType() != "png")
-	// 	std::cout << RED << "Response Body: " << responseBody << std::endl;
-	int length = responseBody.size();
-	std::stringstream ss;
-	ss << length;
-	responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
+	_SET_RESPONSE_HEADERS(responseHeaders, contentType, responseBody);
 	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody);
 }
 
-void   RequestHandler::handleFindError(std::string &body, std::string &errorPath) {
-	body = readFile(errorPath);
+void RequestHandler::handleError(std::string &body, const std::string &errorPath) {
+    body = readFile("gameHub" + errorPath);
+    if (body.empty()) {
+        body = "Error: Not Found";
+    }
 }
 
 void    RequestHandler::handleRequest() {
@@ -81,17 +83,15 @@ void    RequestHandler::handleRequest() {
 	std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(resource));
 	if (i == locations.end()) {
 		std::map<short, std::string>::const_iterator it = errors.find(404);
-		if (it != errors.end() && !it->second.empty())
-			handleFindError(responseBody, errors[404]);
+		if (it != errors.end() && !it->second.empty()) {
+			std::cout << RED << errors[404] << RESET << std::endl;
+			handleError(responseBody, errors[404]);
+		}
 		else
 			responseBody = "Error: 404 Not Found";
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
-		int length = responseBody.size();
-		std::stringstream ss;
-		ss << length;
-		responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
-		_response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody);
-		return;
+		_SET_RESPONSE_HEADERS(responseHeaders, "text/html", responseBody);
+        _response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody);
+        return;
 	}
 	std::vector<short> methods = i->getMethods();
 	if (_request.getMethod() == HTTP::GET && methods[0])
@@ -100,15 +100,12 @@ void    RequestHandler::handleRequest() {
 		std::cout << "Bad request in action" << std::endl;
 		std::map<short, std::string>::const_iterator it = errors.find(400);
 		if (it != errors.end() && !it->second.empty()) {
-            handleFindError(responseBody, errors[400]);
+			std::cout << RED << errors[400] << RESET << std::endl;
+            handleError(responseBody, errors[400]);
         } else {
             responseBody = "Error: Bad Request";
         }
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
-		int length = responseBody.size();
-		std::stringstream ss;
-		ss << length;
-		responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
-		_response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody);
+		_SET_RESPONSE_HEADERS(responseHeaders, "text/html", responseBody);
+        _response = HTTP::Response(HTTP::BAD_REQUEST, HTTP::HTTP_1_1, responseHeaders, responseBody);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/30 15:30:08 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 18:15:50 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,15 @@
 #define LINE_END "\r\n"
 #define MAX_CONTENT_LENGTH 3000000
 #define TIMEOUT_PERIOD 30.0
+
+#define _SET_RESPONSE_HEADERS(responseHeaders, contentType, responseBody) \
+    do { \
+        responseHeaders["Content-Type"] = HTTP::Header("Content-Type", contentType); \
+        int length = responseBody.size(); \
+        std::stringstream ss; \
+        ss << length; \
+        responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str()); \
+    } while (0)
 
 //! Parsing Definitions
 

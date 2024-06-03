@@ -9,15 +9,17 @@ class	RequestHandler {
 		HTTP::Request   _request;
 		HTTP::Response	_response;
 
+		static std::map<std::string, std::string> fileCache;
 		std::string readFile(const std::string &path);
 		void	handleGetRequest(std::string &responseBody,
 					std::map<std::string, 
 					HTTP::Header> &responseHeaders,
 					std::vector<Location>::const_iterator &it,
 					std::string &resource);
-		void	handleBadRequest(std::string &responseBody);
-
-		static std::map<std::string, std::string> fileCache;
+		void        handleError(std::string &responseBody, const std::string &errorPath);
+		void setResponseHeaders(std::map<std::string, HTTP::Header> &responseHeaders, 
+								const std::string &contentType, 
+								const std::string &responseBody);
 	public:
 		RequestHandler();
 		RequestHandler(const ServerConfig &server, const std::string &request);
@@ -34,5 +36,4 @@ class	RequestHandler {
 
 		// Methods
 		void		handleRequest();
-		void        handleFindError(std::string &responsebody, std::string &errorPath);
 };
