@@ -6,17 +6,17 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/01 14:45:34 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 10:03:29 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_CONFIGURATION_HPP
 #define SERVER_CONFIGURATION_HPP
 
-#include "Location.hpp"
 #include <cstring>
 #include <arpa/inet.h>
 #include <cstdlib> 
+#include "Location.hpp"
 
 class ServerConfig {
 
@@ -82,6 +82,14 @@ class ServerConfig {
 		void	bindServer();
 		bool	checkLocaitons() const;
 		bool	isValidErrorPages();
+		
+		struct MatchLocation {
+			const std::string& resource;
+			MatchLocation(const std::string& resource) : resource(resource) {}
+			bool operator()(const Location& loc) const {
+				return loc.getPath() == resource;
+			}
+		};
 
 	// !Exceptions
 	public:

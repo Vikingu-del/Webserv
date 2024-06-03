@@ -13,7 +13,7 @@ html, body {
 
 #error {
   padding: 3rem;
-  background: black url('../imgs/errors/404.png') no-repeat center center fixed;
+  background: black url('404.png') no-repeat center center fixed;
   background-size: cover;
   display: flex;
   height: 100%;

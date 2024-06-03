@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/02 23:49:32 by segfault         ###   ########.fr       */
+/*   Updated: 2024/06/03 09:57:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LOCATION_HPP
-#define LOCATION_HPP
+#pragma once
 
 #include "ConfigFile.hpp"
 #include <vector>
@@ -81,5 +80,3 @@ class Location
 	// !Methods
 		void	parseType();  // Parsing the type of the file (ERIK)
 };
-
-#endif

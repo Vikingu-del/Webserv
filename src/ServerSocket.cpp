@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/02 23:30:53 by segfault         ###   ########.fr       */
+/*   Updated: 2024/06/03 10:25:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,14 +85,7 @@ void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allo
 		perror("accept error");
 		return ;
 	}
-	int flags = fcntl(client_socket, F_GETFL, 0);
-	if (flags == -1) {
-		perror("fcntl F_GETFL error");
-		close(client_socket);
-		return;
-	}
-	if (fcntl(client_socket, F_SETFL, flags | O_NONBLOCK) == -1) {
-		perror("fcntl F_SETFL error");
+	if (setNonBlocking(client_socket) == -1) {
 		close(client_socket);
 		return;
 	}
@@ -104,7 +97,7 @@ void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allo
 	if (_clientsMap.count(client_socket) != 0)
 		_clientsMap.erase(client_socket);
 	_clientsMap.insert(std::make_pair(client_socket, new_client));
-    // std::cout << "Client connected with the socket " << client_socket << std::endl;
+    std::cout << "Client connected with the socket " << client_socket << std::endl;
 	// Add the client socket to the epoll instance
 	addToEpoll(client_socket, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
 }
@@ -117,13 +110,7 @@ void	ServerSocket::listenServer()
 			perror("listen error");
 			exit(1);
 		}
-		int flags = fcntl(i->getListenFd(), F_GETFL, 0);
-		if (flags == -1) {
-			perror("fcntl F_GETFL error");
-			exit(1);
-		}
-		if (fcntl(i->getListenFd(), F_SETFL, flags | O_NONBLOCK) == -1) {
-			perror("fcntl F_SETFL error");
+		if (setNonBlocking(i->getListenFd()) == -1) {
 			exit(1);
 		}
 		addToEpoll(i->getListenFd(), EPOLLIN);
@@ -143,7 +130,7 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
         removeFromEpoll(fd);
     } else {
 		std::string temp = client.getIncompleteRequest() + std::string(buf, count);
-		std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
+		// std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
 		size_t pos;
 		while ((pos = temp.find("\r\n\r\n")) != std::string::npos) {
 			std::string request = temp.substr(0, pos + 4);
@@ -152,6 +139,7 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
 			handler.setServer(client.getServer());
 			handler.setRequest(HTTP::Request::deserialize(request));
 			handler.handleRequest();
+			std::cout << YELLOW << "Request handled" << RESET << std::endl;
 			client.addResponse(handler.getResponse().serialize());
 		}
 		client.setIncompleteRequest(temp);
@@ -159,7 +147,6 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
 	}
 }
 void ServerSocket::sendResponse(const int &fd, Client &client) {
-	std::cout << YELLOW << "Sending response" << RESET << std::endl;
     while (client.hasResponses()) {
 		std::string &buffer = client.getCurrentResponse();
 		ssize_t count = write(fd, buffer.c_str(), buffer.size());
@@ -180,6 +167,7 @@ void ServerSocket::sendResponse(const int &fd, Client &client) {
 	if (!client.hasResponses()) {
 		modifyEpoll(fd, EPOLLIN | EPOLLRDHUP);
 	}
+	std::cout << YELLOW << "Response sent" << RESET << std::endl;
 }
 void ServerSocket::closeConnection(int fd)
 {
@@ -194,7 +182,7 @@ void ServerSocket::runServer()
 	struct epoll_event events[MAX_EVENTS];
 	time_t last_check_time = time(NULL);
 	RequestHandler handler;
-    while (true) {
+    while (42) {
         int numEvents = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000);
 		if (numEvents == -1) {
 			if (errno == EINTR) {

@@ -10,8 +10,6 @@ class	RequestHandler {
 		HTTP::Response	_response;
 
 		std::string readFile(const std::string &path);
-		std::string normalizePath(const std::string &path);
-		std::string getFilePath(const std::string &resource, const std::string &root);
 		void				    handleGetRequest();
 		void				    handleBadRequest();
 
@@ -21,9 +19,9 @@ class	RequestHandler {
 		RequestHandler(const ServerConfig &server, const std::string &request);
 
 		// Getters
-		const ServerConfig&		getServer() const;
-		const HTTP::Request&	getRequest() const;
-		const HTTP::Response&	getResponse() const;
+		const ServerConfig&					getServer() const;
+		const HTTP::Request&				getRequest() const;
+		const HTTP::Response&				getResponse() const;
 
 		// Setters
 		void	setServer(const ServerConfig &server);
@@ -32,5 +30,6 @@ class	RequestHandler {
 
 		// Methods
 		void					handleRequest();
+		void					handleFindError(std::string &body);
 
 };
