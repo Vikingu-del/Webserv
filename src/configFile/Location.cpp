@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/02 23:28:07 by segfault         ###   ########.fr       */
+/*   Updated: 2024/06/03 15:24:20 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,14 +164,14 @@ void Location::setMethods(std::vector<std::string> methods) {
 			this->_methods[2] = 1;
 			// std::cout << PURPLE BLD << "DELETE" << RST <<std::endl;
 		}
-		else if (methods[i] == "PUT") {
-			this->_methods[3] = 1;
-			// std::cout << PURPLE BLD << "PUT" << RST <<std::endl;
-		}
-		else if (methods[i] == "HEAD") {
-			this->_methods[4] = 1;
-			// std::cout << PURPLE BLD << "HEAD" << RST <<std::endl;
-		}
+		// else if (methods[i] == "PUT") {
+		// 	this->_methods[3] = 1;
+		// 	// std::cout << PURPLE BLD << "PUT" << RST <<std::endl;
+		// }
+		// else if (methods[i] == "HEAD") {
+		// 	this->_methods[4] = 1;
+		// 	// std::cout << PURPLE BLD << "HEAD" << RST <<std::endl;
+		// }
 		else
 			throw ServerConfig::ServerConfigException("Allow method not supported: " + methods[i]);
 	}

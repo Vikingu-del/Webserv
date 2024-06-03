@@ -10,8 +10,12 @@ class	RequestHandler {
 		HTTP::Response	_response;
 
 		std::string readFile(const std::string &path);
-		void				    handleGetRequest();
-		void				    handleBadRequest();
+		void	handleGetRequest(std::string &responseBody,
+					std::map<std::string, 
+					HTTP::Header> &responseHeaders,
+					std::vector<Location>::const_iterator &it,
+					std::string &resource);
+		void	handleBadRequest(std::string &responseBody);
 
 		static std::map<std::string, std::string> fileCache;
 	public:
@@ -29,7 +33,6 @@ class	RequestHandler {
 		void	setResponse(const HTTP::Response &response);
 
 		// Methods
-		void					handleRequest();
-		void					handleFindError(std::string &body);
-
+		void		handleRequest();
+		void        handleFindError(std::string &responsebody, std::string &errorPath);
 };

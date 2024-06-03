@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/05/25 14:33:36 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 16:30:31 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,9 @@ namespace   HTTP
 			// Methods
 			std::string							serialize() const;
 			static Request						deserialize(const std::string &request);
+			struct MatchMethod {
+			const HTTP::Method& method;
+		};
 	};
 
     class   Response {
