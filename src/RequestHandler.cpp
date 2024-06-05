@@ -58,9 +58,22 @@ void	RequestHandler::handleGetRequest() {
 	std::vector<Location> locations = _server.getLocations();
 	std::cout << "Just before find_if" << std::endl;
 	std::cout << "Resource: " << resource << std::endl;
+	std::map<short, std::string> errors = _server.getErrorPages();
 	std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(resource));
 	if (i == locations.end()) {
-		handleFindError(responseBody);
+		for (std::map<short, std::string>::const_iterator j = errors.begin(); j != errors.end(); j++) {
+			std::cout << "code: " << j->first << ",   path: " << j->second << std::endl;
+		}
+		std::map<short, std::string>::const_iterator it = errors.find(404);
+		std::cout << "code: " << it->first << ",   path: " << it->second << std::endl;
+		if (it->second.empty()) {
+			std::cout << RED << "Do we come here" << std::endl;
+			responseBody = "ERROR:404 Not Found";
+		}
+		else {
+			std::cout << PURPLE << "Or we open the page" << std::endl;
+			handleFindError(responseBody, errors[404]);
+		}
 		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
 		int length = responseBody.size();
 		std::stringstream ss;
@@ -93,8 +106,8 @@ void RequestHandler::handleBadRequest() {
     this->_response = HTTP::Response(HTTP::BAD_REQUEST, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "Bad request");
 }
 
-void RequestHandler::handleFindError(std::string &body) {
-	body = readFile("gameHub/error_pages/404.html");
+void RequestHandler::handleFindError(std::string &body, std::string &errorPath) {
+	body = readFile(errorPath);
 }
 
 void    RequestHandler::handleRequest() {

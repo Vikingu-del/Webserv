@@ -30,6 +30,6 @@ class	RequestHandler {
 
 		// Methods
 		void					handleRequest();
-		void					handleFindError(std::string &body);
+		void					handleFindError(std::string &body, std::string &errorPath);
 
 };

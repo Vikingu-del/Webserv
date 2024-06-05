@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/01 14:49:38 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/05 14:09:43 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerSocket.hpp"
+#include "Logger.hpp"
 
 int main(int argc, char **argv)
 {
@@ -28,8 +29,8 @@ int main(int argc, char **argv)
 				configFilePath = argv[1];
 				break;
 			default:
-				throw std::invalid_argument("Wrong number arguments");
-				return 1;
+				Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "Error: wrong arguments");
+			return (1);
 		}
 		parser.parseConfigFile(configFilePath);
 		// parser.printServers();
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
 		socket.runServer();
 	}
 	catch (std::exception & ex) {
-		std::cerr << ex.what() << std::endl;
+		Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "Exception: %s", ex.what());
 		return 1;
 	}
 	return 0;

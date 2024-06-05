@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/03 10:41:32 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/05 14:09:29 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerConfig.hpp"
+#include "Logger.hpp"
 
 ServerConfig::ServerConfig()
 	:_port(0),
@@ -631,13 +632,10 @@ bool ServerConfig::checkLocaitons() const
 //! Bind server
 void	ServerConfig::bindServer(void)
 {
-	// std::cout << PINK BLD "ServerConfig bindServer called" RST << std::endl;
 	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
 	{
-		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
-		// exit(EXIT_FAILURE);
-		std::cerr << "Failed to create socket." << std::endl;
-		exit(1);
+		Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: socket error %s   Closing ....", strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 
 	int option_value = 1;
@@ -649,10 +647,8 @@ void	ServerConfig::bindServer(void)
 	_server_address.sin_port = htons(_port);
 	if (bind(_listen_fd, (struct sockaddr *) &_server_address, sizeof(_server_address)) == -1)
 	{
-		// Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
-		// exit(EXIT_FAILURE);
-		std::cerr << "ERR BINDING SOCKET" << std::endl;
+		Logger::logMsg(RED, CONSOLE_OUTPUT, "webserv: bind error %s   Closing ....", strerror(errno));
 		close(_listen_fd);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 }
