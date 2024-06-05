@@ -70,7 +70,7 @@ void	RequestHandler::handleGetRequest() {
 	} else {
 		std::cout << "Resource: " << resource << std::endl;
 		std::cout << "Root Location: " << i->getRootLocation() << std::endl;
-		responseHeaders["Content-Type"] = HTTP::Header("Content-Type", _server.getMimeType(i->getType()));
+		// responseHeaders["Content-Type"] = HTTP::Header("Content-Type", _server.getMimeType(i->getType()));
 		if (i->getAutoindex()) {
 			responseBody = "Autoindex";
 		} else {
@@ -78,8 +78,8 @@ void	RequestHandler::handleGetRequest() {
 			std::cout << "File Path: " << filePath << std::endl;
 			responseBody = readFile(filePath);
 		}
-		if (i->getType() != "png")
-			std::cout << RED << "Response Body: " << responseBody << std::endl;
+		// if (i->getType() != "png")
+		// 	std::cout << RED << "Response Body: " << responseBody << std::endl;
 		int length = responseBody.size();
 		std::stringstream ss;
 		ss << length;
