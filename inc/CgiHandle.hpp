@@ -6,7 +6,7 @@
 /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 15:46:46 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/05 14:47:51 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/06/06 15:41:59 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,17 @@
 
 #include "Webserv.hpp"
 #include "ServerConfig.hpp"
+#include <sys/epoll.h>
 
 class ServerConfig;
-class Location;
+class HTTP::Request;
 
 class CgiHandle
 {
     private:
         std::map<std::string, std::string> _env;
         ServerConfig *_config;
-        Location    *_locationConfig;
+        HTTP::Request _req;
         std::string _pathStr;
         std::string _cgiReq; //cgi extansion
         pid_t       _pid;
@@ -37,7 +38,7 @@ class CgiHandle
         int         _length;
         int         _exitStatus;
     public:
-        CgiHandle(ServerConfig *config, std::string extansion, int epollFd, Location *locationConfig);
+        CgiHandle(ServerConfig *config, std::string extansion, int epollFd, HTTP::Request &req);
         ~CgiHandle();
         CgiHandle(const CgiHandle &copy);
         CgiHandle &operator=(const CgiHandle &copy);
@@ -54,11 +55,14 @@ class CgiHandle
         void        setArgv();
         int         setPipe();
         //other
+        std::string checkAccepting();// #! things
         void        initEnv();
         void        createArray();
         void        execCgi();
         void        closePipe();
-        void        subLength();
+        // void        subLength();
+        int         epollCheck(int pipe_out);
+        void        erasseLength(int length);
 };
 
 #endif
