@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/03 16:30:31 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/05 11:50:02 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ namespace   HTTP
 		UNAUTHORIZED = 401,
 		FORBIDDEN = 403,
 		NOT_FOUND = 404,
+		METHOD_NOT_ALLOWED = 405,
 		INTERNAL_SERVER_ERROR = 500,
 		NOT_IMPLEMENTED = 501,
 		BAD_GATEWAY = 502,

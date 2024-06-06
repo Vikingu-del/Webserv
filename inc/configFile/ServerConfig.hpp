@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/03 10:03:29 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/06 15:33:27 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,9 @@ class ServerConfig {
 			const std::string& resource;
 			MatchLocation(const std::string& resource) : resource(resource) {}
 			bool operator()(const Location& loc) const {
-				return loc.getPath() == resource;
+				std::size_t slash = resource.find_last_of("/");
+				std::string path = resource.substr(0, slash + 1);
+				return loc.getPath() == path;
 			}
 		};
 

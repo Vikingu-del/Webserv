@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/03 10:25:47 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:22:58 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,14 +120,18 @@ void	ServerSocket::listenServer()
 void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &handler) {
     // Check if the client socket is properly initialized and connected
 	char buf[1024];
-	ssize_t count = recv(fd, buf, 1024, 0);
+	ssize_t count = recv(fd, buf, sizeof(buf), 0);
 	if (count == -1) {
 		if (errno == EAGAIN) {
-			perror("read error");
+			perror("recv error");
 			removeFromEpoll(fd);
+			_clientsMap.erase(fd);
 		}
+		return ;
 	} else if (count == 0) {
         removeFromEpoll(fd);
+		_clientsMap.erase(fd);
+		return ;
     } else {
 		std::string temp = client.getIncompleteRequest() + std::string(buf, count);
 		// std::cout << YELLOW << "Received request: " << temp << RESET << std::endl;
@@ -138,6 +142,7 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
 			client.setTime();
 			handler.setServer(client.getServer());
 			handler.setRequest(HTTP::Request::deserialize(request));
+			handler.setErrorPages(client.getServer().getErrorPages());
 			handler.handleRequest();
 			std::cout << YELLOW << "Request handled" << RESET << std::endl;
 			client.addResponse(handler.getResponse().serialize());
@@ -149,19 +154,18 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
 void ServerSocket::sendResponse(const int &fd, Client &client) {
     while (client.hasResponses()) {
 		std::string &buffer = client.getCurrentResponse();
-		ssize_t count = write(fd, buffer.c_str(), buffer.size());
+		ssize_t count = send(fd, buffer.c_str(), buffer.size(), 0);
 		if (count == -1) {
 			if (errno != EAGAIN) {
 				perror("write error");
 				removeFromEpoll(fd);
 				_clientsMap.erase(fd);
 			}
-			break;
+			return;
 		} else {
 			buffer.erase(0, count);
-			if (buffer.empty()) {
+			if (buffer.empty())
 				client.removeCurrentResponse();
-			}
 		}
 	}
 	if (!client.hasResponses()) {
@@ -193,8 +197,8 @@ void ServerSocket::runServer()
 		}
 		for (int i = 0; i < numEvents; ++i) {
 			int fd = events[i].data.fd;
-			if (fd == _servers[i].getListenFd()) {
-				acceptNewConnection(_serversMap[fd]);
+			if (_serversMap.find(fd) != _serversMap.end()) {
+        		acceptNewConnection(_serversMap[fd]);
 			} else if (events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
 				closeConnection(fd);
 			} else if (events[i].events & EPOLLIN) {

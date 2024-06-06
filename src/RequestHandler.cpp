@@ -3,9 +3,9 @@
 
 std::map<std::string, std::string> RequestHandler::fileCache;
 
-RequestHandler::RequestHandler() : _server(), _request(), _response() {}
+RequestHandler::RequestHandler() : _server(), _request(), _response(), _errorPages() {}
 
-RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response() {}
+RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response(), _errorPages(server.getErrorPages()) {}
 
 const ServerConfig& RequestHandler::getServer() const {
     return this->_server;
@@ -17,6 +17,10 @@ const HTTP::Request& RequestHandler::getRequest() const {
 
 const HTTP::Response& RequestHandler::getResponse() const {
     return this->_response;
+}
+
+void RequestHandler::setErrorPages(const std::map<short, std::string> &errorPages) {
+	this->_errorPages = errorPages;
 }
 
 void RequestHandler::setServer(const ServerConfig &server) {
@@ -31,81 +35,187 @@ void RequestHandler::setResponse(const HTTP::Response &response) {
     this->_response = response;
 }
 
-std::string RequestHandler::readFile(const std::string &path) {
+std::pair<std::string, std::string> RequestHandler::readFile(const std::string &path) {
+	std::string extension = path.substr(path.find_last_of(".") + 1);
 	if (fileCache.find(path) != fileCache.end()) {
 		std::cout << "File found in cache" << std::endl;
-		return fileCache[path];
+		return std::make_pair(fileCache[path], extension);
 	}
 	std::ifstream file(path.c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		std::cerr << "Failed to open file: " << path << std::endl;
-		std::string body = readFile("gameHub/error_pages/404.html");
-		return "";
+		// Return the content of the 404 error page or a default error message directly
+		std::string errorPage = "404 not found"; // Default error message
+		if (_errorPages.find(404) != _errorPages.end()) {
+			std::cout << "Error page found: " << _server.getRoot() + _errorPages[404] << std::endl;
+			std::ifstream errorFile((_server.getRoot() + _errorPages[404]).c_str(), std::ios::binary);
+			if (errorFile.is_open()) {
+				std::stringstream buffer;
+				buffer << errorFile.rdbuf();
+				errorPage = buffer.str();
+			}
+		}
+		return std::make_pair(errorPage, "html");
 	}
 	std::stringstream buffer;
 	buffer << file.rdbuf();
 	fileCache[path] = buffer.str();
-	return buffer.str();
+	return std::make_pair(fileCache[path], extension);
 }
 
-void RequestHandler::handleGetRequest(std::string &responseBody,
+void RequestHandler::handleGetRequest(std::pair<std::string,std::string> &responseBody,
 									std::map<std::string, HTTP::Header> &responseHeaders,
 									std::vector<Location>::const_iterator &i,
-									std::string &resource) {
-	std::string contentType = _server.getMimeType(i->getType());
-	if (i->getAutoindex()) {
-		responseBody = "Autoindex";
-		contentType = "text/html";
-	} else {
-		std::string filePath = resource == "/" ? i->getIndexLocation() : i->getRootLocation() + resource;
-		std::cout << "File Path: " << filePath << std::endl;
-		responseBody = readFile(filePath);
+									std::string &resource,
+									std::string &directoryPath) {
+	responseBody.second = _server.getMimeType(i->getType());
+	std::string filePath = resource == "/" ? i->getIndexLocation() : i->getRootLocation() + resource + i->getIndexLocation();
+	// ! Use a logging library instead of std::cout for production (FOR IVAN)
+    // LOG_DEBUG << "Attempting to read file at path: " << filePath;
+	responseBody = readFile(filePath);
+	if (responseBody.first == "404 not found") {
+		if (i->getAutoindex()) {
+			std::cout << RED << "Autoindex enabled: " << i->getRootLocation() + directoryPath << RESET << std::endl;
+			handleAutoindex(responseBody, responseHeaders, i->getRootLocation() + resource);
+			return ;
+		} else {
+			std::map<short, std::string>::const_iterator it = _errorPages.find(404);
+			if (it != _errorPages.end() && !it->second.empty()) {
+				handleError(responseBody, it->second);
+				responseBody.second = "text/html";
+				_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+				_response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+				return;
+			} else {
+				responseBody.first = "Error: 404 Not Found";
+				responseBody.second = "text/html";
+			}
+		}
 	}
-	_SET_RESPONSE_HEADERS(responseHeaders, contentType, responseBody);
-	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody);
+	_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+	responseHeaders["Connection"] = HTTP::Header("Connection", "keep-alive");
+	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 }
 
-void RequestHandler::handleError(std::string &body, const std::string &errorPath) {
+
+void RequestHandler::handlePostRequest(std::pair<std::string, std::string> &responseBody, std::map<std::string, HTTP::Header> &responseHeaders) {
+	// Implement logic for handling POST request
+	responseBody.first = "POST request handling not implemented yet";
+	_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+}
+
+void RequestHandler::handleRemoveRequest(std::pair<std::string, std::string>&responseBody, std::map<std::string, HTTP::Header> &responseHeaders) {
+	// Implement logic for handling DELETE request
+	responseBody.first = "DELETE request handling not implemented yet";
+	_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+}
+
+void RequestHandler::handleError(std::pair<std::string, std::string> &body, const std::string &errorPath) {
     body = readFile("gameHub" + errorPath);
-    if (body.empty()) {
-        body = "Error: Not Found";
+    if (body.first.empty()) {
+        body.first = "Error: 404 Not Found";
+		body.second = "html";
     }
 }
 
 void    RequestHandler::handleRequest() {
 	std::map<std::string, HTTP::Header> responseHeaders;
-	std::string responseBody;
+	std::pair<std::string, std::string> responseBody;
 	responseHeaders["Date"] = HTTP::Header("Date", utils::getCurrentDateTime());
 	responseHeaders["Server"] = HTTP::Header("Server", "Webserv");
 	std::vector<Location> locations = _server.getLocations();
 	std::string resource = _request.getResource();
-	std::map<short, std::string> errors = _server.getErrorPages();
-	std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(resource));
-	if (i == locations.end()) {
-		std::map<short, std::string>::const_iterator it = errors.find(404);
-		if (it != errors.end() && !it->second.empty()) {
-			std::cout << RED << errors[404] << RESET << std::endl;
-			handleError(responseBody, errors[404]);
+	std::string directory = resource.substr(0, resource.find_last_of("/") + 1);
+	std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(directory));
+	if (i == locations.end()) {  // here should be the logic in the case the location was not found
+		std::cout << "Location not found" << std::endl;
+		responseBody = readFile(_server.getRoot() + resource);
+		if (responseBody.first.empty()) {
+			std::map<short, std::string>::const_iterator it = _errorPages.find(404);
+			if (it != _errorPages.end() && !it->second.empty()) {
+				std::cout << RED << _errorPages[404] << RESET << std::endl;
+				handleError(responseBody, _errorPages[404]);
+			}
+			else {
+				responseBody.first = "Error: 404 Not Found";
+				responseBody.second = "html";
+			}
+			_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+			_response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+		} else {
+			_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+			_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 		}
-		else
-			responseBody = "Error: 404 Not Found";
-		_SET_RESPONSE_HEADERS(responseHeaders, "text/html", responseBody);
-        _response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody);
         return;
 	}
-	std::vector<short> methods = i->getMethods();
-	if (_request.getMethod() == HTTP::GET && methods[0])
-			handleGetRequest(responseBody, responseHeaders, i, resource);
-	else {
-		std::cout << "Bad request in action" << std::endl;
-		std::map<short, std::string>::const_iterator it = errors.find(400);
-		if (it != errors.end() && !it->second.empty()) {
-			std::cout << RED << errors[400] << RESET << std::endl;
-            handleError(responseBody, errors[400]);
-        } else {
-            responseBody = "Error: Bad Request";
+	std::vector<short> methods = i->getMethods();  // here in case the location found and we should try to route the request
+	switch (_request.getMethod()) {
+        case HTTP::GET:
+            if (methods[0]) handleGetRequest(responseBody, responseHeaders, i, resource , directory);
+            else {
+				std::cout << "Bad request in action" << std::endl;
+        		std::map<short, std::string>::const_iterator it = _errorPages.find(405);
+				if (it != _errorPages.end() && !it->second.empty()) {
+					std::cout << RED << _errorPages[405] << RESET << std::endl;
+					handleError(responseBody, _errorPages[405]);
+				} else {
+					responseBody.first = "Error 405: Bad Request";
+					responseBody.second = "html";
+				}
+				_SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+				_response = HTTP::Response(HTTP::BAD_REQUEST, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+			}
+            break;
+        case HTTP::POST:
+            if (methods[1]) handlePostRequest(responseBody, responseHeaders);
+            else handleMethodNotAllowed(responseBody, responseHeaders);
+            break;
+        case HTTP::DELETE:
+            if (methods[2]) handleRemoveRequest(responseBody, responseHeaders);
+            else handleMethodNotAllowed(responseBody, responseHeaders);
+            break;
+        default:
+			handleMethodNotAllowed(responseBody, responseHeaders);
+    }
+}
+
+void RequestHandler::handleAutoindex(std::pair<std::string, std::string> &responseBody, std::map<std::string, HTTP::Header> &responseHeaders, const std::string &directoryPath) {
+    DIR *dir;
+    struct dirent *ent;
+
+    if ((dir = opendir(directoryPath.c_str())) != NULL) {
+        std::stringstream ss;
+        ss << "<html><body><h1>Index of " << directoryPath << "</h1><ul>";
+        while ((ent = readdir(dir)) != NULL) {
+            ss << "<li><a href=\"" << ent->d_name << "\">" << ent->d_name << "</a></li>";
         }
-		_SET_RESPONSE_HEADERS(responseHeaders, "text/html", responseBody);
-        _response = HTTP::Response(HTTP::BAD_REQUEST, HTTP::HTTP_1_1, responseHeaders, responseBody);
-	}
+        ss << "</ul></body></html>";
+        responseBody.first = ss.str();
+        closedir(dir);
+    } else {
+        // Could not open directory
+        perror("Failed to open directory for autoindex");
+        responseBody.first = "Error: Could not open directory";
+    }
+	std::cout << RED << responseBody.first << RESET << std::endl;
+    responseHeaders["Content-Type"] = HTTP::Header("Content-Type", "text/html");
+    int length = responseBody.first.size();
+    std::stringstream ss;
+    ss << length;
+    responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str());
+	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+}
+
+void RequestHandler::handleMethodNotAllowed(std::pair<std::string, std::string> &responseBody, std::map<std::string, HTTP::Header> &responseHeaders) {
+    std::map<short, std::string>::const_iterator it = _errorPages.find(405);
+    if (it != _errorPages.end() && !it->second.empty()) {
+        handleError(responseBody, _errorPages[405]);
+    } else {
+        responseBody.first = "Error 405: Method Not Allowed";
+		responseBody.second = "html";
+    }
+    _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+    _response = HTTP::Response(HTTP::METHOD_NOT_ALLOWED, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 }
