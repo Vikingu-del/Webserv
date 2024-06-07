@@ -3,9 +3,9 @@
 
 std::map<std::string, std::string> RequestHandler::fileCache;
 
-RequestHandler::RequestHandler() : _server(), _request(), _response(), _errorPages() {}
+RequestHandler::RequestHandler() : _server(), _request(), _response(), _errorPages(), _showAutoIndex(0) {}
 
-RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response(), _errorPages(server.getErrorPages()) {}
+RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response(), _errorPages(server.getErrorPages()), _showAutoIndex(0) {}
 
 const ServerConfig& RequestHandler::getServer() const {
     return this->_server;
@@ -41,6 +41,7 @@ std::pair<std::string, std::string> RequestHandler::readFile(const std::string &
 		std::cout << "File found in cache" << std::endl;
 		return std::make_pair(fileCache[path], extension);
 	}
+	if (_showAutoIndex == 1) _showAutoIndex = 0;
 	std::ifstream file(path.c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		std::cerr << "Failed to open file: " << path << std::endl;
@@ -69,14 +70,19 @@ void RequestHandler::handleGetRequest(std::pair<std::string,std::string> &respon
 									std::string &resource,
 									std::string &directoryPath) {
 	responseBody.second = _server.getMimeType(i->getType());
-	std::string filePath = resource == "/" ? i->getIndexLocation() : i->getRootLocation() + resource + i->getIndexLocation();
+	std::cout << RED << "Directory: " << directoryPath << RESET << std::endl;
+	std::cout << RED << "Resource: " << resource << RESET << std::endl;
+	std::cout << RED << "Index location: " << i->getIndexLocation() << RESET << std::endl;
+	std::cout << RED << "Root location: " << i->getRootLocation() << RESET << std::endl;
+	std::string filePath = i->getRootLocation() + (directoryPath == resource ? i->getIndexLocation() : resource);
+	std::cout << CYAN << "File path: " << filePath << RESET << std::endl;
+	_showAutoIndex = i->getAutoindex();
 	// ! Use a logging library instead of std::cout for production (FOR IVAN)
-    // LOG_DEBUG << "Attempting to read file at path: " << filePath;
 	responseBody = readFile(filePath);
-	if (responseBody.first == "404 not found") {
-		if (i->getAutoindex()) {
+	if (responseBody.first == "404 not found" || (responseBody.first == readFile(_errorPages[404]).first)) {
+		if (i->getAutoindex() && _showAutoIndex == 0) {
 			std::cout << RED << "Autoindex enabled: " << i->getRootLocation() + directoryPath << RESET << std::endl;
-			handleAutoindex(responseBody, responseHeaders, i->getRootLocation() + resource);
+			handleAutoindex(responseBody, responseHeaders, i->getRootLocation() + directoryPath);
 			return ;
 		} else {
 			std::map<short, std::string>::const_iterator it = _errorPages.find(404);
@@ -185,6 +191,8 @@ void RequestHandler::handleAutoindex(std::pair<std::string, std::string> &respon
     DIR *dir;
     struct dirent *ent;
 
+
+	std::cout << RED << "Directory path: " << directoryPath << RESET << std::endl;
     if ((dir = opendir(directoryPath.c_str())) != NULL) {
         std::stringstream ss;
         ss << "<html><body><h1>Index of " << directoryPath << "</h1><ul>";

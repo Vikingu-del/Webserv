@@ -1,0 +1,29 @@
+.game-selection {
+    display: flex;
+    justify-content: space-around;
+}
+
+.game {
+    width: 45%;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    background-size: cover;
+    background-position: center;
+}
+
+.game h2 {
+    font-size: 2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game1 {
+    background-image: url('../imgs/games/bouncingBalls.png');
+}
+
+.game2 {
+    background-image: url('../imgs/games/rockPaperScizors.png');
+}

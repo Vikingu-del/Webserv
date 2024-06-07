@@ -10,6 +10,7 @@ class	RequestHandler {
 		HTTP::Request   				_request;
 		HTTP::Response					_response;
 		std::map<short, std::string>	_errorPages;
+		short 							_showAutoIndex;
 
 		static std::map<std::string, std::string>	fileCache;
 		std::pair<std::string, std::string> readFile(const std::string &path);
