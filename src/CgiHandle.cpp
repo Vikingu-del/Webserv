@@ -6,7 +6,7 @@
 /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 16:55:20 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/11 16:08:45 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/06/11 17:47:30 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,6 @@ void CgiHandle::execCgi()
     setArgv();
     createArray();
         return ;
-    }
     _pid = fork();
     if (_pid == -1)
     {
@@ -290,7 +289,7 @@ int CgiHandle::getPid()
     return _pid;
 }
 
-void eraseLength(int length)
+void CgiHandle::erasseLength(int length)
 {
     _length -= length;
 }

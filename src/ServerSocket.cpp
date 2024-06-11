@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/03 10:25:47 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/11 17:32:28 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,7 @@ void ServerSocket::runServer()
 			}
 		}
     }
+	
 	// Check for timeouts every second
 	time_t currentTime = time(NULL);
 	if (difftime(currentTime, last_check_time) > 1.0) {
