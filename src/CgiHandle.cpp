@@ -6,7 +6,7 @@
 /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 16:55:20 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/06 15:41:40 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:08:45 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,10 +133,6 @@ void CgiHandle::execCgi()
     setPath();
     setArgv();
     createArray();
-    if (!_path || !_argv || !_envp || setPipe() == -1 || epollCheck(getPipeOut()) == 0)
-    {
-        _exitStatus = 5;
-        closePipe();
         return ;
     }
     _pid = fork();

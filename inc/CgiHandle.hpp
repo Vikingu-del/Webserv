@@ -6,7 +6,7 @@
 /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 15:46:46 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/06 15:41:59 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/06/07 14:50:24 by kilchenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ class CgiHandle
         void        execCgi();
         void        closePipe();
         // void        subLength();
+        
         int         epollCheck(int pipe_out);
         void        erasseLength(int length);
 };
