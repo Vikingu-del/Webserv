@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins',sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 html, body {
@@ -74,9 +74,10 @@ nav .menu {
     background: transparent;
 }
 
-.NavBtns button:hover {
+.MobNavBtns button:hover, .NavBtns button:hover, .center .btns button:hover {
     background-image: linear-gradient(to right, #3f8cd6, #38deec);
     color: #000;
+    border: none;
 }
 
 .wrapper {
@@ -100,10 +101,13 @@ nav .menu {
     width: 54%;
 }
 
-.center .title {
+.center .title, .center .sub_des, #subscribe h2, #subscribe label, .game-selection .game h2 {
     color: #fff;
-    font-size: 70px;
-    font-family: 'Reem Kufi Ink', sans-serif;
+    font-size: 70px; /* Adjust based on specific element */
+    font-family: 'Reem Kufi Ink', sans-serif; /* Adjust based on specific element */
+    font-weight: 500; /* Adjust based on specific element */
+    margin: 11px 0 25px 0; /* Adjust based on specific element */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adjust based on specific element */
 }
 
 .center .sub_des {
@@ -195,6 +199,76 @@ nav .menu {
     background-image: url('../imgs/games/rockPaperScizors.png');
 }
 
+
+.subscribe {
+    width: 100%;
+    padding: 40px 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    justify-content: space-between;
+}
+
+.subscribe h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.subscribe form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.subscribe label {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.subscribe input, .subscribe #dropZone{
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#post #dropZone {
+    padding: 40px;   
+    border: 2px dashed #ccc;
+    text-align: center;
+}
+
+ /* #post input[type="post"] {
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#delete input[type="delete"] {
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+} */
+
+.subscribe button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #38deec;
+    color: #000;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.subscribe button:hover {
+    background-color: #3f8cd6;
+}
+
 @media (min-width: 12000px) {
     .menu ul {
         display: flex;
@@ -261,7 +335,7 @@ nav .menu {
         font-size: 20px;
     }
 
-    a:hover,a.active {
+    a:hover, a.active {
         background: none;
         color: #0082e6;
     }
