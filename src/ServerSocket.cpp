@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/06 14:22:58 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/14 16:57:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ void ServerSocket::runServer()
 			}
 		}
     }
+	
 	// Check for timeouts every second
 	time_t currentTime = time(NULL);
 	if (difftime(currentTime, last_check_time) > 1.0) {
