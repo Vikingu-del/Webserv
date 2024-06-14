@@ -1,5 +1,6 @@
 #include "RequestHandler.hpp"
 #include <algorithm>
+#include "CgiHandle.hpp"
 
 std::map<std::string, std::string> RequestHandler::fileCache;
 
@@ -133,6 +134,13 @@ void    RequestHandler::handleRequest() {
 	responseHeaders["Server"] = HTTP::Header("Server", "Webserv");
 	std::vector<Location> locations = _server.getLocations();
 	std::string resource = _request.getResource();
+	std::string extension = resource.substr(resource.find_last_of(".") + 1);
+	if (extension == "php" || extension == "py" || extension == "sh") {
+		std::cout << RED << "CGI request" << std::endl;
+		// CgiHandle cgiHandle(_server, _request);   /// here
+		// cgiHandler.handleCGIRequest();
+		return;
+	}
 	std::string directory = resource.substr(0, resource.find_last_of("/") + 1);
 	std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(directory));
 	if (i == locations.end()) {  // here should be the logic in the case the location was not found

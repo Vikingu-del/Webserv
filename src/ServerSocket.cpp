@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/14 16:57:09 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/14 17:26:28 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "RequestHandler.hpp"
 #include <sys/epoll.h>
 #include <signal.h>
+#include "CgiHandle.hpp"
+#include "CgiClient.hpp"
 
 // try to execute while server is open with this command in terminal siege -c50 -t30S http://localhost:8002
 

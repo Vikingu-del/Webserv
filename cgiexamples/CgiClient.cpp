@@ -1,86 +1,85 @@
-// /* ************************************************************************** */
-// /*                                                                            */
-// /*                                                        :::      ::::::::   */
-// /*   CgiClient.cpp                                      :+:      :+:    :+:   */
-// /*                                                    +:+ +:+         +:+     */
-// /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-// /*                                                +#+#+#+#+#+   +#+           */
-// /*   Created: 2024/06/04 16:55:16 by kilchenk          #+#    #+#             */
-// /*   Updated: 2024/06/14 17:15:16 by eseferi          ###   ########.fr       */
-// /*                                                                            */
-// /* ************************************************************************** */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CgiClient.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/04 16:55:16 by kilchenk          #+#    #+#             */
+/*   Updated: 2024/06/14 17:42:23 by eseferi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// #include "CgiClient.hpp"
-// #include <sys/fcntl.h>
-// #include "utils.hpp"
+#include "CgiClient.hpp"
+#include <sys/fcntl.h>
+#include "utils.hpp"
 
 
 
-// CgiClient::CgiClient(Client client, int epollFd)
-// {
-//     HTTP::Request req = HTTP::Request::deserialize(_response->getBody());
-//     _client = client;
-//     _isParsed = false;
-//     _isRead = false;
-//     _readBytes = 0;
-//     _readTime = 0;
-//     _codeStatus = 0;
-//     _epollFd = epollFd;
-//     // _cgiReq = //need input like .html or .php or .py
-//     _response = &_client.getCurrentResponse(); //need to get response
-//     _serverConfig = &_client.getServer();//need to get server config
-//     _headerMap = &req.getHeaders();//need to get header from response
-//     // _response = //need to set config
-//     // _serverConfig = //need to set client
-//     _cgiHandle = new CgiHandle(_serverConfig, _cgiReq, _epollFd);
-//     _pid = _cgiHandle->getPid();
-//     _body = &_response->getBody();//get body from response
-//     // _requestBody =  //get body from server config
-//     setPipe(*_cgiHandle);
-//     toCgi(*_cgiHandle, *_requestBody);
-// }
+CgiClient::CgiClient(Client client, int epollFd, HTTP::Request &req)
+{
+    _client = client;
+    _isParsed = false;
+    _isRead = false;
+    _readBytes = 0;
+    _readTime = 0;
+    _codeStatus = 0;
+    _epollFd = epollFd;
+    // _cgiReq = //need input like .html or .php or .py
+    // _response = _client.getCurrentResponse(); //need to get response
+    _serverConfig = _client.getServer();//need to get server config
+    // _headerMap = req.getHeaders();//need to get header from response
+    // _response = //need to set config
+    // _serverConfig = //need to set client
+    // _cgiHandle = CgiHandle(_serverConfig, _cgiReq, _epollFd);
+    // _pid = _cgiHandle->getPid();
+    // _body = &_response->getBody();//get body from response
+    // _requestBody =  //get body from server config
+    // setPipe(*_cgiHandle);
+    // toCgi(*_cgiHandle, *_requestBody);
+}
 
-// CgiClient::~CgiClient()
-// {
-//     deleteChild(_cgiHandle->getPipeOut());
-//     closePipe(*_cgiHandle);
-//     close(_cgiHandle->getPipeOut());
-//     kill(_pid, SIGKILL);
-//     delete _cgiHandle;
-// }
+CgiClient::~CgiClient()
+{
+    // deleteChild(_cgiHandle->getPipeOut());
+    // closePipe(*_cgiHandle);
+    // close(_cgiHandle->getPipeOut());
+    // kill(_pid, SIGKILL);
+    // delete _cgiHandle;
+}
 
-// void CgiClient::setPipe(CgiHandle &cgi)
-// {
-//     int flag;
-//     if ((flag = fcntl(cgi.getPipeOut(), F_GETFL, 0)) == -1 || fcntl(cgi.getPipeOut(), F_SETFL, flag | O_NONBLOCK) == -1)
-//     {
-//         std::cerr << "Error: fcntl failed" << std::endl;
-//         _codeStatus = 500;
-//         return ;
-//     }
-// }
+void CgiClient::setPipe(CgiHandle &cgi)
+{
+    int flag;
+    if ((flag = fcntl(cgi.getPipeOut(), F_GETFL, 0)) == -1 || fcntl(cgi.getPipeOut(), F_SETFL, flag | O_NONBLOCK) == -1)
+    {
+        std::cerr << "Error: fcntl failed" << std::endl;
+        _codeStatus = 500;
+        return ;
+    }
+}
 
-// void CgiClient::toCgi(CgiHandle &cgi, std::string &body)
-// {
+void CgiClient::toCgi(CgiHandle &cgi, std::string &body)
+{
     
-//     if (cgi.getLength() > 0)
-//     {
-//         int out = write(cgi.getPipeIn(), body.c_str(), body.length());
-//         if (out == -1)
-//         {
-//             std::cerr << "Error: write failed" << std::endl;
-//             _codeStatus = 500;
-//             // _response->// need send error cpde to response
-//         } 
-//         else
-//         {
-//             body = body.substr(out);
-//             cgi.erasseLength(out);
-//             if (cgi.getLength() == 0)
-//                 close(cgi.getPipeIn());
-//         }
-//     }
-// }
+    if (cgi.getLength() > 0)
+    {
+        int out = write(cgi.getPipeIn(), body.c_str(), body.length());
+        if (out == -1)
+        {
+            std::cerr << "Error: write failed" << std::endl;
+            _codeStatus = 500;
+            // _response->// need send error cpde to response
+        } 
+        else
+        {
+            body = body.substr(out);
+            cgi.erasseLength(out);
+            if (cgi.getLength() == 0)
+                close(cgi.getPipeIn());
+        }
+    }
+}
 
 // void CgiClient::handleCgi()
 // {
