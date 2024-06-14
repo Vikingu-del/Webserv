@@ -216,14 +216,23 @@ void RequestHandler::handleAutoindex(std::pair<std::string, std::string> &respon
 	_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 }
 
-void RequestHandler::handleMethodNotAllowed(std::pair<std::string, std::string> &responseBody, std::map<std::string, HTTP::Header> &responseHeaders) {
-    std::map<short, std::string>::const_iterator it = _errorPages.find(405);
-    if (it != _errorPages.end() && !it->second.empty()) {
-        handleError(responseBody, _errorPages[405]);
-    } else {
-        responseBody.first = "Error 405: Method Not Allowed";
-		responseBody.second = "html";
-    }
-    _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
-    _response = HTTP::Response(HTTP::METHOD_NOT_ALLOWED, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+void RequestHandler::handleBadRequest() {
+	std::cout << "Trying to handle bad request" << std::endl;
+    this->_response = HTTP::Response(HTTP::BAD_REQUEST, HTTP::HTTP_1_1, std::map<std::string, HTTP::Header>(), "Bad request");
+}
+
+void RequestHandler::handleFindError(std::string &body) {
+	body = readFile("gameHub/error_pages/404.html");
+}
+
+void    RequestHandler::handleRequest() {
+	// !1. Parse the request:
+	switch (this->_request.getMethod()) {
+		case HTTP::GET:
+			handleGetRequest();
+			break;
+		default:
+			std::cout << "Bad request in action" << std::endl;
+			handleBadRequest();
+	}
 }

@@ -42,5 +42,7 @@ class	RequestHandler {
 		void    setErrorPages(const std::map<short, std::string> &errorPages);
 
 		// Methods
-		void		handleRequest();
+		void					handleRequest();
+		void					handleFindError(std::string &body, std::string &errorPath);
+
 };
