@@ -1,25 +1,29 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   CgiHandle.hpp                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/04 15:46:46 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/14 16:56:32 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+// /* ************************************************************************** */
+// /*                                                                            */
+// /*                                                        :::      ::::::::   */
+// /*   CgiHandle.hpp                                      :+:      :+:    :+:   */
+// /*                                                    +:+ +:+         +:+     */
+// /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+// /*                                                +#+#+#+#+#+   +#+           */
+// /*   Created: 2024/06/04 15:46:46 by kilchenk          #+#    #+#             */
+// /*   Updated: 2024/06/14 17:14:44 by eseferi          ###   ########.fr       */
+// /*                                                                            */
+// /* ************************************************************************** */
 
 // #ifndef CGI_HANDLE_HPP
 // # define CGI_HANDLE_HPP
 
+// #include "Http.hpp"
 // #include "Webserv.hpp"
 // #include "ServerConfig.hpp"
-// #include "Http.hpp"
 // #include <sys/epoll.h>
 
 // class ServerConfig;
-// class HTTP::Request;
+// // class HTTP::Request;
+// namespace HTTP
+// {
+//     class Request;
+// }
 
 // class CgiHandle
 // {
@@ -39,7 +43,7 @@
 //         int         _length;
 //         int         _exitStatus;
 //     public:
-//         CgiHandle(ServerConfig *config, std::string extansion, int epollFd, HTTP::Request &req);
+//         CgiHandle(ServerConfig *config, std::string extansion, int epollFd);
 //         ~CgiHandle();
 //         CgiHandle(const CgiHandle &copy);
 //         CgiHandle &operator=(const CgiHandle &copy);

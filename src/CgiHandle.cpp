@@ -3,22 +3,22 @@
 // /*                                                        :::      ::::::::   */
 // /*   CgiHandle.cpp                                      :+:      :+:    :+:   */
 // /*                                                    +:+ +:+         +:+     */
-// /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+// /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 // /*                                                +#+#+#+#+#+   +#+           */
 // /*   Created: 2024/06/04 16:55:20 by kilchenk          #+#    #+#             */
-// /*   Updated: 2024/06/11 17:47:30 by kilchenk         ###   ########.fr       */
+// /*   Updated: 2024/06/14 17:14:55 by eseferi          ###   ########.fr       */
 // /*                                                                            */
 // /* ************************************************************************** */
 
 // #include "CgiHandle.hpp"
 // #include "utils.hpp"
 
-// CgiHandle::CgiHandle(ServerConfig *config, std::string extansion, int epollFd, HTTP::Request &req)
+// CgiHandle::CgiHandle(ServerConfig *config, std::string extansion, int epollFd)
 // {
 //     _config = config;
 //     _cgiReq = extansion;
 //     _epollFd = epollFd;
-//     _req = req;
+//     // _req = req;
 //     _pathStr = "";
 //     _exitStatus = 0;
 //     _length = 0;
@@ -83,6 +83,7 @@
 
 // void CgiHandle::initEnv()
 // {
+//     HTTP::Request _req = HTTP::Request::deserialize();
 //     std::stringstream contentLength;
 //     std::stringstream ss;
 //     ss << _config->getMimeType("content-length");
@@ -116,7 +117,7 @@
 //     _env["SERVER_NAME"] = "localhost";
 //     _env["REMOTE_ADDR"] = _config->getHost();
 //     _env["REMOTE_PORT"] = port;
-//     _env["HTTP_HOST"] = _config->getHost() + ":" + port;
+//     _env["HTTP_HOST"] = _config->getHost() + ":" + std::to_string(port);
 //     _env["HTTP_CONNECTION"] = _config->getMimeType("connection");
 //     _env["HTTP_UPGRADE_INSECURE_REQUESTS"] = _config->getMimeType("upgrade-insecure-requests");
 //     _env["HTTP_USER_AGENT"] = _config->getMimeType("user-agent");

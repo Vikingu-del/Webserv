@@ -3,10 +3,10 @@
 // /*                                                        :::      ::::::::   */
 // /*   CgiClient.hpp                                      :+:      :+:    :+:   */
 // /*                                                    +:+ +:+         +:+     */
-// /*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+// /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 // /*                                                +#+#+#+#+#+   +#+           */
 // /*   Created: 2024/06/04 12:53:14 by kilchenk          #+#    #+#             */
-// /*   Updated: 2024/06/11 17:02:11 by kilchenk         ###   ########.fr       */
+// /*   Updated: 2024/06/14 17:13:46 by eseferi          ###   ########.fr       */
 // /*                                                                            */
 // /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 // #include "CgiHandle.hpp"
 // #include "Webserv.hpp"
+// #include "Http.hpp"
+// #include "Client.hpp"
 
 // class Client;
 // class RequestHandler;
@@ -27,11 +29,11 @@
 // {
 //     private:
 //         std::map<std::string, std::string> *_headerMap;
-//         Client      _client;
+//         Client          _client;
 //         HTTP::Response *_response;
 //         CgiHandle   *_cgiHandle;
 //         ServerConfig *_serverConfig;
-//         // Location    _location;
+//         Location    _location;
 //         std::string _cgiPath; //HEADER
 //         std::string _cgiReq; //cgi extansion
 //         std::string *_body;
