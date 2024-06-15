@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/05/29 22:42:38 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/15 17:35:35 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,14 @@ class Client
 		std::queue<std::string>	_requests;
 		std::queue<std::string>	_responses;
 		std::string 		   	_emptyResponse;
+		int						_epoll_fd;
 		
 	public:
 		/*ORTDOX*/
-		Client();
+		Client() {};
+		Client(int epoll_fd);
 		Client(const Client &copy);
-		Client(ServerConfig & serv);
+		Client(ServerConfig & serv, int epoll_fd);
 		Client  &operator=(const Client &copy);
 		~Client();
 		/*Geters*/
@@ -44,6 +46,7 @@ class Client
 		const time_t                &getLastTime() const;
 		const ServerConfig          &getServer() const;
 		const std::string			&getIncompleteRequest() const;
+		const int 					&getEpollFd() const;
 		/*Seters*/
 		void						setSocket(int &socket);
 		void						setAddress(sockaddr_in &address);

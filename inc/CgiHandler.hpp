@@ -1,14 +1,13 @@
 #pragma once
 
 #include "Http.hpp"
-#include "Webserv.hpp"
+#include "Client.hpp"
 #include "ServerConfig.hpp"
 #include <sys/epoll.h>
 
 class CgiHandler {
 	private:
 		std::map<std::string, std::string>		_env;
-		ServerConfig							_config;
 		HTTP::Request							_req;
 		HTTP::Response							_res;
 		Client									_client;
@@ -18,6 +17,7 @@ class CgiHandler {
 		int										_pipeIn[2];
 		int										_pipeOut[2];
 		int										_epollFd;
+		ServerConfig							_server;
 		int 									_readBytes;
         int 									_readTime;
         int 									_statusCode;
@@ -26,12 +26,21 @@ class CgiHandler {
 		int										_length;
         int										_exitStatus;
 
+        // Private Methods
+        void                initEnv();
+        void	            closePipes();
+		void	            deleteChild(int childFd);
+        std::vector<char *> createEnvArray();
+
 	public:
-		CgiHandler();
-		CgiHandler(const Client &client, const HTTP::Request &req, int epollFd, std::string cgiExt);
+		CgiHandler(const Client &client, const HTTP::Request &req, int epollFd, std::string cgiExt, const ServerConfig &server);
 		~CgiHandler();
-		CgiHandler(const CgiHandler &copy);
 		CgiHandler &operator=(const CgiHandler &copy);
+
+
+        // Public Methods
+        void initCgi();
+        void execCgi();
 
 		// Getters
 		std::map<std::string, std::string>	&getEnv();
@@ -54,8 +63,6 @@ class CgiHandler {
 		int									getLength();
 		int									getExitStatus();
 
-
-
 		// Setters
 		void	setEnv(const std::map<std::string, std::string> &env);
 		void	setConfig(const ServerConfig &config);
@@ -75,12 +82,4 @@ class CgiHandler {
 		void	setIsParsed(bool isParsed);
 		void	setLength(int length);
 		void	setExitStatus(int exitStatus);
-		
-		// Method
-		void	initCgi();
-		void	initEnv();
-		void    execCgi();
-		void	checkSheban(); // #!
-		void	closePipe();
-		void	deleteChild(int childFd);
 };

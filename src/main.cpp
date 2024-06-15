@@ -6,14 +6,14 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/14 18:13:28 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/15 12:53:37 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerSocket.hpp"
 #include "Logger.hpp"
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
 
 	std::string configFilePath;

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:02:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/14 17:26:28 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/15 17:34:48 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include "RequestHandler.hpp"
 #include <sys/epoll.h>
 #include <signal.h>
-#include "CgiHandle.hpp"
-#include "CgiClient.hpp"
 
 // try to execute while server is open with this command in terminal siege -c50 -t30S http://localhost:8002
 
@@ -92,7 +90,7 @@ void	ServerSocket::acceptNewConnection(ServerConfig &serv)// we need it to  allo
 		return;
 	}
 	// Instantiate Client with ServerConfig and set the socket
-	Client	new_client(serv);
+	Client	new_client(serv, epoll_fd);
 	new_client.setSocket(client_socket);
 	new_client.setTime();
 	// Ensure the client socket is unique in _clients_map
@@ -145,6 +143,7 @@ void ServerSocket::readRequest(const int &fd, Client &client, RequestHandler &ha
 			handler.setServer(client.getServer());
 			handler.setRequest(HTTP::Request::deserialize(request));
 			handler.setErrorPages(client.getServer().getErrorPages());
+			handler.setClient(client);
 			handler.handleRequest();
 			std::cout << YELLOW << "Request handled" << RESET << std::endl;
 			client.addResponse(handler.getResponse().serialize());

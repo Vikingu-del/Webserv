@@ -6,15 +6,15 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/03 10:23:39 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/15 17:30:52 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
 /* Constructors, destructors and ansignment operator*/
-Client::Client() : _clientSocket(-1), _lastMsg(0) {}
-Client::Client(ServerConfig &serv) : _server(serv), _clientSocket(-1), _lastMsg(0) {}
+Client::Client(int epoll_fd) : _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd) {}
+Client::Client(ServerConfig &serv, int epoll_fd) : _server(serv), _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd) {}
 Client::~Client() {}
 
 Client::Client(const Client &copy)
@@ -47,11 +47,12 @@ Client &Client::operator=(const Client &copy)
 }
 
 /* Geters */
-const int 	&Client::getSocket() const { return _clientSocket; }
+const int 	        &Client::getSocket() const { return _clientSocket; }
 const sockaddr_in	&Client::getAddress() const { return _clientAddress; }
-const time_t	&Client::getLastTime() const { return _lastMsg; }
+const time_t	    &Client::getLastTime() const { return _lastMsg; }
 const std::string	&Client::getIncompleteRequest() const { return _incompleteRequest; }
 const ServerConfig	&Client::getServer() const { return _server; }
+const int           &Client::getEpollFd() const { return _epoll_fd; }
 
 /* Setters */
 void	Client::setSocket(int &socket) { _clientSocket = socket; }

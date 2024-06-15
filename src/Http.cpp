@@ -117,9 +117,12 @@ HTTP::Header	HTTP::Header::deserialize(const std::string &header) {
 
 // Constructors
 HTTP::Request::Request()
-	: _method(HTTP::GET), _resource(""), _headers(), _version(HTTP::HTTP_1_1), _body("") {};
+	: _method(HTTP::GET), _resource(""), _headers(), _version(HTTP::HTTP_1_1), _body(""), _uri(""), _query("") {};
 HTTP::Request::Request(Method method, const std::string& resource, const std::map<std::string, HTTP::Header>& headers, Version version, const std::string& body)
-    : _method(method), _resource(resource), _headers(headers), _version(version), _body(body) {}
+    : _method(method), _resource(resource), _headers(headers), _version(version), _body(body) {
+		parseQuery();
+		parseUri();
+}
 
 // copy assignment operator
 HTTP::Request& HTTP::Request::operator=(const HTTP::Request& other) {
@@ -138,6 +141,8 @@ void	HTTP::Request::setResource(const std::string &resource) { _resource = resou
 void	HTTP::Request::setVersion(Version version) { _version = version; }
 void	HTTP::Request::setHeaders(const std::map<std::string, Header> &headers) { _headers = headers; }
 void	HTTP::Request::setBody(const std::string &body) { _body = body; }
+void	HTTP::Request::setUri(const std::string &uri) { _uri = uri; }
+void	HTTP::Request::setQuery(const std::string &query) { _query = query; }
 
 // Getters
 // HTTP::Version	HTTP::Request::getVersion() const bool			operator==(const HeaderType &type) const;
@@ -146,6 +151,29 @@ HTTP::Method	HTTP::Request::getMethod() const { return _method; }
 const			std::string &HTTP::Request::getResource() const { return _resource; }
 const			std::map<std::string, HTTP::Header> &HTTP::Request::getHeaders() const { return _headers; }
 const			std::string &HTTP::Request::getBody() const { return _body; }
+void			HTTP::Request::getHeader(const std::string &key, std::string &src) const {
+	std::map<std::string, Header>::const_iterator it = _headers.find(key);
+	if (it != _headers.end()) src = it->second.getValue();
+	src = "";
+}
+const			std::string &HTTP::Request::getUri() const { return _uri; }
+const			std::string &HTTP::Request::getQuery() const { return _query; }
+
+void	HTTP::Request::parseQuery() {
+	std::size_t pos = _resource.find("?");
+	if (pos != std::string::npos)
+		_query = _resource.substr(pos + 1);
+	else
+		_query = "";
+}
+
+void	HTTP::Request::parseUri() {
+	std::size_t pos = _resource.find("?");
+	if (pos != std::string::npos) 
+		_uri = _resource.substr(0, pos);
+	else
+		_uri = _resource;
+}
 
 // Methods
 std::string		HTTP::Request::serialize() const {
@@ -220,6 +248,11 @@ HTTP::StatusCode	HTTP::Response::getResponseCode() const { return _responseCode;
 HTTP::Version		HTTP::Response::getVersion() const { return _version; }
 const				std::map<std::string, HTTP::Header>	&HTTP::Response::getHeaders() const { return _headers; }
 const				std::string &HTTP::Response::getBody() const { return _body; }
+void				HTTP::Response::getHeader(const std::string &key, std::string &src) const {
+	std::map<std::string, Header>::const_iterator it = _headers.find(key);
+	if (it != _headers.end()) src = it->second.getValue();
+	src = "";
+}
 
 // Methods
 std::string		HTTP::Response::serialize() const {

@@ -1,12 +1,12 @@
 #include "RequestHandler.hpp"
 #include <algorithm>
-#include "CgiHandle.hpp"
+#include "CgiHandler.hpp"
 
 std::map<std::string, std::string> RequestHandler::fileCache;
 
-RequestHandler::RequestHandler() : _server(), _request(), _response(), _errorPages(), _showAutoIndex(0) {}
+RequestHandler::RequestHandler() : _server(), _request(), _response(), _errorPages(), _showAutoIndex(0), _client(0) {}
 
-RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request) : _server(server), _request(HTTP::Request::deserialize(request)), _response(), _errorPages(server.getErrorPages()), _showAutoIndex(0) {}
+RequestHandler::RequestHandler(const ServerConfig &server, const std::string &request, const Client &client) : _server(server), _request(HTTP::Request::deserialize(request)), _response(), _errorPages(server.getErrorPages()), _showAutoIndex(0), _client(client) {}
 
 const ServerConfig& RequestHandler::getServer() const {
     return this->_server;
@@ -18,6 +18,10 @@ const HTTP::Request& RequestHandler::getRequest() const {
 
 const HTTP::Response& RequestHandler::getResponse() const {
     return this->_response;
+}
+
+const Client &RequestHandler::getClient() const {
+	return this->_client;
 }
 
 void RequestHandler::setErrorPages(const std::map<short, std::string> &errorPages) {
@@ -34,6 +38,10 @@ void RequestHandler::setRequest(const HTTP::Request &request) {
 
 void RequestHandler::setResponse(const HTTP::Response &response) {
     this->_response = response;
+}
+
+void RequestHandler::setClient(const Client &client) {
+	_client = client;
 }
 
 std::pair<std::string, std::string> RequestHandler::readFile(const std::string &path) {
@@ -70,6 +78,7 @@ void RequestHandler::handleGetRequest(std::pair<std::string,std::string> &respon
 									std::vector<Location>::const_iterator &i,
 									std::string &resource,
 									std::string &directoryPath) {
+	std::cout << BLUE << "Handling GET request" << RESET << std::endl;
 	responseBody.second = _server.getMimeType(i->getType());
 	std::cout << RED << "Directory: " << directoryPath << RESET << std::endl;
 	std::cout << RED << "Resource: " << resource << RESET << std::endl;
@@ -134,13 +143,6 @@ void    RequestHandler::handleRequest() {
 	responseHeaders["Server"] = HTTP::Header("Server", "Webserv");
 	std::vector<Location> locations = _server.getLocations();
 	std::string resource = _request.getResource();
-	std::string extension = resource.substr(resource.find_last_of(".") + 1);
-	if (extension == "php" || extension == "py" || extension == "sh") {
-		std::cout << RED << "CGI request" << std::endl;
-		// CgiHandle cgiHandle(_server, _request);   /// here
-		// cgiHandler.handleCGIRequest();
-		return;
-	}
 	std::string directory = resource.substr(0, resource.find_last_of("/") + 1);
 	std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(directory));
 	if (i == locations.end()) {  // here should be the logic in the case the location was not found
@@ -163,6 +165,14 @@ void    RequestHandler::handleRequest() {
 			_response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 		}
         return;
+	}
+	size_t dotPosition = resource.find_last_of(".");
+	if (directory == "/cgi-bin/") {
+		if (dotPosition == std::string::npos)
+			handleCgiRequest(*i , "", resource, responseBody, _client);
+		else
+			handleCgiRequest(*i, resource.substr(dotPosition), resource, responseBody, _client);
+		return ;
 	}
 	std::vector<short> methods = i->getMethods();  // here in case the location found and we should try to route the request
 	switch (_request.getMethod()) {
@@ -234,4 +244,17 @@ void RequestHandler::handleMethodNotAllowed(std::pair<std::string, std::string> 
     }
     _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
     _response = HTTP::Response(HTTP::METHOD_NOT_ALLOWED, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
+}
+
+
+void    RequestHandler::handleCgiRequest(const Location &location, const std::string &extension, const std::string &resource, std::pair<std::string, std::string> &responseBody, Client &client) {
+	// Implement logic for handling CGI request"
+	_request.parseUri();
+	_request.parseQuery();
+	std::cout << RED << "CGI request handling not implemented yet" << std::endl;
+	std::cout << "Location: " << location.getPath() << std::endl;
+	std::cout << "Resource: " << resource << std::endl;
+	std::cout << "Response body: " << responseBody.first << std::endl;
+	std::cout << "Response type: " << responseBody.second << RESET << std::endl;
+	CgiHandler cgiHandler(client, _request, client.getEpollFd(), extension, _server);
 }

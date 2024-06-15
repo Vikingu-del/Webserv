@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/14 16:58:38 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/15 13:33:23 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,7 +386,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		else if (parametr[i] == "autoindex" && (i + 1) < parametr.size())
 		{
 			if (path == "/cgi-bin")
-				throw ServerConfigException("Parametr autoindex not all for CGI");
+				throw ServerConfigException("Parametr autoindex not for all CGI");
 
 			if (flag_autoindex)
 				throw ServerConfigException("Autoindex of location  duplicated");
@@ -517,7 +517,7 @@ int ServerConfig::isValidLocation(Location & location) const
 	{
 		if (location.getCgiPath().empty() || location.getCgiExtension().empty() || location.getIndexLocation().empty())
 			return (1);
-		
+		// here we check if the index file exists and if it has the right permissions
 		if (ConfigFile::checkFilePermissons(location.getIndexLocation(), 4) < 0)
 		{
 			std::string path = location.getRootLocation() + location.getPath() + "/" + location.getIndexLocation();
