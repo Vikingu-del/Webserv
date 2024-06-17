@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/15 17:43:34 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:13:44 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,6 @@ namespace   HTTP
 	std::string	versionToString(Version version);
 	Version		stringToVersion(const std::string& version);
 	std::string	statusCodeToString(StatusCode code);
-	// std::string headerTypeToStr(HeaderType header);
-	// HeaderType	strToHeaderType(const std::string& header);
 
     // CLASSES
 	class	Header
@@ -76,7 +74,6 @@ namespace   HTTP
 		private:
 			std::string		_key;
 			std::string		_value;
-			// HeaderType		_type;
 		public:
 			Header();
 			Header(const std::string &key, const std::string &value);
@@ -85,16 +82,13 @@ namespace   HTTP
 			// Setters
 			void			setKey(const std::string &key);
 			void			setValue(const std::string &value);
-			// void			setType(HeaderType type);
 
 			// Getters
 			const			std::string &getKey() const;
 			const			std::string &getValue() const;
-			// const			HeaderType &getType() const;
 
 			// Overload
 			bool			operator==(const std::string &key) const;
-			// bool			operator==(const HeaderType &type) const;
 
 			// methods
 			std::string		serialize() const;
@@ -178,6 +172,7 @@ namespace   HTTP
             // Methods
             std::string							serialize() const;
             static Response						deserialize(const std::string &response);
+			void								appendToBody(const std::string &data);
     };
 
 }

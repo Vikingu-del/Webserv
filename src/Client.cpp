@@ -6,21 +6,26 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/15 17:30:52 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/17 14:23:19 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include "CgiHandler.hpp"
 
-/* Constructors, destructors and ansignment operator*/
-Client::Client(int epoll_fd) : _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd) {}
-Client::Client(ServerConfig &serv, int epoll_fd) : _server(serv), _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd) {}
-Client::~Client() {}
+/* Constructors, destructors and assignment operator */
+Client::Client() : _clientSocket(-1), _lastMsg(0), _epoll_fd(-1), _cgiHandler(NULL), _isCgiRequest(false) {}
+Client::Client(int epoll_fd) : _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd), _cgiHandler(NULL), _isCgiRequest(false) {}
+Client::Client(ServerConfig &serv, int epoll_fd) : _server(serv), _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd), _cgiHandler(NULL), _isCgiRequest(false) {}
+Client::~Client() {
+    if (_cgiHandler) {
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+    }
+}
 
-Client::Client(const Client &copy)
-{
-    if (this != &copy)
-    {
+Client::Client(const Client &copy) {
+    if (this != &copy) {
         this->_clientAddress = copy._clientAddress;
         this->_lastMsg = copy._lastMsg;
         this->_clientSocket = copy._clientSocket;
@@ -28,13 +33,17 @@ Client::Client(const Client &copy)
         this->_requests = copy._requests;
         this->_responses = copy._responses;
         this->_incompleteRequest = copy._incompleteRequest;
+        if (copy._cgiHandler) {
+            this->_cgiHandler = new CgiHandler(*copy._cgiHandler);
+        } else {
+            this->_cgiHandler = NULL;
+        }
     }
 }
 
-Client &Client::operator=(const Client &copy)
-{
-     if (this != &copy)
-    {
+
+Client &Client::operator=(const Client &copy) {
+    if (this != &copy) {
         this->_clientAddress = copy._clientAddress;
         this->_lastMsg = copy._lastMsg;
         this->_clientSocket = copy._clientSocket;
@@ -42,10 +51,17 @@ Client &Client::operator=(const Client &copy)
         this->_requests = copy._requests;
         this->_responses = copy._responses;
         this->_incompleteRequest = copy._incompleteRequest;
+        if (_cgiHandler) {
+            delete _cgiHandler;
+        }
+        if (copy._cgiHandler) {
+            this->_cgiHandler = new CgiHandler(*copy._cgiHandler);
+        } else {
+            this->_cgiHandler = NULL;
+        }
     }
-    return (*this);    
+    return (*this);
 }
-
 /* Geters */
 const int 	        &Client::getSocket() const { return _clientSocket; }
 const sockaddr_in	&Client::getAddress() const { return _clientAddress; }

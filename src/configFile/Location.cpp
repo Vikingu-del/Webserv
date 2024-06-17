@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/03 15:24:20 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/16 16:48:08 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ Location::Location()
 	_index(""),
 	_return(""),
 	_alias(""),
-	_client_max_body_size(MAX_CONTENT_LENGTH)
+	_client_max_body_size(MAX_CONTENT_LENGTH),
+	_cgi_path(),  // Initialize vectors
+	_cgi_ext()
 {
 	_methods.push_back(1);
     _methods.push_back(0);
@@ -40,7 +42,9 @@ Location::Location(const Location &other)
       _return(other._return),
       _alias(other._alias),
       _client_max_body_size(other._client_max_body_size),
-      _methods(other._methods)
+      _methods(other._methods),
+	  _cgi_path(other._cgi_path),
+	  _cgi_ext(other._cgi_ext)
 {
 	// std::cout << BLUE << "Location copy constructor" << RST << std::endl;
 }
@@ -109,12 +113,10 @@ const std::string &Location::getAlias() const {
 }
 
 const std::vector<std::string> &Location::getCgiPath() const {
-	// std::cout << BLUE "Location getCgiPath called" RST << std::endl;
 	return (this->_cgi_path);
 }
 
 const std::vector<std::string> &Location::getCgiExtension() const {
-	// std::cout << BLUE "Location getCgiExtension called" RST << std::endl;
 	return (this->_cgi_ext);
 }
 
@@ -201,12 +203,12 @@ void Location::setAlias(std::string value) {
 }
 
 void Location::setCgiPath(std::vector<std::string> path) {
-	// std::cout << BLUE "Location setCgiPath called" RST << std::endl;
+	_cgi_path.clear();
 	this->_cgi_path = path;
 }
 
 void Location::setCgiExtension(std::vector<std::string> extension) {
-	// std::cout << BLUE "Location setCgiExtension called" RST << std::endl;
+	_cgi_ext.clear();
 	this->_cgi_ext = extension;
 }
 
@@ -276,4 +278,18 @@ std::string Location::getPrintMethods() const {
 	}
 	
 	return (res);
+}
+
+bool Location::isMethodAllowed(HTTP::Method method) const {
+	if (method == HTTP::GET && _methods[0])
+		return (true);
+	if (method == HTTP::POST && _methods[1])
+		return (true);
+	if (method == HTTP::DELETE && _methods[2])
+		return (true);
+	// if (method == HTTP::PUT && _methods[3])
+	// 	return (true);
+	// if (method == HTTP::HEAD && _methods[4])
+	// 	return (true);
+	return (false);
 }

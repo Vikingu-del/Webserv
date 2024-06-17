@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/15 18:23:39 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/16 13:00:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "defines.h"
 #include <ctime>
 #include <iomanip>
-#include "Location.hpp"
+#include <map>
 
 namespace utils
 {

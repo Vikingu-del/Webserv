@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kilchenk <kilchenk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:51:09 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/05 15:04:59 by kilchenk         ###   ########.fr       */
+/*   Updated: 2024/06/16 12:58:17 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 #include <exception>
 #include "utils.hpp"
+#include "Http.hpp"
 
 class Location 
 {
@@ -79,4 +80,5 @@ class Location
 
 	// !Methods
 		void	parseType();  // Parsing the type of the file (ERIK)
+		bool	isMethodAllowed(HTTP::Method method) const;
 };

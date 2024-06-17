@@ -1,24 +1,19 @@
 #include "CgiHandler.hpp"
 #include <fcntl.h>
-// #include <sys/types.h>
-// #include <sys/wait.h>
+#include <sys/wait.h>
+#include "Client.hpp"
+#include "Logger.hpp"
 
-CgiHandler::CgiHandler(const Client &client,
-                    const HTTP::Request &req,
-                    int epollFd,
-                    std::string cgiExt,
-                    const ServerConfig &server) : _req(req),
-                                        _client(client),
-                                        _cgiExt(cgiExt),
-                                        _epollFd(epollFd),
-                                        _server(server) {
+CgiHandler::CgiHandler() : _pid(0), _readBytes(0), _readTime(0), _statusCode(0), _isRead(false), _isParsed(false), _length(0), _exitStatus(0), _state(WRITING) {}
+CgiHandler::CgiHandler(Client* client, const HTTP::Request &req, int epollFd, std::string cgiExt, const ServerConfig &server)
+    : _req(req), _client(client), _cgiExt(cgiExt), _epollFd(epollFd), _server(server), _state(WRITING) {
     _resource = _req.getResource();
     initEnv();
     initCgi();
 }
 
 CgiHandler::~CgiHandler() {
-    // closePipes();
+    closePipes();
 }
 
 CgiHandler &CgiHandler::operator=(const CgiHandler &copy) {
@@ -43,11 +38,12 @@ CgiHandler &CgiHandler::operator=(const CgiHandler &copy) {
         _isParsed = copy._isParsed;
         _length = copy._length;
         _exitStatus = copy._exitStatus;
+        _state = copy._state;
     }
     return *this;
 }
 
-void    CgiHandler::initEnv() {
+void CgiHandler::initEnv() {
     _env["GATEWAY_INTERFACE"] = "CGI/1.1";
     _env["SERVER_PROTOCOL"] = "HTTP/1.1";
     _env["REQUEST_METHOD"] = HTTP::methodToString(_req.getMethod());
@@ -60,18 +56,18 @@ void    CgiHandler::initEnv() {
     _env["SCRIPT_NAME"] = _resource.find('?') != std::string::npos ? _resource.substr(0, _resource.find('?')) : _resource;
     _env["SERVER_NAME"] = _server.getServerName();
     _env["SERVER_PORT"] = utils::intToString(_server.getPort());
-    _env["REMOTE_ADDR"] = utils::intToString(_client.getAddress().sin_addr.s_addr);
-    _env["REMOTE_PORT"] = utils::intToString(ntohs(_client.getAddress().sin_port));
+    _env["REMOTE_ADDR"] = utils::intToString(_client->getAddress().sin_addr.s_addr);
+    _env["REMOTE_PORT"] = utils::intToString(ntohs(_client->getAddress().sin_port));
 }
 
 void CgiHandler::initCgi() {
     if (pipe(_pipeIn) == -1 || pipe(_pipeOut) == -1) {
-        perror("pipe error");
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "pipe error");
         return;
     }
     _pid = fork();
     if (_pid == -1) {
-        perror("fork error");
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "fork error");
         return;
     }
     if (_pid == 0) {
@@ -87,7 +83,7 @@ void CgiHandler::initCgi() {
         args.push_back(strdup(_resource.c_str()));
         args.push_back(NULL);
         execve(_cgiExt.c_str(), args.data(), envp.data());
-        perror("execve error");
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "execve error");
         exit(1);
     } else {
         // Parent process
@@ -108,7 +104,29 @@ std::vector<char *> CgiHandler::createEnvArray() {
 }
 
 void CgiHandler::execCgi() {
-    // Implement I/O handling here
+    char buffer[1024];
+    ssize_t bytesRead;
+
+    // Read from CGI script's stdout
+    while ((bytesRead = read(_pipeOut[0], buffer, 1023)) > 0) {
+        buffer[bytesRead] = '\0';
+        _res.appendToBody(std::string(buffer, bytesRead));
+    }
+    if (bytesRead == -1 && errno != EAGAIN) {
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "read error: %s", strerror(errno));
+    }
+    int status;
+    if (waitpid(_pid, &status, WNOHANG) == -1) {
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "waitpid error: %s", strerror(errno));
+    }
+    if (WIFEXITED(status)) {
+        _exitStatus = WEXITSTATUS(status);
+    }
+    if (WIFEXITED(status)) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Child process exited with status: %d", WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status)) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Child process was terminated by signal: %d", WTERMSIG(status));
+    }
 }
 
 void CgiHandler::closePipes() {
@@ -119,46 +137,86 @@ void CgiHandler::closePipes() {
 }
 
 void CgiHandler::deleteChild(int childFd) {
-    // Implement child process cleanup
-    
+    close(_pipeIn[1]);
+    close(_pipeOut[0]);
+
+    // Remove the file descriptor from the epoll instance
+    if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, childFd, NULL) == -1) {
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "epoll_ctl DEL error: %s", strerror(errno));
+    }
+
+    // Wait for the child process to exit
+    int status;
+    if (waitpid(_pid, &status, 0) == -1) {
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "waitpid error: %s", strerror(errno));
+    }
+
+    if (WIFEXITED(status)) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Child process exited with status: %d", WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status)) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Child process killed by signal: %d", WTERMSIG(status));
+    }
 }
 
-// Implement the rest of the getters and setters here
+CgiHandler::CgiState CgiHandler::getState() const {
+    return _state;
+}
 
-std::map<std::string, std::string> &CgiHandler::getEnv() { return _env; }
-ServerConfig &CgiHandler::getConfig() { return _server; }
-HTTP::Request &CgiHandler::getRequest() { return _req; }
-HTTP::Response &CgiHandler::getResponse() { return _res; }
-Client &CgiHandler::getClient() { return _client; }
-pid_t CgiHandler::getPid() { return _pid; }
-std::string &CgiHandler::getCgiExt() { return _cgiExt; }
-std::string &CgiHandler::getResource() { return _resource; }
-int CgiHandler::getPipeIn() { return _pipeIn[0]; }
-int CgiHandler::getPipeOut() { return _pipeOut[0]; }
-int CgiHandler::getEpollFd() { return _epollFd; }
-int CgiHandler::getReadBytes() { return _readBytes; }
-int CgiHandler::getReadTime() { return _readTime; }
-int CgiHandler::getStatusCode() { return _statusCode; }
-bool CgiHandler::getIsRead() { return _isRead; }
-bool CgiHandler::getIsParsed() { return _isParsed; }
-int CgiHandler::getLength() { return _length; }
-int CgiHandler::getExitStatus() { return _exitStatus; }
+void CgiHandler::setState(CgiState state) {
+    _state = state;
+}
 
-void CgiHandler::setEnv(const std::map<std::string, std::string> &env) { _env = env; }
-void CgiHandler::setConfig(const ServerConfig &server) { _server = server; }
-void CgiHandler::setRequest(const HTTP::Request &req) { _req = req; }
-void CgiHandler::setResponse(const HTTP::Response &res) { _res = res; }
-void CgiHandler::setClient(const Client &client) { _client = client; }
-void CgiHandler::setPid(pid_t pid) { _pid = pid; }
-void CgiHandler::setCgiExt(const std::string &cgiExt) { _cgiExt = cgiExt; }
-void CgiHandler::setResource(const std::string &resource) { _resource = resource; }
-void CgiHandler::setPipeIn(int pipeIn) { _pipeIn[0] = pipeIn; }
-void CgiHandler::setPipeOut(int pipeOut) { _pipeOut[0] = pipeOut; }
-void CgiHandler::setEpollFd(int epollFd) { _epollFd = epollFd; }
-void CgiHandler::setReadBytes(int readBytes) { _readBytes = readBytes; }
-void CgiHandler::setReadTime(int readTime) { _readTime = readTime; }
-void CgiHandler::setStatusCode(int statusCode) { _statusCode = statusCode; }
-void CgiHandler::setIsRead(bool isRead) { _isRead = isRead; }
-void CgiHandler::setIsParsed(bool isParsed) { _isParsed = isParsed; }
-void CgiHandler::setLength(int length) { _length = length; }
-void CgiHandler::setExitStatus(int exitStatus) { _exitStatus = exitStatus; }
+int CgiHandler::getPipeIn() const {
+    return _pipeIn[1];
+}
+
+int CgiHandler::getPipeOut() const {
+    return _pipeOut[0];
+}
+
+void CgiHandler::readCgiResponse(Client* client, CgiHandler* cgiHandler) {
+    char buffer[1024];
+    ssize_t bytesRead;
+    bool readErrorOccurred = false;
+    std::string completeResponse;
+
+    while ((bytesRead = read(cgiHandler->_pipeOut[0], buffer, sizeof(buffer) - 1)) > 0) {
+        buffer[bytesRead] = '\0';
+        completeResponse += std::string(buffer, bytesRead);
+    }
+    if (!completeResponse.empty()) {
+        client->addResponse(completeResponse);
+    }
+    if (bytesRead == -1 && errno != EAGAIN) {
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "read error: %s", strerror(errno));
+        readErrorOccurred = true;
+    }
+
+    int status;
+    if (waitpid(cgiHandler->_pid, &status, WNOHANG) == -1) {
+        Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "waitpid error: %s", strerror(errno));
+    } else if (WIFEXITED(status)) {
+        cgiHandler->_exitStatus = WEXITSTATUS(status);
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Child process exited with status: %d", cgiHandler->_exitStatus);
+        if (!readErrorOccurred) {
+            cgiHandler->setState(DONE);
+        }
+    } else if (WIFSIGNALED(status)) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Child process was terminated by signal: %d", WTERMSIG(status));
+    }
+}
+
+void CgiHandler::sendCgiBody(Client* client, CgiHandler* cgiHandler) {
+    if (client->hasRequests()) {
+        const std::string requestBody = client->getNextRequest(); // This now retrieves and removes the request
+        ssize_t bytesSent = write(cgiHandler->_pipeIn[1], requestBody.c_str(), requestBody.size());
+        if (bytesSent == -1) {
+            Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "write error: %s", strerror(errno));
+        } else if (bytesSent < static_cast<ssize_t>(requestBody.size())) {
+            Logger::logMsg("\x1B[31m", CONSOLE_OUTPUT, "Partial write occurred. Expected: %zu, Sent: %zd", requestBody.size(), bytesSent);
+        // Handle partial write or retry logic here
+        } else {
+            cgiHandler->setState(READING); // Move to reading state only if the write was successful
+        }
+    }
+}

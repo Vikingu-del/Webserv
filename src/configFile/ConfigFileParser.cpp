@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/03 08:01:31 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/16 16:46:52 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,6 @@ void ConfigFileParser::handleLocationDirective(ServerConfig &server, std::vector
 	while (i < parametrs.size() && parametrs[i] != "}")
 		codes.push_back(parametrs[i++]);
 	server.setLocation(path, codes);
-	// std::cout << PURPLE << "location: " << path << std::endl;
 	if (i < parametrs.size() && parametrs[i] != "}")
 		throw ParsingErrorException("Wrong character in server scope{}");
 	flag_loc = false;
@@ -364,8 +363,9 @@ int ConfigFileParser::printServers()
 			std::cout << PURPLE << "name location: " << RST << itl->getPath() << std::endl;
 			std::cout << PURPLE << "methods: " << RST << itl->getPrintMethods() << std::endl;
 			std::cout << PURPLE << "index: " << RST << itl->getIndexLocation() << std::endl;
-			if (itl->getCgiPath().empty())
+			if (itl->getCgiPath().empty()) // Why getCgiPath and getCgiExtension are empty? (ERIK)
 			{
+				std::cout << RED << "path can not be empty" << RST << std::endl;
 				std::cout << PURPLE << "root: " << RST << itl->getRootLocation() << std::endl;
 				if (!itl->getReturn().empty())
 					std::cout << PURPLE << "return: " << RST << itl->getReturn() << std::endl;
