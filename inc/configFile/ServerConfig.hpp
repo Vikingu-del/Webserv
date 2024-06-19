@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/15 18:45:11 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/06 15:33:27 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class ServerConfig {
 	private:
 		uint16_t						_port;
 		in_addr_t						_host;
-		std::string						_server_name; // why is not working
+		std::string						_server_name;
 		std::string						_root;
 		unsigned long					_client_max_body_size;
 		std::string						_index;
@@ -33,7 +33,7 @@ class ServerConfig {
 		int								_listen_fd;
 		struct sockaddr_in 				_server_address;
 		std::map<short, std::string>	_error_pages;
-		std::map<std::string, std::string> _mimeTypes;
+		std::map<std::string, std::string> _mimeTypes; // I put this for finding the mime type of the files (ERIK)
 
 	// !Getters
 	public:

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/16 15:48:26 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/14 16:58:38 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,8 +385,8 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		}
 		else if (parametr[i] == "autoindex" && (i + 1) < parametr.size())
 		{
-			if (path == "/cgi-bin/")
-				throw ServerConfigException("Parametr autoindex not for all CGI");
+			if (path == "/cgi-bin")
+				throw ServerConfigException("Parametr autoindex not all for CGI");
 
 			if (flag_autoindex)
 				throw ServerConfigException("Autoindex of location  duplicated");
@@ -404,7 +404,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		}
 		else if (parametr[i] == "return" && (i + 1) < parametr.size())
 		{
-			if (path == "/cgi-bin/")
+			if (path == "/cgi-bin")
 				throw ServerConfigException("Parametr return not all for CGI");
 			if (!new_location.getReturn().empty())
 				throw ServerConfigException("Return of location duplicated");
@@ -413,7 +413,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		}
 		else if (parametr[i] == "alias" && (i + 1) < parametr.size())
 		{
-			if (path == "/cgi-bin/")
+			if (path == "/cgi-bin")
 				throw ServerConfigException("Parametr alias not all for CGI");
 			if (!new_location.getAlias().empty())
 				throw ServerConfigException("Alias of location duplicated");
@@ -438,7 +438,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 						throw ServerConfigException("Token is invalid");
 				}
 			}
-			new_location.setCgiExtension(extension); // we are seting CGI_EXTENSION ERIK
+			new_location.setCgiExtension(extension);
 		}
 		else if (parametr[i] == "cgi_path" && (i + 1) < parametr.size())
 		{
@@ -460,7 +460,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 				if (parametr[i].find("/python") == std::string::npos && parametr[i].find("/bash") == std::string::npos)	
 					throw ServerConfigException("cgi_path is invalid");
 			}
-			new_location.setCgiPath(path); // We are setting CGI_PATH ERIK
+			new_location.setCgiPath(path);
 		}
 		else if (parametr[i] == "client_max_body_size" && (i + 1) < parametr.size())
 		{
@@ -473,10 +473,10 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		else if (i < parametr.size())
 			throw ServerConfigException("Parametr in a locati is invalid");
 	}
-	if (new_location.getPath() != "/cgi-bin/" && new_location.getIndexLocation().empty())
-		new_location.setIndexLocation(_index);
+	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
+		new_location.setIndexLocation(this->_index);
 	if (!flag_max_size)
-		new_location.setMaxBodySize(_client_max_body_size);
+		new_location.setMaxBodySize(this->_client_max_body_size);
 	valid = isValidLocation(new_location);
 	if (valid == 1)
 		throw ServerConfigException("Failed CGI validation");
@@ -487,12 +487,13 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 	else if (valid == 4)
 		throw ServerConfigException("Failed alias file location validation");
 	new_location.parseType();  // Only here changed (ERIK)
-	_locations.push_back(new_location);
+	std::cout << RED << "Location type: " << new_location.getType() << std::endl; // Just to see if the types are set correctly
+	this->_locations.push_back(new_location);
 }
 
 void ServerConfig::setFd(int fd)
 {
-	_listen_fd = fd;
+	this->_listen_fd = fd;
 }
 
 
@@ -512,11 +513,11 @@ void ServerConfig::initErrorPages(void)
 int ServerConfig::isValidLocation(Location & location) const
 {
 	// std::cout << PINK BLD "ServerConfig isValidLocation called" RST << std::endl;
-	if (location.getPath() == "/cgi-bin/")
+	if (location.getPath() == "/cgi-bin")
 	{
 		if (location.getCgiPath().empty() || location.getCgiExtension().empty() || location.getIndexLocation().empty())
 			return (1);
-		// here we check if the index file exists and if it has the right permissions
+		
 		if (ConfigFile::checkFilePermissons(location.getIndexLocation(), 4) < 0)
 		{
 			std::string path = location.getRootLocation() + location.getPath() + "/" + location.getIndexLocation();
@@ -565,7 +566,7 @@ int ServerConfig::isValidLocation(Location & location) const
 	}
 	else
 	{
-		if (location.getPath()[0] != '/' || location.getPath()[location.getPath().size() - 1] != '/')
+		if (location.getPath()[0] != '/')
 			return (2);
 		if (location.getRootLocation().empty()) {
 			location.setRootLocation(this->_root);

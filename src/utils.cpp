@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:57:30 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/15 18:23:36 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 08:43:31 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,18 +78,4 @@ std::string utils::getCurrentDateTime() {
     char buffer[100];
     strftime(buffer, 100, "%a, %d %b %Y %H:%M:%S GMT", gmt);
     return std::string(buffer);
-}
-
-std::string utils::intToString(int value) {
-    std::ostringstream oss;
-    oss << value;
-    return oss.str();
-}
-
-void utils::printMap(const std::map<std::string, std::string> &map) {
-    std::map<std::string, std::string>::const_iterator it = map.begin();
-    while (it != map.end()) {
-        std::cout << it->first << " = " << it->second << std::endl;
-        it++;
-    }
 }

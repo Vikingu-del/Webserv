@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/16 13:00:09 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/03 09:57:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "defines.h"
 #include <ctime>
 #include <iomanip>
-#include <map>
+#include "Location.hpp"
 
 namespace utils
 {
@@ -36,9 +36,7 @@ namespace utils
         return oss.str();
     }
     int strToInt(const std::string& str);
-    std::string intToString(int value);
     std::string toLower(const std::string& str);
     std::string	statusCodeString(short statusCode);
     std::string getCurrentDateTime();
-    void printMap(const std::map<std::string, std::string> &map);
 }

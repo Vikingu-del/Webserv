@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/17 15:13:44 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/14 16:56:01 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ namespace   HTTP
 	std::string	versionToString(Version version);
 	Version		stringToVersion(const std::string& version);
 	std::string	statusCodeToString(StatusCode code);
+	// std::string headerTypeToStr(HeaderType header);
+	// HeaderType	strToHeaderType(const std::string& header);
 
     // CLASSES
 	class	Header
@@ -74,6 +76,7 @@ namespace   HTTP
 		private:
 			std::string		_key;
 			std::string		_value;
+			// HeaderType		_type;
 		public:
 			Header();
 			Header(const std::string &key, const std::string &value);
@@ -82,13 +85,16 @@ namespace   HTTP
 			// Setters
 			void			setKey(const std::string &key);
 			void			setValue(const std::string &value);
+			// void			setType(HeaderType type);
 
 			// Getters
 			const			std::string &getKey() const;
 			const			std::string &getValue() const;
+			// const			HeaderType &getType() const;
 
 			// Overload
 			bool			operator==(const std::string &key) const;
+			// bool			operator==(const HeaderType &type) const;
 
 			// methods
 			std::string		serialize() const;
@@ -103,8 +109,6 @@ namespace   HTTP
 			std::map<std::string, Header>	_headers;
 			Version							_version;
 			std::string						_body;
-			std::string						_uri;
-			std::string						_query;
 		public:
 			Request();
 			Request(Method method, const std::string& resource, const std::map<std::string, Header>& headers, Version version, const std::string& body);
@@ -119,8 +123,6 @@ namespace   HTTP
 			void								setResource(const std::string &resource);
 			void								setHeaders(const std::map<std::string, Header> &headers);
 			void								setBody(const std::string &body);
-			void								setUri(const std::string &uri);
-			void								setQuery(const std::string &query);
 
 			// Getters
 			Version								getVersion() const;
@@ -128,18 +130,13 @@ namespace   HTTP
 			const std::string					&getResource() const;
 			const std::map<std::string, Header>	&getHeaders() const;
 			const std::string					&getBody() const;
-			void								getHeader(const std::string &key, std::string &src) const;
-			const std::string					&getUri() const;
-			const std::string					&getQuery() const;
 
 			// Methods
-			void                   				parseUri();
-			void								parseQuery();
 			std::string							serialize() const;
 			static Request						deserialize(const std::string &request);
 			struct MatchMethod {
-				const HTTP::Method& method;
-			};
+			const HTTP::Method& method;
+		};
 	};
 
     class   Response {
@@ -167,12 +164,10 @@ namespace   HTTP
             Version								getVersion() const;
             const std::map<std::string, Header>	&getHeaders() const;
             const std::string					&getBody() const;
-			void								getHeader(const std::string &key, std::string &src) const;
             
             // Methods
             std::string							serialize() const;
             static Response						deserialize(const std::string &response);
-			void								appendToBody(const std::string &data);
     };
 
 }
