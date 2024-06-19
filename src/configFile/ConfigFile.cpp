@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segfault <segfault@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 17:07:47 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/02 23:29:36 by segfault         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:03:56 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,5 @@ ConfigFile::ConfigFile(std::string const path) : _configFilePath(path), _numOfSe
 
 //! Destructor
 ConfigFile::~ConfigFile() {
-	std::cout << RED BLD "ConfigFile destructor called" RST << std::endl;
+	// std::cout << RED BLD "ConfigFile destructor called" RST << std::endl;
 }

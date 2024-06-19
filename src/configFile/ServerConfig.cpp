@@ -6,7 +6,7 @@
 /*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/18 17:07:20 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/06/19 16:03:40 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -487,7 +487,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 	else if (valid == 4)
 		throw ServerConfigException("Failed alias file location validation");
 	new_location.parseType();  // Only here changed (ERIK)
-	std::cout << RED << "Location type: " << new_location.getType() << std::endl; // Just to see if the types are set correctly
+	// std::cout << RED << "Location type: " << new_location.getType() << std::endl; // Just to see if the types are set correctly
 	this->_locations.push_back(new_location);
 }
 
@@ -627,6 +627,29 @@ bool ServerConfig::checkLocaitons() const
 		}
 	}
 	return (false);
+}
+
+//! Check that required locations are present
+bool ServerConfig::checkSpecificLocations() const
+{
+    std::vector<std::string> requiredLocations;
+    requiredLocations.push_back("/cgi-bin/");
+    requiredLocations.push_back("/database/");
+    std::vector<Location>::const_iterator it;
+    for (std::vector<std::string>::const_iterator requiredLocation = requiredLocations.begin(); requiredLocation != requiredLocations.end(); ++requiredLocation) {
+        bool found = false;
+        for (it = this->_locations.begin(); it != this->_locations.end(); ++it) {
+            if (it->getPath() == *requiredLocation) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+			throw ServerConfigException( RED "Required location " + *requiredLocation + " not found." RST);
+            return false;
+        }
+    }
+    return true;
 }
 
 //! Bind server

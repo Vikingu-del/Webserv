@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/06 15:33:27 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/19 15:55:16 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class ServerConfig {
 		int								_listen_fd;
 		struct sockaddr_in 				_server_address;
 		std::map<short, std::string>	_error_pages;
-		std::map<std::string, std::string> _mimeTypes; // I put this for finding the mime type of the files (ERIK)
+		std::map<std::string, std::string> _mimeTypes;
 
 	// !Getters
 	public:
@@ -48,8 +48,7 @@ class ServerConfig {
 		const std::vector<Location> 		&getLocations() const;
 		const struct sockaddr_in 			&getServerArddres() const;
 		const int 							&getListenFd() const;
-		const std::string 					&getMimeType(std::string extension) const;  // Returns the exact mime for the specific extension (ERIK)
-
+		const std::string 					&getMimeType(std::string extension) const;
 
 	// !Setters
 	public:
@@ -81,6 +80,7 @@ class ServerConfig {
 		bool	isValidHost(std::string host) const;
 		void	bindServer();
 		bool	checkLocaitons() const;
+		bool 	checkSpecificLocations() const;
 		bool	isValidErrorPages();
 		
 		struct MatchLocation {

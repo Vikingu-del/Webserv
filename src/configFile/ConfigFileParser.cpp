@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFileParser.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/03 08:01:31 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/19 16:01:53 by ipetruni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,6 +295,9 @@ void ConfigFileParser::finalizeServerConfig(ServerConfig &server, const std::vec
 		throw ParsingErrorException("Index from config file not found or unreadable");
 	if (server.checkLocaitons())
 		throw ParsingErrorException("Location is duplicated");
+	if (!server.checkSpecificLocations()) {
+		return;
+	}
 	if (!server.getPort())
 		throw ParsingErrorException("Port not found");
 	server.setErrorPages(error_codes);
