@@ -6,12 +6,13 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 15:15:34 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/16 15:47:25 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/20 02:56:05 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerSocket.hpp"
 #include "Logger.hpp"
+#include "ConfigFileParser.hpp"
 
 int main(int argc, char **argv)
 {

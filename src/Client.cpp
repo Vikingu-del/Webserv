@@ -1,109 +1,135 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/10 14:10:23 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/17 14:23:19 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Client.hpp"
+#include "ServerSocket.hpp"
+#include "RequestHandler.hpp"
 #include "CgiHandler.hpp"
+#include "Logger.hpp"
+#include <unistd.h>
+#include <ctime>
 
-/* Constructors, destructors and assignment operator */
-Client::Client() : _clientSocket(-1), _lastMsg(0), _epoll_fd(-1), _cgiHandler(NULL), _isCgiRequest(false) {}
-Client::Client(int epoll_fd) : _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd), _cgiHandler(NULL), _isCgiRequest(false) {}
-Client::Client(ServerConfig &serv, int epoll_fd) : _server(serv), _clientSocket(-1), _lastMsg(0), _epoll_fd(epoll_fd), _cgiHandler(NULL), _isCgiRequest(false) {}
+Client::Client(ServerSocket& serverSocket) 
+    : _lastMsg(time(NULL)), _incompleteRequest(""), _emptyResponse(""), _cgiHandler(NULL), _isCgiRequest(false), _serverSocket(serverSocket), _clientSocket(-1) {}
+
+Client::Client(ServerConfig& serv, ServerSocket& serverSocket, int clientSocket) 
+    : _lastMsg(time(NULL)), _incompleteRequest(""), _emptyResponse(""), _cgiHandler(NULL), _isCgiRequest(false), _serverSocket(serverSocket), _server(serv), _clientSocket(clientSocket) {}
+
 Client::~Client() {
     if (_cgiHandler) {
         delete _cgiHandler;
-        _cgiHandler = NULL;
+    }
+    close(_clientSocket);
+}
+
+void Client::handleEvent(int events) {
+    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client handling events: %d", events);
+    if (events & EPOLLIN) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client EPOLLIN event for fd: %d", _clientSocket);
+        _serverSocket.readRequest(_clientSocket, this);
+    }
+    if (events & EPOLLOUT) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client EPOLLOUT event for fd: %d", _clientSocket);
+        sendResponse();
+    }
+    if (events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client EPOLLHUP, EPOLLRDHUP, or EPOLLERR event for fd: %d", _clientSocket);
+        _serverSocket.closeConnection(_clientSocket);
     }
 }
 
-Client::Client(const Client &copy) {
-    if (this != &copy) {
-        this->_clientAddress = copy._clientAddress;
-        this->_lastMsg = copy._lastMsg;
-        this->_clientSocket = copy._clientSocket;
-        this->_server = copy._server;
-        this->_requests = copy._requests;
-        this->_responses = copy._responses;
-        this->_incompleteRequest = copy._incompleteRequest;
-        if (copy._cgiHandler) {
-            this->_cgiHandler = new CgiHandler(*copy._cgiHandler);
-        } else {
-            this->_cgiHandler = NULL;
-        }
+void Client::sendResponse() {
+    if (_responses.empty()) {
+        return;
+    }
+    std::string response = _responses.front();
+    ssize_t bytesSent = send(_clientSocket, response.c_str(), response.size(), 0);
+    if (bytesSent == -1) {
+        Logger::logMsg(RED, CONSOLE_OUTPUT, "send error: %s", strerror(errno));
+        return;
+    }
+    if (bytesSent == static_cast<ssize_t>(response.size())) {
+        _responses.pop_front();
+    } else {
+        _responses.front() = response.substr(bytesSent);
+    }
+
+    if (_responses.empty()) {
+        // Mark the client as done and remove the client socket from the epoll monitoring list after sending all responses
+        _cgiHandler->setState(CgiHandler::DONE);
+        _serverSocket.removeFdFromMonitor(_clientSocket);
+        close(_clientSocket); // Close the client socket after sending the response
     }
 }
 
-
-Client &Client::operator=(const Client &copy) {
-    if (this != &copy) {
-        this->_clientAddress = copy._clientAddress;
-        this->_lastMsg = copy._lastMsg;
-        this->_clientSocket = copy._clientSocket;
-        this->_server = copy._server;
-        this->_requests = copy._requests;
-        this->_responses = copy._responses;
-        this->_incompleteRequest = copy._incompleteRequest;
-        if (_cgiHandler) {
-            delete _cgiHandler;
-        }
-        if (copy._cgiHandler) {
-            this->_cgiHandler = new CgiHandler(*copy._cgiHandler);
-        } else {
-            this->_cgiHandler = NULL;
-        }
-    }
-    return (*this);
+void Client::addResponse(const std::string& response) {
+    _responses.push_back(response);
 }
-/* Geters */
-const int 	        &Client::getSocket() const { return _clientSocket; }
-const sockaddr_in	&Client::getAddress() const { return _clientAddress; }
-const time_t	    &Client::getLastTime() const { return _lastMsg; }
-const std::string	&Client::getIncompleteRequest() const { return _incompleteRequest; }
-const ServerConfig	&Client::getServer() const { return _server; }
-const int           &Client::getEpollFd() const { return _epoll_fd; }
 
-/* Setters */
-void	Client::setSocket(int &socket) { _clientSocket = socket; }
-void	Client::setAddress(sockaddr_in &address) { _clientAddress = address; }
-void	Client::setServer(ServerConfig &serv) { _server = serv; }
-void	Client::setTime() { _lastMsg = time(NULL); }
-void	Client::setIncompleteRequest(const std::string &req) { _incompleteRequest = req; }
+void Client::removeCurrentResponse() {
+    if (!_responses.empty()) {
+        _responses.pop_front();
+    }
+}
 
-/* Methods */
-void	Client::addRequest(const std::string& req) { _requests.push(req); }
-bool	Client::hasRequests() { return !_requests.empty(); }
+bool Client::hasResponses() const {
+    return !_responses.empty();
+}
+
+std::string& Client::getCurrentResponse() {
+    return _responses.front();
+}
+
+std::string Client::getIncompleteRequest() const {
+    return _incompleteRequest;
+}
+
+void Client::setIncompleteRequest(const std::string& request) {
+    _incompleteRequest = request;
+}
+
+void Client::setTime() {
+    _lastMsg = time(NULL);
+}
+
+time_t Client::getLastTime() const {
+    return _lastMsg;
+}
+
+void Client::setCgiRequest(bool isCgi) {
+    _isCgiRequest = isCgi;
+}
+
+bool Client::isCgiRequest() const {
+    return _isCgiRequest;
+}
+
+void Client::setCgiHandler(CgiHandler* handler) {
+    _cgiHandler = handler;
+}
+
+CgiHandler* Client::getCgiHandler() const {
+    return _cgiHandler;
+}
+
+void Client::addFdToMonitor(int fd, uint32_t events) {
+    if (_monitoredFds.find(fd) == _monitoredFds.end()) {
+        _serverSocket.addToEpoll(fd, uint32_t(events));
+        _monitoredFds.insert(fd);
+    }
+}
+
+int Client::getSocket() const {
+    return _clientSocket;
+}
+
+ServerConfig Client::getServer() const {
+    return _server;
+}
+
+bool Client::hasIncompleteRequest() const {
+    return !_incompleteRequest.empty();
+}
 
 std::string Client::getNextRequest() {
-    if (_requests.empty()) return "";
-    std::string req = _requests.front();
-    _requests.pop();
-    return req;
-}
-
-void	Client::addResponse(const std::string& resp) { _responses.push(resp); }
-
-bool	Client::hasResponses() { return !_responses.empty(); }
-
-std::string	&Client::getCurrentResponse() {
-	if (_responses.empty()) return _emptyResponse;
-	return _responses.front();
-}
-void	Client::removeCurrentResponse() {
-	if (!_responses.empty())
-        _responses.pop();
-}
-
-void	Client::clearClient() {
-    // Clear all the data in the client object
-    while (!_requests.empty()) _requests.pop();
-    while (!_responses.empty()) _responses.pop();
+    std::string request = _incompleteRequest;
     _incompleteRequest.clear();
+    return request;
 }

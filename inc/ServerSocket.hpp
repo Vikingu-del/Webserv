@@ -1,52 +1,44 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ServerSocket.hpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/10 14:03:11 by kilchenk          #+#    #+#             */
-/*   Updated: 2024/06/17 12:31:20 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef SERVER_SOCKET_HPP
 #define SERVER_SOCKET_HPP
 
-#include <sys/socket.h>
-#include <sys/epoll.h>
-#include <map>
 #include <vector>
+#include <map>
 #include "ServerConfig.hpp"
-#include "Client.hpp"
-#include "RequestHandler.hpp"
-#include "CgiHandler.hpp"
+
+class Client;
+class CgiHandler;
 
 class ServerSocket {
 private:
-    std::vector<ServerConfig> _servers;
-    std::map<int, ServerConfig> _serversMap;
-    std::map<int, Client*> _clientsMap;
     int epoll_fd;
-
-    void parseRequest(Client *client, const std::string &data);
-    void handleCgiRequest(Client *client);
+    std::vector<ServerConfig> _servers;
+    std::map<int, Client*> _clientsMap;
+    std::map<int, ServerConfig> _serversMap;
+    std::map<int, CgiHandler*> _cgiPipeMap;
 
 public:
     ServerSocket();
     ~ServerSocket();
-    void setupServer(std::vector<ServerConfig> serv);
-    void runServer();
-    void acceptNewConnection(ServerConfig &serv);
-    void listenServer();
-    void readRequest(const int &fd, Client *client);
-    void sendResponse(const int &fd, Client *client);
-    void closeConnection(const int fd);
+
     void addToEpoll(const int fd, uint32_t events);
     void modifyEpoll(int fd, uint32_t events);
-    void removeFromEpoll(const int fd);
+    void removeFromEpoll(int fd);
+    void acceptNewConnection(ServerConfig &serverConfig);
+    void listenServer();
+    void readRequest(int fd, Client *client);
+    void parseRequest(Client *client, const std::string &data);
+    void handleCgiEvent(int fd, uint32_t events);
+    void handleCgiRequest(Client *client);
+    void sendResponse(const int fd, Client *client);
+    void closeConnection(int clientFd);
+    void runServer();
+    void handleEpollIn(int fd);
+    void handleEpollOut(int fd);
+    void setupServer(std::vector<ServerConfig> serv);
     void checkTimeout();
-    int     getEpollFd() const;
+    int getEpollFd() const;
+    std::map<int, CgiHandler*>& getCgiPipeMap() { return _cgiPipeMap; }
+    void removeFdFromMonitor(int fd);
 };
 
-#endif
+#endif // SERVER_SOCKET_HPP
