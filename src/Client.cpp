@@ -37,6 +37,7 @@ void Client::handleEvent(int events) {
 
 void Client::sendResponse() {
     if (_responses.empty()) {
+        Logger::logMsg(PURPLE, CONSOLE_OUTPUT, "No responses to send");
         return;
     }
     std::string response = _responses.front();
@@ -52,10 +53,14 @@ void Client::sendResponse() {
     }
 
     if (_responses.empty()) {
-        // Mark the client as done and remove the client socket from the epoll monitoring list after sending all responses
-        _cgiHandler->setState(CgiHandler::DONE);
+         Logger::logMsg(RED, CONSOLE_OUTPUT, "Server socket pointer is null");
         _serverSocket.removeFdFromMonitor(_clientSocket);
-        close(_clientSocket); // Close the client socket after sending the response
+        close(_clientSocket);
+        if (_cgiHandler != NULL) {
+            _cgiHandler->setState(CgiHandler::DONE);
+        } else {
+            Logger::logMsg(PURPLE, CONSOLE_OUTPUT, "No CGI handler for this client");
+        }
     }
 }
 

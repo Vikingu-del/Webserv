@@ -123,6 +123,7 @@ void CgiHandler::readCgiResponse() {
 }
 
 void CgiHandler::sendCgiBody() {
+    std::cout << YELLOW << "Sending CGI body" << RESET << std::endl;
     const std::string requestBody = _client->getIncompleteRequest();
     std::cout << YELLOW << "Sending CGI body: " << requestBody << RESET << std::endl;
     ssize_t bytesSent = write(_pipeIn[1], requestBody.c_str(), requestBody.size());

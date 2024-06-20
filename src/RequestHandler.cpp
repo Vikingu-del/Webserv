@@ -82,11 +82,21 @@ void RequestHandler::handleGetRequest(std::pair<std::string, std::string> &respo
                                       std::string &resource,
                                       std::string &directoryPath) {
     Logger::logMsg("INFO", CONSOLE_OUTPUT, "Handling GET request");
+    
+    // Determine the MIME type
     responseBody.second = _server.getMimeType(i->getType());
+
+    // Construct the file path
     std::string filePath = i->getRootLocation() + (directoryPath == resource ? i->getIndexLocation() : resource);
     Logger::logMsg("INFO", CONSOLE_OUTPUT, "File path: %s", filePath.c_str());
+
+    // Check if autoindex is enabled
     _showAutoIndex = i->getAutoindex();
+
+    // Read the file
     responseBody = readFile(filePath);
+
+    // Handle file not found case
     if (responseBody.first == "404 not found" || (responseBody.first == readFile(_errorPages[404]).first)) {
         if (i->getAutoindex() && _showAutoIndex == 0) {
             Logger::logMsg("INFO", CONSOLE_OUTPUT, "Autoindex enabled: %s", (i->getRootLocation() + directoryPath).c_str());
@@ -101,15 +111,20 @@ void RequestHandler::handleGetRequest(std::pair<std::string, std::string> &respo
                 _response = HTTP::Response(HTTP::NOT_FOUND, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
                 return;
             } else {
-                responseBody.first = "Error: 404 Not Found";
+                responseBody.first = "<html><body><h1>Error 404: Not Found</h1></body></html>";
                 responseBody.second = "text/html";
             }
         }
     }
+
+    // Set response headers
     _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
     responseHeaders["Connection"] = HTTP::Header("Connection", "keep-alive");
+
+    // Set the response
     _response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 }
+
 
 void RequestHandler::handlePostRequest(std::pair<std::string, std::string> &responseBody, 
                                        std::map<std::string, HTTP::Header> &responseHeaders) {
@@ -198,37 +213,34 @@ void RequestHandler::handleAutoindex(std::pair<std::string, std::string> &respon
     _response = HTTP::Response(HTTP::OK, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 }
 
-void RequestHandler::handleMethodNotAllowed(std::pair<std::string, std::string> &responseBody, std::map<std::string, HTTP::Header> &responseHeaders) {
-    std::map<short, std::string>::const_iterator it = _errorPages.find(405);
-    if (it != _errorPages.end() && !it->second.empty()) {
-        handleError(responseBody, _errorPages[405]);
-    } else {
-        responseBody.first = "Error 405: Method Not Allowed";
-        responseBody.second = "html";
-    }
-    _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
-    _response = HTTP::Response(HTTP::METHOD_NOT_ALLOWED, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
-}
-
 void RequestHandler::handleRequest() {
     std::map<std::string, HTTP::Header> responseHeaders;
     std::pair<std::string, std::string> responseBody;
     responseHeaders["Date"] = HTTP::Header("Date", utils::getCurrentDateTime());
     responseHeaders["Server"] = HTTP::Header("Server", "Webserv");
-    std::vector<Location> locations = _server.getLocations();
+
+    // Get resource and directory
     std::string resource = _request.getResource();
     std::string directory = resource.substr(0, resource.find_last_of("/") + 1);
+    
+    // Log the request details
+    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Handling request for resource: %s", resource.c_str());
+
+    // Find matching location
+    std::vector<Location> locations = _server.getLocations();
     std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(directory));
+    
     if (i == locations.end()) {
         Logger::logMsg("INFO", CONSOLE_OUTPUT, "Location not found");
         responseBody = readFile(_server.getRoot() + resource);
+
         if (responseBody.first.empty()) {
             std::map<short, std::string>::const_iterator it = _errorPages.find(404);
             if (it != _errorPages.end() && !it->second.empty()) {
                 Logger::logMsg("INFO", CONSOLE_OUTPUT, "Error page: %s", _errorPages[404].c_str());
                 handleError(responseBody, _errorPages[404]);
             } else {
-                responseBody.first = "Error: 404 Not Found";
+                responseBody.first = "<html><body><h1>Error 404: Not Found</h1></body></html>";
                 responseBody.second = "html";
             }
             _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
@@ -239,25 +251,30 @@ void RequestHandler::handleRequest() {
         }
         return;
     }
+
+    // Check if the requested method is allowed
     std::vector<short> methods = i->getMethods();
     switch (_request.getMethod()) {
         case HTTP::GET:
-            if (methods[0]) handleGetRequest(responseBody, responseHeaders, i, resource, directory);
-            else {
+            if (methods[0]) {
+                handleGetRequest(responseBody, responseHeaders, i, resource, directory);
+            } else {
                 Logger::logMsg("ERROR", CONSOLE_OUTPUT, "GET method not allowed");
                 handleMethodNotAllowed(responseBody, responseHeaders);
             }
             break;
         case HTTP::POST:
-            if (methods[1]) handlePostRequest(responseBody, responseHeaders);
-            else {
+            if (methods[1]) {
+                handlePostRequest(responseBody, responseHeaders);
+            } else {
                 Logger::logMsg("ERROR", CONSOLE_OUTPUT, "POST method not allowed");
                 handleMethodNotAllowed(responseBody, responseHeaders);
             }
             break;
         case HTTP::DELETE:
-            if (methods[2]) handleRemoveRequest(responseBody, responseHeaders);
-            else {
+            if (methods[2]) {
+                handleRemoveRequest(responseBody, responseHeaders);
+            } else {
                 Logger::logMsg("ERROR", CONSOLE_OUTPUT, "DELETE method not allowed");
                 handleMethodNotAllowed(responseBody, responseHeaders);
             }
@@ -265,5 +282,13 @@ void RequestHandler::handleRequest() {
         default:
             Logger::logMsg("ERROR", CONSOLE_OUTPUT, "Method not allowed");
             handleMethodNotAllowed(responseBody, responseHeaders);
+            break;
     }
+}
+
+void RequestHandler::handleMethodNotAllowed(std::pair<std::string, std::string> &responseBody, std::map<std::string, HTTP::Header> &responseHeaders) {
+    responseBody.first = "<html><body><h1>Error 405: Method Not Allowed</h1></body></html>";
+    responseBody.second = "html";
+    _SET_RESPONSE_HEADERS(responseHeaders, responseBody);
+    _response = HTTP::Response(HTTP::METHOD_NOT_ALLOWED, HTTP::HTTP_1_1, responseHeaders, responseBody.first);
 }

@@ -196,7 +196,6 @@ void ServerSocket::sendResponse(const int fd, Client* client) {
             }
         }
     }
-
     if (!client->hasResponses()) {
         if (client->isCgiRequest() && client->getCgiHandler()->getState() != CgiHandler::DONE) {
             modifyEpoll(fd, EPOLLIN | EPOLLRDHUP);
