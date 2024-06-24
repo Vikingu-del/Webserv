@@ -12,11 +12,11 @@
 int setNonBlocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "fcntl F_GETFL error: %s", strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "fcntl F_GETFL error: %s", strerror(errno));
         return -1;
     }
     if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "fcntl F_SETFL error: %s", strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "fcntl F_SETFL error: %s", strerror(errno));
         return -1;
     }
     return 0;
@@ -25,7 +25,7 @@ int setNonBlocking(int fd) {
 ServerSocket::ServerSocket() {
     epoll_fd = epoll_create1(EPOLL_CLOEXEC);
     if (epoll_fd == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_create1 error: %s", strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_create1 error: %s", strerror(errno));
         exit(1);
     }
 }
@@ -44,11 +44,11 @@ void ServerSocket::addToEpoll(const int fd, uint32_t events) {
     ev.events = events;
     ev.data.fd = fd;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "Failed to add fd %d to epoll instance with events %u: %s", fd, events, strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "Failed to add fd %d to epoll instance with events %u: %s", fd, events, strerror(errno));
         close(fd);
         return; // Do not close epoll_fd here, it is for the entire server
     }
-    Logger::logMsg(RED, CONSOLE_OUTPUT, "Added fd %d to epoll with events %u", fd, events);
+    // Logger::logMsg(RED, CONSOLE_OUTPUT, "Added fd %d to epoll with events %u", fd, events);
 }
 
 void ServerSocket::modifyEpoll(int fd, uint32_t events) {
@@ -56,14 +56,14 @@ void ServerSocket::modifyEpoll(int fd, uint32_t events) {
     ev.events = events;
     ev.data.fd = fd;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &ev) == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_ctl EPOLL_CTL_MOD error: %s", strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_ctl EPOLL_CTL_MOD error: %s", strerror(errno));
         exit(1);
     }
 }
 
 void ServerSocket::removeFromEpoll(int fd) {
     if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, 0) == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_ctl EPOLL_CTL_DEL error: %s", strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_ctl EPOLL_CTL_DEL error: %s", strerror(errno));
     }
     close(fd);
 }
@@ -71,7 +71,7 @@ void ServerSocket::removeFromEpoll(int fd) {
 void ServerSocket::acceptNewConnection(ServerConfig& serverConfig) {
     int clientFd = accept(serverConfig.getListenFd(), NULL, NULL);
     if (clientFd == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "Failed to accept new connection: %s", strerror(errno));
+        // Logger::logMsg(RED, CONSOLE_OUTPUT, "Failed to accept new connection: %s", strerror(errno));
         return;
     }
 
@@ -81,13 +81,13 @@ void ServerSocket::acceptNewConnection(ServerConfig& serverConfig) {
     addToEpoll(clientFd, EPOLLIN);
 
     _clientsMap[clientFd] = new Client(serverConfig, *this, clientFd);
-    Logger::logMsg(RED, CONSOLE_OUTPUT, "Accepted new connection, fd: %d", clientFd);
+    // Logger::logMsg(RED, CONSOLE_OUTPUT, "Accepted new connection, fd: %d", clientFd);
 }
 
 void ServerSocket::listenServer() {
     for (std::vector<ServerConfig>::iterator i = _servers.begin(); i != _servers.end(); ++i) {
         if (listen(i->getListenFd(), 200) == -1) {
-            Logger::logMsg(RED, CONSOLE_OUTPUT, "listen error: %s", strerror(errno));
+            // Logger::logMsg(RED, CONSOLE_OUTPUT, "listen error: %s", strerror(errno));
             exit(1);
         }
         if (setNonBlocking(i->getListenFd()) == -1) {
@@ -104,7 +104,7 @@ void ServerSocket::readRequest(int fd, Client* client) {
 
     if (count == -1) {
         if (errno == EAGAIN) {
-            Logger::logMsg(RED, CONSOLE_OUTPUT, "recv error: %s", strerror(errno));
+            // Logger::logMsg(RED, CONSOLE_OUTPUT, "recv error: %s", strerror(errno));
             closeConnection(fd);
         }
         return;
@@ -147,18 +147,15 @@ void ServerSocket::parseRequest(Client* client, const std::string& data) {
 }
 
 void ServerSocket::handleCgiEvent(int fd, uint32_t events) {
-    Logger::logMsg(RED, CONSOLE_OUTPUT, "Handling CGI event for fd: %d, events: %u", fd, events);
     CgiHandler* cgiHandler = _cgiPipeMap[fd];
     if (events & EPOLLIN) {
-        std::cout << "Reading CGI response" << std::endl;
         cgiHandler->readCgiResponse();
-    } else if (events & EPOLLOUT) {
-        std::cout << "Sending CGI body" << std::endl;
+        // After reading the CGI response, update the epoll instance for the client socket
+        modifyEpoll(cgiHandler->getClient()->getSocket(), EPOLLOUT);
+    } else if (events & EPOLLOUT)
         cgiHandler->sendCgiBody();
-    } else {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "Closing CGI connection due to hang up or error for fd: %d", fd);
+    else
         closeConnection(fd);
-    }
 }
 
 void ServerSocket::removeFdFromMonitor(int fd) {
@@ -166,44 +163,17 @@ void ServerSocket::removeFdFromMonitor(int fd) {
 }
 
 void ServerSocket::handleCgiRequest(Client* client) {
-    Logger::logMsg(RED, CONSOLE_OUTPUT, "handleCgiRequest for client fd: %d", client->getSocket());
     CgiHandler* cgiHandler = client->getCgiHandler();
     if (!cgiHandler) {
         Logger::logMsg(RED, CONSOLE_OUTPUT, "CgiHandler is NULL for client fd: %d", client->getSocket());
         return;
     }
-
     cgiHandler->initCgi();
-    client->addFdToMonitor((*cgiHandler).getPipeOut(), EPOLLOUT | EPOLLET);
-    getCgiPipeMap()[(*cgiHandler).getPipeOut()] = cgiHandler;
-    Logger::logMsg(RED, CONSOLE_OUTPUT, "execCgi called for client fd: %d", client->getSocket());
-}
-
-void ServerSocket::sendResponse(const int fd, Client* client) {
-    while (client->hasResponses()) {
-        std::string& buffer = client->getCurrentResponse();
-        ssize_t count = send(fd, buffer.c_str(), buffer.size(), 0);
-        if (count == -1) {
-            if (errno != EAGAIN) {
-                Logger::logMsg(RED, CONSOLE_OUTPUT, "write error: %s", strerror(errno));
-                closeConnection(fd);
-            }
-            return;
-        } else {
-            buffer.erase(0, count);
-            if (buffer.empty()) {
-                client->removeCurrentResponse();
-            }
-        }
+    int pipeOutFd = cgiHandler->getPipeOut();
+    if (!_cgiPipeMap.count(pipeOutFd)) {
+        client->addFdToMonitor(pipeOutFd, EPOLLIN | EPOLLET);
+        getCgiPipeMap()[pipeOutFd] = cgiHandler;
     }
-    if (!client->hasResponses()) {
-        if (client->isCgiRequest() && client->getCgiHandler()->getState() != CgiHandler::DONE) {
-            modifyEpoll(fd, EPOLLIN | EPOLLRDHUP);
-        } else {
-            modifyEpoll(fd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
-        }
-    }
-    Logger::logMsg(YELLOW, CONSOLE_OUTPUT, "Response sent");
 }
 
 void ServerSocket::closeConnection(int clientFd) {
@@ -225,17 +195,17 @@ void ServerSocket::runServer() {
             if (errno == EINTR) {
                 continue;
             }
-            Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_wait error: %s", strerror(errno));
+            // Logger::logMsg(RED, CONSOLE_OUTPUT, "epoll_wait error: %s", strerror(errno));
             exit(1);
         }
         for (int i = 0; i < numEvents; ++i) {
             int fd = events[i].data.fd;
-            Logger::logMsg(RED, CONSOLE_OUTPUT, "Handling event for fd: %d, events: %u", fd, events[i].events);
+            // Logger::logMsg(RED, CONSOLE_OUTPUT, "Handling event for fd: %d, events: %u", fd, events[i].events);
 
             if (_serversMap.find(fd) != _serversMap.end()) {
                 acceptNewConnection(_serversMap[fd]);
             } else if (events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
-                Logger::logMsg(RED, CONSOLE_OUTPUT, "Closing connection due to hang up or error for fd: %d", fd);
+                // Logger::logMsg(RED, CONSOLE_OUTPUT, "Closing connection due to hang up or error for fd: %d", fd);
                 closeConnection(fd);
             } else {
                 if (_clientsMap.find(fd) != _clientsMap.end()) {
@@ -243,7 +213,7 @@ void ServerSocket::runServer() {
                 } else if (_cgiPipeMap.find(fd) != _cgiPipeMap.end()) {
                     handleCgiEvent(fd, events[i].events);
                 } else {
-                    Logger::logMsg(RED, CONSOLE_OUTPUT, "Unknown file descriptor: %d", fd);
+                    // Logger::logMsg(RED, CONSOLE_OUTPUT, "Unknown file descriptor: %d", fd);
                 }
             }
         }
@@ -256,23 +226,11 @@ void ServerSocket::runServer() {
     }
 }
 
-void ServerSocket::handleEpollIn(int fd) {
-    if (_clientsMap.find(fd) != _clientsMap.end()) {
-        _clientsMap[fd]->handleEvent(EPOLLIN);
-    }
-}
-
-void ServerSocket::handleEpollOut(int fd) {
-    if (_clientsMap.find(fd) != _clientsMap.end()) {
-        _clientsMap[fd]->handleEvent(EPOLLOUT);
-    }
-}
-
 void ServerSocket::setupServer(std::vector<ServerConfig> serv) {
     _servers = serv;
     for (std::vector<ServerConfig>::iterator server = _servers.begin(); server != _servers.end(); ++server) {
         server->bindServer();
-        Logger::logMsg(BLUE, CONSOLE_OUTPUT, "Server created on port: %d", server->getPort());
+        // Logger::logMsg(BLUE, CONSOLE_OUTPUT, "Server created on port: %d", server->getPort());
     }
 }
 
@@ -282,7 +240,7 @@ void ServerSocket::checkTimeout() {
     while (it != _clientsMap.end()) {
         if (difftime(currentTime, it->second->getLastTime()) > TIMEOUT_PERIOD) {
             int fd = it->first;
-            Logger::logMsg(RED, CONSOLE_OUTPUT, "Client Timeout, Closing Connection");
+            // Logger::logMsg(RED, CONSOLE_OUTPUT, "Client Timeout, Closing Connection");
             delete it->second;
             std::map<int, Client*>::iterator temp = it;
             ++it;

@@ -1,20 +1,26 @@
-#!/usr/bin/python3
+from flask import Flask, request, jsonify
+import os
 
-import os, cgi
+app = Flask(__name__)
+UPLOAD_FOLDER = './gameHub/database/'
 
-form = cgi.FieldStorage()
+# Ensure the upload folder exists
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-# Get filename here
-fileitem = form['filename']
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Test if the file was uploaded
-if fileitem.filename:
-    # strip leading path from file name to avoid directory traversal attacks
-    open(os.getcwd() + '/cgi-bin/tmp/' + os.path.basename(fileitem.filename), 'wb').write(fileitem.file.read())
-    message = 'The file "' + os.path.basename(fileitem.filename) + '" was uploaded successfully'
-else:
-    message = 'Uploading Failed'
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'image' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    if file:
+        filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(filename)
+        return jsonify({"message": "File successfully uploaded"}), 200
 
-print("content-type: text/html; charset=utf-8")
-print("content-type: text/html\r\n")
-print("<H1> " + message + " </H1>")
+if __name__ == "__main__":
+    app.run(port=8002)

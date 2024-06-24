@@ -82,3 +82,11 @@ This project is about writing our own HTTP server. We will be able to test it wi
 4. **Documentation:** Document the code clearly with comments and a README file.
 
 This outline provides a comprehensive roadmap for creating a web server from scratch in C++ 98. Remember to focus on the fundamental concepts of networking, HTTP protocols, and server development. Good luck with your project!
+
+
+
+cgi 
+Initialization: Set up pipes and fork the CGI process.
+Sending Body: Write the request body to the CGI process and close the pipe.
+Reading Response: Read the response from the CGI process, and handle the completion state.
+Sending Client Response: Ensure that the connection is only closed once the response is fully sent and the CGI handler is done processing.

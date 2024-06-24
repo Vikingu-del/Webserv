@@ -22,9 +22,9 @@ public:
 
 private:
     const HTTP::Request& _req;
+    HTTP::Response _res;
     Client* _client;
     std::string _cgiExt;
-    // int _epollFd;
     ServerConfig _server;
     Location _location;
     std::string _resource;
@@ -33,14 +33,15 @@ private:
     int _pipeIn[2];
     int _pipeOut[2];
     std::map<std::string, std::string> _env;
-    ServerSocket* _serverSocket;  // Add ServerSocket pointer
+    ServerSocket* _serverSocket;
+    int _exitStatus;
 
     void initEnv();
     std::vector<char*> createEnvArray();
     void closePipes();
 
 public:
-     CgiHandler(Client* client, const HTTP::Request& req, const std::string& cgiExt, const ServerConfig& server, const Location& location, ServerSocket* serverSocket);
+    CgiHandler(Client* client, const HTTP::Request& req, const std::string& cgiExt, const ServerConfig& server, const Location& location, ServerSocket* serverSocket);
     ~CgiHandler();
 
     void initCgi();
@@ -52,9 +53,14 @@ public:
     // getters
     int getPipeIn() const { return _pipeIn[1]; }
     int getPipeOut() const { return _pipeOut[0]; }
+    Client* getClient() const { return _client; }
 
-private:
-    int _exitStatus;  // Declare _exitStatus here
+    bool cgiScriptExists(const std::string& scriptPath);
+    void sendErrorResponse(int statusCode, const std::string& statusText, const std::string& message);
+    std::string handleGetResponse(const std::string& response);
+    std::string handlePostResponse(const std::string& response);
+    std::string handleDeleteResponse(const std::string& response);
+    void handleAutoindex(std::string &responseBody, std::map<std::string, HTTP::Header> &responseHeaders, const std::string &directoryPath);
 };
 
 #endif // CGI_HANDLER_HPP

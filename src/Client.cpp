@@ -20,48 +20,34 @@ Client::~Client() {
 }
 
 void Client::handleEvent(int events) {
-    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client handling events: %d", events);
-    if (events & EPOLLIN) {
-        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client EPOLLIN event for fd: %d", _clientSocket);
+    if (events & EPOLLIN)
         _serverSocket.readRequest(_clientSocket, this);
-    }
-    if (events & EPOLLOUT) {
-        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client EPOLLOUT event for fd: %d", _clientSocket);
+    if (events & EPOLLOUT)
         sendResponse();
-    }
-    if (events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR)) {
-        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Client EPOLLHUP, EPOLLRDHUP, or EPOLLERR event for fd: %d", _clientSocket);
+    if (events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
         _serverSocket.closeConnection(_clientSocket);
-    }
 }
 
 void Client::sendResponse() {
     if (_responses.empty()) {
-        Logger::logMsg(PURPLE, CONSOLE_OUTPUT, "No responses to send");
+        _serverSocket.modifyEpoll(_clientSocket, EPOLLIN); // Modify epoll to listen for reading events only
         return;
     }
     std::string response = _responses.front();
     ssize_t bytesSent = send(_clientSocket, response.c_str(), response.size(), 0);
-    if (bytesSent == -1) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "send error: %s", strerror(errno));
+    if (bytesSent == -1)
         return;
-    }
-    if (bytesSent == static_cast<ssize_t>(response.size())) {
+    if (bytesSent == static_cast<ssize_t>(response.size()))
         _responses.pop_front();
-    } else {
+    else
         _responses.front() = response.substr(bytesSent);
-    }
-
     if (_responses.empty()) {
-         Logger::logMsg(RED, CONSOLE_OUTPUT, "Server socket pointer is null");
         _serverSocket.removeFdFromMonitor(_clientSocket);
         close(_clientSocket);
-        if (_cgiHandler != NULL) {
+        if (_cgiHandler != NULL)
             _cgiHandler->setState(CgiHandler::DONE);
-        } else {
-            Logger::logMsg(PURPLE, CONSOLE_OUTPUT, "No CGI handler for this client");
-        }
-    }
+    } else
+        _serverSocket.modifyEpoll(_clientSocket, EPOLLOUT);
 }
 
 void Client::addResponse(const std::string& response) {

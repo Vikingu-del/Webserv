@@ -231,7 +231,6 @@ void RequestHandler::handleRequest() {
     std::vector<Location>::const_iterator i = std::find_if(locations.begin(), locations.end(), ServerConfig::MatchLocation(directory));
     
     if (i == locations.end()) {
-        Logger::logMsg("INFO", CONSOLE_OUTPUT, "Location not found");
         responseBody = readFile(_server.getRoot() + resource);
 
         if (responseBody.first.empty()) {
@@ -254,35 +253,16 @@ void RequestHandler::handleRequest() {
 
     // Check if the requested method is allowed
     std::vector<short> methods = i->getMethods();
-    switch (_request.getMethod()) {
-        case HTTP::GET:
-            if (methods[0]) {
-                handleGetRequest(responseBody, responseHeaders, i, resource, directory);
-            } else {
-                Logger::logMsg("ERROR", CONSOLE_OUTPUT, "GET method not allowed");
-                handleMethodNotAllowed(responseBody, responseHeaders);
-            }
-            break;
-        case HTTP::POST:
-            if (methods[1]) {
-                handlePostRequest(responseBody, responseHeaders);
-            } else {
-                Logger::logMsg("ERROR", CONSOLE_OUTPUT, "POST method not allowed");
-                handleMethodNotAllowed(responseBody, responseHeaders);
-            }
-            break;
-        case HTTP::DELETE:
-            if (methods[2]) {
-                handleRemoveRequest(responseBody, responseHeaders);
-            } else {
-                Logger::logMsg("ERROR", CONSOLE_OUTPUT, "DELETE method not allowed");
-                handleMethodNotAllowed(responseBody, responseHeaders);
-            }
-            break;
-        default:
-            Logger::logMsg("ERROR", CONSOLE_OUTPUT, "Method not allowed");
-            handleMethodNotAllowed(responseBody, responseHeaders);
-            break;
+    HTTP::Method method = _request.getMethod();
+    if (method == HTTP::GET && methods[0])
+        handleGetRequest(responseBody, responseHeaders, i, resource, directory);
+    else if (method == HTTP::POST && methods[1])
+        handlePostRequest(responseBody, responseHeaders);
+    else if (method == HTTP::DELETE && methods[2])
+        handleRemoveRequest(responseBody, responseHeaders);
+    else {
+        Logger::logMsg("ERROR", CONSOLE_OUTPUT, "Method not allowed");
+        handleMethodNotAllowed(responseBody, responseHeaders);
     }
 }
 

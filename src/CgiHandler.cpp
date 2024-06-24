@@ -36,21 +36,39 @@ void CgiHandler::initEnv() {
     _env["SERVER_PORT"] = utils::intToString(_server.getPort());
     _env["REMOTE_ADDR"] = utils::intToString(_server.getServerArddres().sin_addr.s_addr);
     _env["REMOTE_PORT"] = utils::intToString(ntohs(_server.getServerArddres().sin_port));
+    _env["PATH_INFO"] = _resource;
 }
 
+
 void CgiHandler::initCgi() {
-    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Initializing CGI");
+    std::string file = _resource.find_last_of('.') != std::string::npos ? _resource.substr(_resource.find_last_of('/') + 1) :  _location.getIndexLocation();
+    std::string cgiScriptPath = _location.getRootLocation() + "/cgi-bin/" + file;
+    _resource = cgiScriptPath;
+    if (!cgiScriptExists(cgiScriptPath)) {
+        Logger::logMsg(RED, CONSOLE_OUTPUT, "CGI script not found: %s", cgiScriptPath.c_str());
+        sendErrorResponse(404, "Not Found", "CGI script not found");
+        return;
+    }
     if (pipe(_pipeIn) == -1 || pipe(_pipeOut) == -1) {
         Logger::logMsg(RED, CONSOLE_OUTPUT, "pipe error: %s", strerror(errno));
         return;
     }
-    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Pipes created successfully");
     _client->addFdToMonitor(_pipeOut[0], EPOLLIN);
     _serverSocket->getCgiPipeMap()[_pipeOut[0]] = this;  // Add to _cgiPipeMap
+    initEnv();
+     std::vector<char *> envp = createEnvArray();
+    std::vector<char *> args;
 
+    // Construct the full path to the script
+    args.push_back(strdup(cgiScriptPath.c_str()));
+    args.push_back(0);
+    for (std::map<std::string, std::string>::iterator it = _env.begin(); it != _env.end(); ++it) {
+        Logger::logMsg("INFO", CONSOLE_OUTPUT, "env: %s=%s", it->first.c_str(), it->second.c_str());
+    }
     _pid = fork();
     if (_pid == -1) {
         Logger::logMsg(RED, CONSOLE_OUTPUT, "fork error: %s", strerror(errno));
+        sendErrorResponse(500, "Internal Server Error", "CGI script error");
         return;
     }
     if (_pid == 0) {
@@ -62,24 +80,18 @@ void CgiHandler::initCgi() {
         dup2(_pipeOut[1], STDOUT_FILENO);
         close(_pipeIn[0]);
         close(_pipeOut[1]);
-
-        std::vector<char *> envp = createEnvArray();
-        std::vector<char *> args;
-
-        // Construct the full path to the script
-        std::string script_path = _location.getRootLocation() + _resource;
-        args.push_back(strdup(script_path.c_str()));
-        args.push_back(NULL);
-        execve(args[0], args.data(), envp.data());
+        execve(args[0], &args[0], &envp[0]);
+        perror("execve");
         exit(1);
     } else {
         // Parent process
         Logger::logMsg("INFO", CONSOLE_OUTPUT, "Parent process continuing after fork");
         close(_pipeIn[0]);
         close(_pipeOut[1]);
+        setState(WRITING); // Set the state to WRITING after forking
+        _serverSocket->modifyEpoll(_pipeOut[0], EPOLLIN); // Update epoll to listen for reading events
     }
 }
-
 
 void CgiHandler::readCgiResponse() {
     char buffer[1024];
@@ -105,35 +117,32 @@ void CgiHandler::readCgiResponse() {
     }
 
     if (_exitStatus == 0) {
+        std::string cgiResponse;
         if (completeResponse.find("HTTP/1.1") == std::string::npos) {
-            std::string cgiResponse = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + completeResponse;
-            _client->addResponse(cgiResponse);
-            std::cout << cgiResponse << std::endl;
+            cgiResponse = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + completeResponse;
         } else {
-            _client->addResponse(completeResponse);
-             Logger::logMsg(PURPLE, CONSOLE_OUTPUT, "Adding complete response: %s", completeResponse.c_str());
+            cgiResponse = completeResponse;
         }
+        _client->addResponse(cgiResponse);
     } else {
         _client->addResponse("HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/html\r\n\r\nCGI script error");
     }
 
     Logger::logMsg(PURPLE, CONSOLE_OUTPUT, "execCgi completed with response: %s", completeResponse.c_str());
     _state = DONE; // Set the state to DONE after executing CGI
-    (*_client).sendResponse();
 }
 
 void CgiHandler::sendCgiBody() {
-    std::cout << YELLOW << "Sending CGI body" << RESET << std::endl;
-    const std::string requestBody = _client->getIncompleteRequest();
-    std::cout << YELLOW << "Sending CGI body: " << requestBody << RESET << std::endl;
+    const std::string requestBody = _req.getBody();
     ssize_t bytesSent = write(_pipeIn[1], requestBody.c_str(), requestBody.size());
     if (bytesSent == -1) {
         Logger::logMsg(RED, CONSOLE_OUTPUT, "write error: %s", strerror(errno));
-    } else if (bytesSent < static_cast<ssize_t>(requestBody.size())) {
-        Logger::logMsg(RED, CONSOLE_OUTPUT, "Partial write occurred. Expected: %zu, Sent: %zd", requestBody.size(), bytesSent);
-    } else {
-        setState(READING); // Move to reading state only if the write was successful
+        close(_pipeIn[1]);
+        return;
     }
+    close(_pipeIn[1]);
+    setState(READING);
+    _serverSocket->modifyEpoll(_pipeOut[0], EPOLLIN);
 }
 
 void CgiHandler::closePipes() {
@@ -144,14 +153,58 @@ void CgiHandler::closePipes() {
     if (_pipeOut[1] != -1) close(_pipeOut[1]);
 }
 
-std::vector<char *> CgiHandler::createEnvArray() {
-    std::vector<char *> envp;
+std::vector<char*> CgiHandler::createEnvArray() {
+    std::vector<char*> envp;
     for (std::map<std::string, std::string>::iterator it = _env.begin(); it != _env.end(); ++it) {
         std::string env_entry = it->first + "=" + it->second;
-        char *env_cstr = new char[env_entry.size() + 1];
+        char* env_cstr = new char[env_entry.size() + 1];
         std::strcpy(env_cstr, env_entry.c_str());
         envp.push_back(env_cstr);
     }
-    envp.push_back(NULL); // Null-terminate the array
+    envp.push_back(0); // Null-terminate the array
     return envp;
+}
+
+bool CgiHandler::cgiScriptExists(const std::string& scriptPath) {
+    if (ConfigFile::checkFileExistence(scriptPath) == 1) {
+        return true;
+    } else return false;
+}
+
+void CgiHandler::sendErrorResponse(int statusCode, const std::string& statusText, const std::string& message) {
+    std::ostringstream responseStream;
+    responseStream << "HTTP/1.1 " << statusCode << " " << statusText << "\r\n"
+                   << "Content-Type: text/html\r\n"
+                   << "Content-Length: " << message.size() << "\r\n"
+                   << "\r\n"
+                   << message;
+
+    std::string response = responseStream.str();
+    _client->addResponse(response);
+    _serverSocket->modifyEpoll(_client->getSocket(), EPOLLOUT);
+    setState(DONE);
+}
+
+std::string CgiHandler::handleGetResponse(const std::string& response) {
+    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Handling GET response");
+    if (response.find("HTTP/1.1") == std::string::npos) {
+        return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + response;
+    }
+    return response;
+}
+
+std::string CgiHandler::handlePostResponse(const std::string& response) {
+    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Handling POST response");
+    if (response.find("HTTP/1.1") == std::string::npos) {
+        return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + response;
+    }
+    return response;
+}
+
+std::string CgiHandler::handleDeleteResponse(const std::string& response) {
+    Logger::logMsg("INFO", CONSOLE_OUTPUT, "Handling DELETE response");
+    if (response.find("HTTP/1.1") == std::string::npos) {
+        return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" + response;
+    }
+    return response;
 }

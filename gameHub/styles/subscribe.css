@@ -1,0 +1,400 @@
+/* Add this to your existing CSS file */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background-image: url(../imgs/games/bouncingBalls.png);
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+}
+
+nav {
+    width: 100%;
+    padding: 10px 0;
+    z-index: 12;
+}
+
+nav .menu {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.menu .logo img {
+    width: 300px;
+}
+
+.menu ul {
+    display: flex;
+    list-style: none;
+}
+
+.menu ul li {
+    list-style: none;
+}
+
+.menu ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.menu ul li a:hover {
+    background-image: linear-gradient(to right, #3f8cd6, #38deec);
+    color: #000;
+}
+
+.MobNavBtns button {
+    height: 50px;
+    width: 150px;
+    border-radius: 50px;
+    border: 2px solid #3bbee3;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 0 10px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    color: #38deec;
+    background: transparent;
+}
+
+.MobNavBtns button:hover, .NavBtns button:hover, .center .btns button:hover {
+    background-image: linear-gradient(to right, #3f8cd6, #38deec);
+    color: #000;
+    border: none;
+}
+
+.wrapper {
+    height: 100%;
+}
+
+.container {
+    width: 1200px;
+    height: 85%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.InnerDiv {
+    height: 80%;
+    display: flex;
+    align-items: center;
+}
+
+.center {
+    width: 54%;
+}
+
+.center .title, .center .sub_des, #subscribe h2, #subscribe label, .game-selection .game h2 {
+    color: #fff;
+    font-size: 70px; /* Adjust based on specific element */
+    font-family: 'Reem Kufi Ink', sans-serif; /* Adjust based on specific element */
+    font-weight: 500; /* Adjust based on specific element */
+    margin: 11px 0 25px 0; /* Adjust based on specific element */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adjust based on specific element */
+}
+
+.center .sub_des {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 20;
+    margin: 11px 0 25px 0;
+}
+
+.center .btns button {
+    height: 50px;
+    width: 150px;
+    border-radius: 50px;
+    border: none;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 0 10px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    background-image: linear-gradient(to right, #3f8cd6, #38deec);
+    color: #000;
+}
+
+.center .btns button:hover {
+    border: 2px solid #3bbee3;
+    color: #38deec;
+    background: transparent;
+}
+
+.checkbtn {
+    font-size: 30px;
+    color: white;
+    float: right;
+    line-height: normal;
+    cursor: pointer;
+    display: none;
+}
+
+#check {
+    display: none;
+}
+
+.MobNavBtns button {
+    display: none;
+    height: 40px;
+    width: 150px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 0 10px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    color: #ffffff;
+    background-image: linear-gradient(to right, #3f8cd6, #38deec);
+    border: none;
+}
+
+.game-selection {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.game-selection .game {
+    width: 45%;
+    height: 40vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    background-size: cover;
+    background-position: center;
+}
+
+.game-selection .game h2 {
+    font-size: 2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game-selection .game1 {
+    background-image: url('../imgs/games/bouncingBalls.png');
+}
+
+.game-selection .game2 {
+    background-image: url('../imgs/games/rockPaperScizors.png');
+}
+
+
+.subscribe {
+    width: 100%;
+    padding: 40px 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    justify-content: space-between;
+}
+
+.subscribe h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.subscribe form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.subscribe label {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.subscribe input, .subscribe #dropZone{
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#post #dropZone {
+    padding: 40px;   
+    border: 2px dashed #ccc;
+    text-align: center;
+}
+
+ /* #post input[type="post"] {
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#delete input[type="delete"] {
+    padding: 10px;
+    width: 300px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+} */
+
+.subscribe button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #38deec;
+    color: #000;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.subscribe button:hover {
+    background-color: #3f8cd6;
+}
+
+@media (min-width: 12000px) {
+    .menu ul {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+/* Responsive Media Query */
+@media (max-width: 1200px) {
+    body {
+        background-image: url(../imgs/games/bouncingBalls.png);
+    }
+    .menu ul li {
+        margin-left: 7px;
+        text-align: left;
+        padding-left: 60px;
+    }
+
+    li .MovNavBtns {
+        padding: 0 15px;
+    }
+
+    .MobNavBtns button {
+        display: block;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .NavBtns {
+        display: none;
+    }
+
+    .checkbtn {
+        display: block;
+    }
+
+    .center .title {
+        font-size: 38px;
+    }
+
+    .center {
+        width: 100%;
+    }
+
+    ul {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        background: #2c3e50;
+        top: 0;
+        left: -100%;
+        text-align: center;
+        transition: all .5s;
+    }
+
+    nav ul li {
+        display: block;
+        margin: 20px 0;
+    }
+
+    nav ul li a {
+        font-size: 20px;
+    }
+
+    a:hover, a.active {
+        background: none;
+        color: #0082e6;
+    }
+
+    #check:checked ~ ul {
+        left: -50px;
+    }
+    #check:not(:checked) ~ ul {
+        left: -100%;
+    }
+    .game-selection {
+        flex-direction: column;
+    }
+
+    .game-selection .game {
+        width: 100%;
+        height: 40vh;
+    }
+}
+
+#drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+#drop-area.highlight {
+    border-color: purple;
+}
+
+#drop-area input {
+    display: none;
+}
+
+#drop-area .button {
+    background-color: #009578;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#drop-area .button:hover {
+    background-color: #007e63;
+}
+
+#progress-bar {
+    width: 100%;
+    height: 20px;
+    margin-top: 10px;
+}
+
+#file-name {
+    margin-top: 10px;
+    font-weight: bold;
+}

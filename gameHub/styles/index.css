@@ -80,6 +80,31 @@ nav .menu {
     border: none;
 }
 
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+card {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+#dropZone {
+    width: 100%;
+    height: 100px;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+#dropZone.dragover {
+    border-color: #000;
+}
+
 .wrapper {
     height: 100%;
 }
