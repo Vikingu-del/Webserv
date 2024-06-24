@@ -3,65 +3,98 @@
 /*                                                        :::      ::::::::   */
 /*   Logger.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 16:52:12 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/05 14:09:34 by ipetruni         ###   ########.fr       */
+/*   Updated: 2024/06/24 12:03:43 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Logger.hpp"
 
-LoggerState Logger::state = ON;
 std::string Logger::file_name = "logfile.txt";
+LogPrio Logger::prio = ERROR;
+L_State Logger::state = ON;
 
-void Logger::logMsg(const char *color, LoggerMode m, const char* msg, ...) {
-	if (state == ON) {
-		char output[8192];
-		va_list args;
-		va_start(args, msg);
-		vsnprintf(output, sizeof(output), msg, args);
-		va_end(args);
+std::map<LogPrio, std::string> Logger::prio_str = initMap();
 
-		std::string date = getCurrTime();
 
-		if (m == FILE_OUTPUT) {
-			struct stat st;
-			if (stat("logs", &st) != 0) {
-				if (mkdir("logs", 0777) < 0 && errno != EEXIST) {
-					std::cerr << "mkdir() Error: " << strerror(errno) << std::endl;
-					return;
-				}
-			}
+std::map<LogPrio, std::string> Logger::initMap()
+{
+    std::map<LogPrio, std::string> p_map;
 
-			try {
-				std::ofstream log_file(("logs/" + file_name).c_str(), std::ios::app);
-				if (!log_file) {
-					throw std::ios_base::failure("Error opening file");
-				}
-				log_file << date << " " << output << "\n";
-				log_file.close();
-			} catch (const std::exception &e) {
-				std::cerr << "File operation error: " << e.what() << std::endl;
-			}
-		} else if (m == CONSOLE_OUTPUT) {
-			std::cout << color << date << output << "\x1B[0m" << std::endl;
-		}
-	}
+    // p_map[DEBUG] = "[DEBUG]   ";
+    p_map[DEBUG] = "[INFO]    ";
+    p_map[INFO] = "[DEBUG]    ";
+    p_map[ERROR] = "[ERROR]   ";
+    return p_map;
 }
 
-std::string Logger::getCurrTime() {
-	std::time_t now = std::time(NULL);
-	struct tm *tm_info = std::localtime(&now);
-	char date[100];
-	std::strftime(date, sizeof(date), "[%Y-%m-%d %H:%M:%S] ", tm_info);
-	return std::string(date);
+void    Logger::logMsg(const char *color, Mode m, const char* msg, ...)
+{
+    char        output[8192];
+    va_list     args;
+    int         n;
+
+    if (state == ON)
+    {
+        va_start(args, msg);
+        n = vsnprintf(output, 8192, msg, args);
+        std::string date = getCurrTime();
+        if (m == FILE_OUTPUT)
+        {
+            if (mkdir("logs", 0777) < 0 && errno != EEXIST)
+            {
+                std::cerr << "mkdir() Error: " << strerror(errno) << std::endl;
+                return ;
+            }
+            int fd = open(("logs/" + file_name).c_str(), O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
+            std::cout << "fd is " << fd << "And errno is :" << strerror(errno) << std::endl;
+            write(fd, date.c_str(), date.length());
+            write(fd, "   ", 3);
+            write(fd, output, n);
+            write(fd, "\n", 1);
+            close(fd);
+        }
+        else if (m == CONSOLE_OUTPUT)
+        {
+            // Not used Currently..
+            // if (p == DEBUG)
+            //     std::cout << LIGHTMAGENTA;
+            // else if (p == INFO)
+            //     std::cout << CYAN;
+            // else if (p == ERROR)
+            //     std::cout << RED;
+            std::cout << color << getCurrTime() << output << RESET << std::endl;
+        }      
+        va_end(args);
+    }
 }
 
-void Logger::setFilenName(const std::string &name) {
-	Logger::file_name = name;
+std::string Logger::getCurrTime()
+{
+    tzset();
+    char date[1000];
+    time_t now = time(0);
+    struct tm tm = *gmtime(&now);
+    tm.tm_hour = tm.tm_hour + GST;
+    strftime(date, sizeof(date), "[%Y-%m-%d  %H:%M:%S]   ", &tm);
+    return (std::string(date));
 }
 
-void Logger::setState(LoggerState s) {
-	Logger::state = s;
+void Logger::setPrio(LogPrio p)
+{
+    Logger::prio = p;
 }
+
+void Logger::setFilenName(std::string name)
+{
+    Logger::file_name = name;
+}
+
+void Logger::setState(L_State s)
+{
+    Logger::state = s;
+}
+
+

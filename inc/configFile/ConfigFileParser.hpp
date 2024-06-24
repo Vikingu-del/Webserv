@@ -1,81 +1,51 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ConfigFileParser.hpp                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/09 11:52:26 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/05/26 16:45:06 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#ifndef CONFIGFILEPARSER_HPP
+#define CONFIGFILEPARSER_HPP
 
-#ifndef CONFIG_FILE_PARSER_HPP
-#define CONFIG_FILE_PARSER_HPP
-
-#include "ServerConfig.hpp"
-#include "ConfigFile.hpp"
+#include "Webserv.hpp"
 
 class ServerConfig;
 
-class ConfigFileParser
-{
-	// !Constructor / Destructor
+class ConfigFileParser {
+	private:
+		std::vector<ServerConfig>	_servers;
+		std::vector<std::string>	_server_config;
+		size_t						_nb_server;
+
 	public:
+
 		ConfigFileParser();
 		~ConfigFileParser();
-	// !Private attributes
-	private:
-		std::vector<std::string>	_serversConfig;
-		size_t						_numOfServers;
-		std::vector<ServerConfig>	_servers;
-	public:
-	// !Methods
-		int parseConfigFile(std::string & configFilePath);
-		std::vector<ServerConfig> getServers() const;
-	//! Parsing auxiliar methods
-		void removeComments(std::string &str);
+
+		int createCluster(const std::string &config_file);
+
+		void splitServers(std::string &content);
+		void removeComments(std::string &content);
 		void removeWhiteSpace(std::string &content);
-	//! Split servers
 		size_t findStartServer(size_t start, std::string &content);
 		size_t findEndServer(size_t start, std::string &content);
-		void findAndSplitServers(std::string &content);
-	//! Server creation
 		void createServer(std::string &config, ServerConfig &server);
-		void handleListenDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
-		void handleLocationDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_loc);
-		void handleHostDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
-		void handleRootDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
-		void handleErrorPageDirective(std::vector<std::string> &parametrs, size_t &i, std::vector<std::string> &error_codes);
-		void handleClientMaxBodySizeDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_max_size);
-		void handleServerNameDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
-		void handleIndexDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i);
-		void handleAutoindexDirective(ServerConfig &server, std::vector<std::string> &parametrs, size_t &i, bool &flag_autoindex);
-		void handleUnsupportedDirective(bool flag_loc);
-		void finalizeServerConfig(ServerConfig &server, const std::vector<std::string> &error_codes);
-		
-	//! Check for duplicate servers
-		void checkForDuplicateServers();
-	
-	//! Debugging
-		int printServers();
-	public: 
-		class ParsingErrorException : public std::exception
+		void checkServers();
+		std::vector<ServerConfig>	getServers();
+		int	stringCompare(std::string str1, std::string str2, size_t pos);
+
+		int print();
+
+		public:
+		class ErrorException : public std::exception
 		{
 			private:
 				std::string _message;
 			public:
-				ParsingErrorException(std::string message) throw()
+				ErrorException(std::string message) throw()
 				{
-					_message = "Config File Parser Error: " + message;
+					_message = "CONFIG PARSER ERROR: " + message;
 				}
 				virtual const char* what() const throw()
 				{
 					return (_message.c_str());
 				}
-				virtual ~ParsingErrorException() throw() {}
+				virtual ~ErrorException() throw() {}
 		};
-		
 };
 
 #endif

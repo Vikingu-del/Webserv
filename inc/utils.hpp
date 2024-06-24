@@ -6,24 +6,13 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:29:47 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/16 13:00:09 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/24 17:11:26 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <vector>
-#include <string>
-#include <sstream>
-#include <cctype>
-#include <stdexcept>
-#include <locale>
-#include <algorithm>
-#include <iostream>
-#include "defines.h"
-#include <ctime>
-#include <iomanip>
-#include <map>
+#include "Webserv.hpp"
 
 namespace utils
 {
@@ -35,10 +24,13 @@ namespace utils
         oss << value;
         return oss.str();
     }
+    unsigned int hexToDec(const std::string& nb);
     int strToInt(const std::string& str);
     std::string intToString(int value);
     std::string toLower(const std::string& str);
     std::string	statusCodeString(short statusCode);
     std::string getCurrentDateTime();
     void printMap(const std::map<std::string, std::string> &map);
+    std::string getErrorPage(short statusCode);
+    int buildHtmlIndex(std::string &dir_name, std::vector<u_int8_t> &body, size_t &body_len);
 }

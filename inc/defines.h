@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/17 15:26:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/24 18:47:23 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
     } while (0)
 
 //! Parsing Definitions
+#define CONNECTION_TIMEOUT 60
+#define MAX_EVENTS 1000
+#define BUFF_SIZE 40000
 
 //! checkFileExistence return values
 #define THIS_IS_FILE 1
@@ -39,6 +42,7 @@
 #define NO_PERMISSIONS "000"
 #define THIS_FILE_HAS_PERMISSION 0
 #define THIS_FILE_DOESNT_HAVE_PERMISSION -1
+#define MAX_URI_LENGTH 4096
 
 //! Color Definitions
 #define RED   "\033[31m"
@@ -105,3 +109,72 @@
 #define STATUS_510 "Not Extended"
 #define STATUS_511 "Network Authentication Required"
 #define STATUS_UNDEFINED "Undefined"
+
+enum	StatusCode {
+    OK = 200,
+    MOVED_PERMANENTLY = 301,
+    MOVED_TEMPORARILY = 302,
+    NOT_MODIFIED = 304,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+    METHOD_NOT_ALLOWED = 405,
+    INTERNAL_SERVER_ERROR = 500,
+    NOT_IMPLEMENTED = 501,
+    BAD_GATEWAY = 502,
+    SERVICE_UNAVAILABLE = 503
+};
+
+enum ParsingState {
+    Request_Line,
+    Request_Line_Post_Put,
+    Request_Line_Method,
+    Request_Line_First_Space,
+    Request_Line_URI_Path_Slash,
+    Request_Line_URI_Path,
+    Request_Line_URI_Query,
+    Request_Line_URI_Fragment,
+    Request_Line_Ver,
+    Request_Line_HT,
+    Request_Line_HTT,
+    Request_Line_HTTP,
+    Request_Line_HTTP_Slash,
+    Request_Line_Major,
+    Request_Line_Dot,
+    Request_Line_Minor,
+    Request_Line_CR,
+    Request_Line_LF,
+    Field_Name_Start,
+    Fields_End,
+    Field_Name,
+    Field_Value,
+    Field_Value_End,
+    Chunked_Length_Begin,
+    Chunked_Length,
+    Chunked_Ignore,
+    Chunked_Length_CR,
+    Chunked_Length_LF,
+    Chunked_Data,
+    Chunked_Data_CR,
+    Chunked_Data_LF,
+    Chunked_End_CR,
+    Chunked_End_LF,
+    Message_Body,
+    Parsing_Done
+};
+	
+enum	Method {
+    GET,
+    POST,
+    DELETE,
+    PUT,
+    HEAD,
+    NONE
+};
+
+enum Version {
+    HTTP_1_0,
+    HTTP_1_1,
+    HTTP_2_0
+};

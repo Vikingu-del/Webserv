@@ -1,51 +1,38 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include "ServerConfig.hpp"
-#include <string>
-#include <deque>
-#include <set>
+#include "Webserv.hpp"
+#include "Http.hpp"
 
-class ServerSocket;
-class CgiHandler;
+class Client
+{
+    public:
+        Client();
+        Client(const Client &other);
+        Client(ServerConfig &);
+		    Client &operator=(const Client & rhs);
+        ~Client();
 
-class Client {
-private:
-    time_t _lastMsg;
-    std::string _incompleteRequest;
-    std::string _emptyResponse;
-    CgiHandler* _cgiHandler;
-    bool _isCgiRequest;
-    ServerSocket& _serverSocket;
-    ServerConfig _server;
-    std::deque<std::string> _responses;
-    std::set<int> _monitoredFds;
-    int _clientSocket;
+        const int                 &getSocket() const;
+        const struct sockaddr_in  &getAddress() const;
+        const HTTP::Request       &getRequest() const;
+        const time_t              &getLastTime() const;
 
-public:
-    Client(ServerSocket& serverSocket);
-    Client(ServerConfig& serv, ServerSocket& serverSocket, int clientSocket);
-    ~Client();
+        void                setSocket(int &);
+        void                setAddress(sockaddr_in &);
+        void                setServer(ServerConfig &);
+        void                buildResponse();
+        void                updateTime();
 
-    void handleEvent(int events);
-    void sendResponse();
-    void addResponse(const std::string& response);
-    void removeCurrentResponse();
-    bool hasResponses() const;
-    std::string& getCurrentResponse();
-    std::string getIncompleteRequest() const;
-    void setIncompleteRequest(const std::string& request);
-    void setTime();
-    time_t getLastTime() const;
-    void setCgiRequest(bool isCgi);
-    bool isCgiRequest() const;
-    void setCgiHandler(CgiHandler* handler);
-    CgiHandler* getCgiHandler() const;
-    void addFdToMonitor(int fd, uint32_t events);
-    int getSocket() const;
-    ServerConfig getServer() const;
-    bool hasIncompleteRequest() const;
-    std::string getNextRequest();
+        void                clearClient();
+        HTTP::Response      response;
+        HTTP::Request       request;
+        ServerConfig        server;
+    private:
+        int                 _client_socket;
+        struct sockaddr_in  _client_address;
+        time_t              _last_msg_time;
 };
+
 
 #endif // CLIENT_HPP

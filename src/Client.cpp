@@ -1,126 +1,106 @@
-#include "Client.hpp"
 #include "ServerSocket.hpp"
+#include "Http.hpp"
 #include "RequestHandler.hpp"
 #include "CgiHandler.hpp"
 #include "Logger.hpp"
 #include <unistd.h>
 #include <ctime>
 
-Client::Client(ServerSocket& serverSocket) 
-    : _lastMsg(time(NULL)), _incompleteRequest(""), _emptyResponse(""), _cgiHandler(NULL), _isCgiRequest(false), _serverSocket(serverSocket), _clientSocket(-1) {}
-
-Client::Client(ServerConfig& serv, ServerSocket& serverSocket, int clientSocket) 
-    : _lastMsg(time(NULL)), _incompleteRequest(""), _emptyResponse(""), _cgiHandler(NULL), _isCgiRequest(false), _serverSocket(serverSocket), _server(serv), _clientSocket(clientSocket) {}
-
-Client::~Client() {
-    if (_cgiHandler) {
-        delete _cgiHandler;
-    }
-    close(_clientSocket);
+Client::Client()
+{
+    _last_msg_time = time(NULL);
 }
 
-void Client::handleEvent(int events) {
-    if (events & EPOLLIN)
-        _serverSocket.readRequest(_clientSocket, this);
-    if (events & EPOLLOUT)
-        sendResponse();
-    if (events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
-        _serverSocket.closeConnection(_clientSocket);
+Client::~Client() {}
+
+/* Copy constructor */
+Client::Client(const Client &other)
+{
+	if (this != &other)
+	{
+		this->_client_socket = other._client_socket;
+		this->_client_address = other._client_address;
+		this->request = other.request;
+		this->response = other.response;
+		this->server = other.server;
+		this->_last_msg_time = other._last_msg_time;
+
+	}
+	return ;
 }
 
-void Client::sendResponse() {
-    if (_responses.empty()) {
-        _serverSocket.modifyEpoll(_clientSocket, EPOLLIN); // Modify epoll to listen for reading events only
-        return;
-    }
-    std::string response = _responses.front();
-    ssize_t bytesSent = send(_clientSocket, response.c_str(), response.size(), 0);
-    if (bytesSent == -1)
-        return;
-    if (bytesSent == static_cast<ssize_t>(response.size()))
-        _responses.pop_front();
-    else
-        _responses.front() = response.substr(bytesSent);
-    if (_responses.empty()) {
-        _serverSocket.removeFdFromMonitor(_clientSocket);
-        close(_clientSocket);
-        if (_cgiHandler != NULL)
-            _cgiHandler->setState(CgiHandler::DONE);
-    } else
-        _serverSocket.modifyEpoll(_clientSocket, EPOLLOUT);
+/* Assinment operator */
+Client &Client::operator=(const Client & rhs)
+{
+	if (this != &rhs)
+	{
+		this->_client_socket = rhs._client_socket;
+		this->_client_address = rhs._client_address;
+		this->request = rhs.request;
+		this->response = rhs.response;
+		this->server = rhs.server;
+		this->_last_msg_time = rhs._last_msg_time;
+	}
+	return (*this);
 }
 
-void Client::addResponse(const std::string& response) {
-    _responses.push_back(response);
+Client::Client(ServerConfig &server)
+{
+    setServer(server);
+    request.setMaxBodySize(server.getClientMaxBody());
+    _last_msg_time = time(NULL);
 }
 
-void Client::removeCurrentResponse() {
-    if (!_responses.empty()) {
-        _responses.pop_front();
-    }
+void    Client::setSocket(int &sock)
+{
+    _client_socket = sock;
 }
 
-bool Client::hasResponses() const {
-    return !_responses.empty();
+void    Client::setAddress(sockaddr_in &addr)
+{
+    _client_address =  addr;
 }
 
-std::string& Client::getCurrentResponse() {
-    return _responses.front();
+void    Client::setServer(ServerConfig &server)
+{
+    response.setServer(server);
 }
 
-std::string Client::getIncompleteRequest() const {
-    return _incompleteRequest;
+
+const int     &Client::getSocket() const
+{
+    return (_client_socket);
 }
 
-void Client::setIncompleteRequest(const std::string& request) {
-    _incompleteRequest = request;
+const HTTP::Request   &Client::getRequest() const
+{
+    return (request);
 }
 
-void Client::setTime() {
-    _lastMsg = time(NULL);
+const struct sockaddr_in    &Client::getAddress() const
+{
+    return (_client_address);
 }
 
-time_t Client::getLastTime() const {
-    return _lastMsg;
+const time_t     &Client::getLastTime() const
+{
+    return (_last_msg_time);
 }
 
-void Client::setCgiRequest(bool isCgi) {
-    _isCgiRequest = isCgi;
+
+void        Client::buildResponse()
+{
+    response.setRequest(this->request);
+    response.buildResponse();
 }
 
-bool Client::isCgiRequest() const {
-    return _isCgiRequest;
+void             Client::updateTime()
+{
+    _last_msg_time = time(NULL);
 }
 
-void Client::setCgiHandler(CgiHandler* handler) {
-    _cgiHandler = handler;
-}
-
-CgiHandler* Client::getCgiHandler() const {
-    return _cgiHandler;
-}
-
-void Client::addFdToMonitor(int fd, uint32_t events) {
-    if (_monitoredFds.find(fd) == _monitoredFds.end()) {
-        _serverSocket.addToEpoll(fd, uint32_t(events));
-        _monitoredFds.insert(fd);
-    }
-}
-
-int Client::getSocket() const {
-    return _clientSocket;
-}
-
-ServerConfig Client::getServer() const {
-    return _server;
-}
-
-bool Client::hasIncompleteRequest() const {
-    return !_incompleteRequest.empty();
-}
-
-std::string Client::getNextRequest() {
-    std::string request = _incompleteRequest;
-    _incompleteRequest.clear();
-    return request;
+void             Client::clearClient()
+{
+    response.clear();
+    request.clear();
 }

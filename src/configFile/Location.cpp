@@ -1,255 +1,209 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Location.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/16 16:48:08 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Location.hpp"
-#include "ServerConfig.hpp"
-
-// !Constructors
 
 Location::Location()
-	:_path(""),
-	_root(""),
-	_autoindex(false),
-	_index(""),
-	_return(""),
-	_alias(""),
-	_client_max_body_size(MAX_CONTENT_LENGTH),
-	_cgi_path(),  // Initialize vectors
-	_cgi_ext()
 {
-	_methods.push_back(1);
-    _methods.push_back(0);
-    _methods.push_back(0);
-    _methods.push_back(0);
-    _methods.push_back(0);
+	this->_path = "";
+	this->_root = "";
+	this->_autoindex = false;
+	this->_index = "";
+	this->_return = "";
+	this->_alias = "";
+	this->_client_max_body_size = MAX_CONTENT_LENGTH;
+	this->_methods.reserve(5);
+	this->_methods.push_back(1);
+	this->_methods.push_back(0);
+	this->_methods.push_back(0);
+	this->_methods.push_back(0);
+	this->_methods.push_back(0);
 }
 
 Location::Location(const Location &other)
-	:  _type(other._type),
-	  _path(other._path),
-      _root(other._root),
-      _autoindex(other._autoindex),
-      _index(other._index),
-      _return(other._return),
-      _alias(other._alias),
-      _client_max_body_size(other._client_max_body_size),
-      _methods(other._methods),
-	  _cgi_path(other._cgi_path),
-	  _cgi_ext(other._cgi_ext)
 {
-	// std::cout << BLUE << "Location copy constructor" << RST << std::endl;
+	this->_path = other._path;
+	this->_root = other._root;
+	this->_autoindex = other._autoindex;
+	this->_index = other._index;
+	this->_cgi_path = other._cgi_path;
+	this->_cgi_ext = other._cgi_ext;
+	this->_return = other._return;
+	this->_alias = other._alias;
+    this->_methods = other._methods;
+	this->_ext_path = other._ext_path;
+	this->_client_max_body_size = other._client_max_body_size;
 }
 
-Location &Location::operator=(const Location &other) {
-	// std::cout << BLUE << "Location assignation operator" << RST << std::endl;
-	if (this != &other)
+Location &Location::operator=(const Location &rhs)
+{
+	if (this != &rhs)
 	{
-		_type = other._type;
-		_path = other._path;
-		_root = other._root;
-		_autoindex = other._autoindex;
-		_index = other._index;
-		_return = other._return;
-		_alias = other._alias;
-		_client_max_body_size = other._client_max_body_size;
-		_methods = other._methods;
-	}
-	return *this;
+		this->_path = rhs._path;
+		this->_root = rhs._root;
+		this->_autoindex = rhs._autoindex;
+		this->_index = rhs._index;
+		this->_cgi_path = rhs._cgi_path;
+		this->_cgi_ext = rhs._cgi_ext;
+		this->_return = rhs._return;
+		this->_alias = rhs._alias;
+		this->_methods = rhs._methods;
+		this->_ext_path = rhs._ext_path;
+		this->_client_max_body_size = rhs._client_max_body_size;
+    }
+	return (*this);
 }
 
+Location::~Location() { }
 
-// !Destructor
-
-Location::~Location() {
-	// std::cout << RED << "Location destructor" << RST << std::endl;
-	// ? no specific cleanup needed
+/* set functions */
+void Location::setPath(std::string parametr)
+{
+	this->_path = parametr;
 }
 
-
-// !Getters
-
-const std::string &Location::getPath() const {
-	// std::cout << BLUE "Location getPath called" RST << std::endl;
-	return(this->_path);
+void Location::setRootLocation(std::string parametr)
+{
+	if (ConfigFile::getTypePath(parametr) != 2)
+		throw ServerConfig::ErrorException("root of location");
+	this->_root = parametr;
 }
 
-const std::string &Location::getRootLocation() const {
-	// std::cout << BLUE "Location getRootLocation called" RST << std::endl;
-	return(this->_root);
-}
+void Location::setMethods(std::vector<std::string> methods)
+{
+	this->_methods[0] = 0;
+	this->_methods[1] = 0;
+	this->_methods[2] = 0;
+	this->_methods[3] = 0;
+	this->_methods[4] = 0;
 
-const bool &Location::getAutoindex() const {
-	// std::cout << BLUE "Location getAutoindex called" RST << std::endl;
-	return(this->_autoindex);
-}
-
-const std::string &Location::getIndexLocation() const {
-	// std::cout << BLUE "Location getIndexLocation called" RST << std::endl;
-	return(this->_index);
-}
-
-const std::vector<short> &Location::getMethods() const {
-	// std::cout << BLUE "Location getMethods called" RST << std::endl;
-	return(this->_methods);
-}
-
-const std::string &Location::getReturn() const {
-	// std::cout << BLUE "Location getReturn called" RST << std::endl;
-	return(this->_return);
-}
-
-const std::string &Location::getAlias() const {
-	// std::cout << BLUE "Location getAlias called" RST << std::endl;
-	return(this->_alias);
-}
-
-const std::vector<std::string> &Location::getCgiPath() const {
-	return (this->_cgi_path);
-}
-
-const std::vector<std::string> &Location::getCgiExtension() const {
-	return (this->_cgi_ext);
-}
-
-const std::map<std::string, std::string> &Location::getExtensionPath() const {  // Where is in the class _ext_path (ERIK)
-	// std::cout << BLUE "Location getExtensionPath called" RST << std::endl;
-	return(this->_ext_path);
-}
-
-const unsigned long &Location::getMaxBodySize() const {
-	// std::cout << BLUE "Location getMaxBodySize called" RST << std::endl;
-	return(this->_client_max_body_size);
-}
-
-const std::string &Location::getType() const {
-	return(this->_type);
-}
-
-// !Setters
-
-void Location::setPath(std::string value) {
-	// std::cout << BLUE "Location setPath called" RST << std::endl;
-	this->_path = value;
-}
-
-void Location::setRootLocation(std::string value) {
-	// std::cout << BLUE "Location setRootLocation called" RST << std::endl;
-	if (ConfigFile::checkFileExistence(value) != 2)
-		throw ServerConfig::ServerConfigException("Root path does not exist");
-	this->_root = value;
-}
-
-void Location::setMethods(std::vector<std::string> methods) {
-	// std::cout << BLUE "Location setMethods called" RST << std::endl;
-	std::fill(this->_methods.begin(), this->_methods.end(), 0);
-
-	for(size_t i = 0; i < methods.size(); i++)
+	for (size_t i = 0; i < methods.size(); i++)
 	{
-		if (methods[i] == "GET") {
+		if (methods[i] == "GET")
 			this->_methods[0] = 1;
-			// std::cout << PURPLE BLD << "GET" << RST <<std::endl;
-		}
-		else if (methods[i] == "POST") {
+		else if (methods[i] == "POST")
 			this->_methods[1] = 1;
-			// std::cout << PURPLE BLD << "POST" << RST <<std::endl;
-		}
-		else if (methods[i] == "DELETE") {
+		else if (methods[i] == "DELETE")
 			this->_methods[2] = 1;
-			// std::cout << PURPLE BLD << "DELETE" << RST <<std::endl;
-		}
-		// else if (methods[i] == "PUT") {
-		// 	this->_methods[3] = 1;
-		// 	// std::cout << PURPLE BLD << "PUT" << RST <<std::endl;
-		// }
-		// else if (methods[i] == "HEAD") {
-		// 	this->_methods[4] = 1;
-		// 	// std::cout << PURPLE BLD << "HEAD" << RST <<std::endl;
-		// }
+		else if (methods[i] == "PUT")
+			this->_methods[3] = 1;
+		else if (methods[i] == "HEAD")
+			this->_methods[4] = 1;
 		else
-			throw ServerConfig::ServerConfigException("Allow method not supported: " + methods[i]);
+			throw ServerConfig::ErrorException("Allow method not supported " + methods[i]);
 	}
 }
 
-void Location::setAutoindex(std::string value) {
-	// std::cout << BLUE "Location setAutoindex called" RST << std::endl;
-	if (value == "on" || value == "off")
-		this->_autoindex = (value == "on");
+void Location::setAutoindex(std::string parametr)
+{
+	if (parametr == "on" || parametr == "off")
+		this->_autoindex = (parametr == "on");
 	else
-		throw ServerConfig::ServerConfigException("Wrong syntax: autoindex");
+		throw ServerConfig::ErrorException("Wrong autoindex");
 }
 
-void Location::setIndexLocation(std::string value) {
-	// std::cout << BLUE "Location setIndexLocation called" RST << std::endl;
-	this->_index = value;
+void Location::setIndexLocation(std::string parametr)
+{
+	this->_index = parametr;
 }
 
-void Location::setReturn(std::string value) {
-	// std::cout << BLUE "Location setReturn called" RST << std::endl;
-	this->_return = value;
+void Location::setReturn(std::string parametr)
+{
+	this->_return = parametr;
 }
 
-void Location::setAlias(std::string value) {
-	// std::cout << BLUE "Location setAlias called" RST << std::endl;
-	this->_alias = value;
+void Location::setAlias(std::string parametr)
+{
+	this->_alias = parametr;
 }
 
-void Location::setCgiPath(std::vector<std::string> path) {
-	_cgi_path.clear();
+void Location::setCgiPath(std::vector<std::string> path)
+{
 	this->_cgi_path = path;
 }
 
-void Location::setCgiExtension(std::vector<std::string> extension) {
-	_cgi_ext.clear();
+void Location::setCgiExtension(std::vector<std::string> extension)
+{
 	this->_cgi_ext = extension;
 }
 
-void Location::setMaxBodySize(std::string string_value) {
-	// std::cout << BLUE "Location setMaxBodySize called" RST << std::endl;
+void Location::setMaxBodySize(std::string parametr)
+{
 	unsigned long body_size = 0;
 
-	for (size_t i = 0; i < string_value.length(); i++) {
-		if (string_value[i] < '0' || string_value[i] > '9')
-			throw ServerConfig::ServerConfigException("Wrong syntax: client_max_body_size");
+	for (size_t i = 0; i < parametr.length(); i++)
+	{
+		if (parametr[i] < '0' || parametr[i] > '9')
+			throw ServerConfig::ErrorException("Wrong syntax: client_max_body_size");
 	}
-	if (!utils::strToInt(string_value))
-		throw ServerConfig::ServerConfigException("Wrong syntax: client_max_body_size");
-	body_size = utils::strToInt(string_value);
+	if (!ft_stoi(parametr))
+		throw ServerConfig::ErrorException("Wrong syntax: client_max_body_size");
+	body_size = ft_stoi(parametr);
 	this->_client_max_body_size = body_size;
 }
 
-void Location::setMaxBodySize(unsigned long value) {
-	// std::cout << BLUE "Location setMaxBodySize called" RST << std::endl;
-	this->_client_max_body_size = value;
+void Location::setMaxBodySize(unsigned long parametr)
+{
+	this->_client_max_body_size = parametr;
 }
 
-void Location::setType(std::string value) {
-	// std::cout << BLUE "Location setType called" RST << std::endl;
-	this->_type = value;
+/* get functions */
+const std::string &Location::getPath() const
+{
+	return (this->_path);
 }
 
-void Location::parseType() {
-	std::size_t it = _path.find_last_of(".");
-	if (it != std::string::npos)
-		_type = _path.substr(it + 1);
-	else
-		_type = "html";
-	// std::cout << YELLOW << "Type: " << _type << std::endl;
+const std::string &Location::getRootLocation() const
+{
+	return (this->_root);
 }
 
-//! Debugging method
-std::string Location::getPrintMethods() const {
-	
+const std::string &Location::getIndexLocation() const
+{
+	return (this->_index);
+}
+
+const std::vector<short> &Location::getMethods() const
+{
+	return (this->_methods);
+}
+
+const std::vector<std::string> &Location::getCgiPath() const
+{
+	return (this->_cgi_path);
+}
+
+const std::vector<std::string> &Location::getCgiExtension() const
+{
+	return (this->_cgi_ext);
+}
+
+const bool &Location::getAutoindex() const
+{
+	return (this->_autoindex);
+}
+
+const std::string &Location::getReturn() const
+{
+	return (this->_return);
+}
+
+const std::string &Location::getAlias() const
+{
+	return (this->_alias);
+}
+
+const std::map<std::string, std::string> &Location::getExtensionPath() const
+{
+	return (this->_ext_path);
+}
+
+const unsigned long &Location::getMaxBodySize() const
+{
+	return (this->_client_max_body_size);
+}
+
+/* for printing allowed methods*/
+std::string Location::getPrintMethods() const
+{
 	std::string res;
-	
 	if (_methods[4])
 		res.insert(0, "HEAD");
 	if (_methods[3])
@@ -276,20 +230,5 @@ std::string Location::getPrintMethods() const {
 			res.insert(0, ", ");
 		res.insert(0, "GET");
 	}
-	
 	return (res);
-}
-
-bool Location::isMethodAllowed(HTTP::Method method) const {
-	if (method == HTTP::GET && _methods[0])
-		return (true);
-	if (method == HTTP::POST && _methods[1])
-		return (true);
-	if (method == HTTP::DELETE && _methods[2])
-		return (true);
-	// if (method == HTTP::PUT && _methods[3])
-	// 	return (true);
-	// if (method == HTTP::HEAD && _methods[4])
-	// 	return (true);
-	return (false);
 }
