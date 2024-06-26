@@ -1,4 +1,4 @@
-#include "CgiHandler.hpp"
+#include "Webserv.hpp"
 
 // Constructor
 CgiHandler::CgiHandler() {

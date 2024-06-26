@@ -1,12 +1,8 @@
 #ifndef SERVERSOCKET_HPP
 #define SERVERSOCKET_HPP
 
-#include "Webserv.hpp"
-#include "Client.hpp"
-#include "Http.hpp"
-
-class Client;
 class CgiHandler;
+class Client;
 
 class ServerSocket {
 private:
@@ -24,22 +20,24 @@ public:
     void modifyEpoll(int fd, uint32_t events);
     void removeFromEpoll(int fd);
     void acceptNewConnection(ServerConfig &serverConfig);
-    void listenServer();
+    void listenServers();
     void assignServer(Client &);
     void handleReqBody(Client &);
     void readRequest(const int& fd, Client &);
     void readCgiResponse(Client &, CgiHandler &);
     void sendCgiBody(Client &, CgiHandler &);
     void sendResponse(const int &i, Client &);
+    void handleEpollIn(int fd);
+    void handleEpollOut(int fd);
     // void parseRequest(Client *client, const std::string &data);
     // void handleCgiEvent(int fd, uint32_t events);
     // void handleCgiRequest(Client *client);
     // void sendResponse(const int fd, Client *client);
     void closeConnection(int clientFd);
-    void runServer();
+    void runServers();
     // void handleEpollIn(int fd);
     // void handleEpollOut(int fd);
-    void setupServer(std::vector<ServerConfig> serv);
+    void setupServers(std::vector<ServerConfig> serv);
     void checkTimeout();
     int getEpollFd() const;
     std::map<int, CgiHandler>& getCgiPipeMap() { return _cgiPipeMap; }

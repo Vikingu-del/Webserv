@@ -14,13 +14,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Http.hpp"
-#include <stdint.h>
-#include <string.h>
-#include <iostream>
-#include "ServerConfig.hpp"
-#include "Mime.hpp"
-#include "CgiHandler.hpp"
+#include "Webserv.hpp"
 
 HTTP::Request::Request()
 {
@@ -1051,14 +1045,14 @@ static std::string combinePaths(std::string p1, std::string p2, std::string p3)
     return (res);
 }
 
-static void replaceAlias(Location &location, HTTP::Request &request, std::string &target_file)
+static void replaceAlias(Location &location, HTTP::Request &request, std::string &targetFile)
 {
-    target_file = combinePaths(location.getAlias(), request.getPath().substr(location.getPath().length()), "");
+    targetFile = combinePaths(location.getAlias(), request.getPath().substr(location.getPath().length()), "");
 }
 
-static void appendRoot(Location &location, HTTP::Request &request, std::string &target_file)
+static void appendRoot(Location &location, HTTP::Request &request, std::string &targetFile)
 {
-    target_file = combinePaths(location.getRootLocation(), request.getPath(), "");
+    targetFile = combinePaths(location.getRootLocation(), request.getPath(), "");
 }
 
 int HTTP::Response::handleCgiTemp(std::string &location_key)
@@ -1105,7 +1099,7 @@ int        HTTP::Response::handleCgi(std::string &location_key)
         _code = 501;
         return (1);
     }
-    if (ConfigFile::getTypePath(path) != 1)
+    if (ConfigFile::checkFileExistence(path) != 1)
     {
         _code = 404;
         return (1);
@@ -1115,7 +1109,15 @@ int        HTTP::Response::handleCgi(std::string &location_key)
         _code = 403;
         return (1);
     }
-    if (isAllowedMethod(_request.getMethod(), *_server.getLocationKey(location_key), _code))
+
+    // Get the location iterator
+    std::vector<Location>::iterator locationItr = _server.getLocationKey(location_key);
+    if (locationItr == _server.getLocations().end()) {
+        _code = 404; // Not Found
+        return (1);
+    }
+
+    if (isAllowedMethod(_request.getMethod(), *locationItr, _code))
         return (1);
     _cgiObj.clear();
     _cgiObj.setCgiPath(path);
@@ -1125,7 +1127,7 @@ int        HTTP::Response::handleCgi(std::string &location_key)
         _code = 500;
         return (1);
     }
-    _cgiObj.initEnv(_request, _server.getLocationKey(location_key)); // + URI
+    _cgiObj.initEnv(_request, locationItr); // + URI
     _cgiObj.execute(this->_code);
     return (0);
 }

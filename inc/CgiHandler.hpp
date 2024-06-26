@@ -1,8 +1,16 @@
 #ifndef CGIHANDLER_HPP
 #define CGIHANDLER_HPP
 
-#include "Webserv.hpp"
-#include "Http.hpp"
+#include <map>
+#include <string>
+#include <vector>
+
+class Location;
+
+// Forward declaration of HTTP namespace and Request class
+namespace HTTP {
+    class Request;
+}
 
 class CgiHandler {
 	private:
@@ -16,7 +24,6 @@ class CgiHandler {
 	public:
 		int	pipe_in[2];
 		int	pipe_out[2];
-
 		CgiHandler();
 		CgiHandler(std::string path);
 		~CgiHandler();

@@ -1,10 +1,4 @@
-#include "ServerSocket.hpp"
-#include "Http.hpp"
-#include "RequestHandler.hpp"
-#include "CgiHandler.hpp"
-#include "Logger.hpp"
-#include <unistd.h>
-#include <ctime>
+#include "Webserv.hpp"
 
 Client::Client()
 {

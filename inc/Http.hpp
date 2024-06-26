@@ -6,19 +6,67 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/24 18:46:52 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/25 12:44:30 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #ifndef HTTP_HPP
-#define HTTP_HPP
+# define HTTP_HPP
 
-#include "Webserv.hpp"
+#include "CgiHandler.hpp"
+class ServerConfig;
+class Mime;
 
 namespace   HTTP {
 	// ENUMS
-	
+	enum Method {
+		GET,
+		HEAD,
+		POST,
+		PUT,
+		DELETE,
+		NONE
+	};
+
+	enum ParsingState
+{
+    Request_Line,
+    Request_Line_Post_Put,
+    Request_Line_Method,
+    Request_Line_First_Space,
+    Request_Line_URI_Path_Slash,
+    Request_Line_URI_Path,
+    Request_Line_URI_Query,
+    Request_Line_URI_Fragment,
+    Request_Line_Ver,
+    Request_Line_HT,
+    Request_Line_HTT,
+    Request_Line_HTTP,
+    Request_Line_HTTP_Slash,
+    Request_Line_Major,
+    Request_Line_Dot,
+    Request_Line_Minor,
+    Request_Line_CR,
+    Request_Line_LF,
+    Field_Name_Start,
+    Fields_End,
+    Field_Name,
+    Field_Value,
+    Field_Value_End,
+    Chunked_Length_Begin,
+    Chunked_Length,
+    Chunked_Ignore,
+    Chunked_Length_CR,
+    Chunked_Length_LF,
+    Chunked_Data,
+    Chunked_Data_CR,
+    Chunked_Data_LF,
+    Chunked_End_CR,
+    Chunked_End_LF,
+    Message_Body,
+    Parsing_Done
+};
 
 	class Request {
 	private:
@@ -56,7 +104,7 @@ namespace   HTTP {
 	public:
 		Request(); // Default constructor
 		// Request(Method method, const std::string& resource, const std::map<std::string, Header>& headers, Version version, const std::string& body); // Parameterized constructor
-		~Request() {}; // Destructor
+		~Request(); // Destructor
 
 		// Getters
 		Method										&getMethod(); // Returns the HTTP method of the request
@@ -95,7 +143,7 @@ namespace   HTTP {
 			std::string				_responseBody;
 			std::string				_location;
 			short			 		_code;
-			char			  		*_res;
+			// char			  		*_res;
 			int						_cgi;
 			int						_cgiFd[2];
 			size_t					_cgiResponseLength;
@@ -125,7 +173,7 @@ namespace   HTTP {
 			Response();
 			Response(HTTP::Request&);
 			// Response(StatusCode responseCode, Version version, const std::map<std::string, Header> &headers, const std::string &body);
-			~Response() {};
+			~Response();
 
 			// Public members
 			CgiHandler		_cgiObj;

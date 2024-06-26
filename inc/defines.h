@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/24 18:47:23 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/26 06:25:39 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,11 @@
 
 #define LINE_END "\r\n"
 #define MAX_CONTENT_LENGTH 3000000
-#define TIMEOUT_PERIOD 30.0
-
-#define _SET_RESPONSE_HEADERS(responseHeaders, responseBody) \
-    do { \
-        responseHeaders["Content-Type"] = HTTP::Header("Content-Type", responseBody.second); \
-        int length = responseBody.first.size(); \
-        std::stringstream ss; \
-        ss << length; \
-        responseHeaders["Content-Length"] = HTTP::Header("Content-Length", ss.str()); \
-    } while (0)
+#define TIMEOUT_PERIOD 5000
 
 //! Parsing Definitions
 #define CONNECTION_TIMEOUT 60
-#define MAX_EVENTS 1000
+#define MAX_EVENTS 512
 #define BUFF_SIZE 40000
 
 //! checkFileExistence return values
@@ -55,6 +46,7 @@
 #define PINK "\033[0;35m"
 #define BLD "\033[1m"
 #define RST "\033[0m"
+#define GST  4;
 
 //! Error Error Status Definitions
 #define STATUS_100 "Continue"

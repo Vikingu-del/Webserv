@@ -3,14 +3,11 @@
 # define WEBSERV_HPP
 
 # include <iostream>
-// # include <fstream>
 # include <fcntl.h>
 # include <cstring>
 # include <string> 
-# include <unistd.h>
 # include <dirent.h>
-# include <sstream>
-// # include <bits/stdc++.h>
+# include <bits/stdc++.h>
 # include <cstdlib>
 # include <fstream>
 # include <sstream>
@@ -32,8 +29,8 @@
 # include <sys/stat.h>
 # include <sys/time.h>
 # include <unistd.h>
-// # include <machine/types.h>
 # include <signal.h>
+# include <sys/epoll.h>
 
 /* Network */
 # include <sys/socket.h>
@@ -47,8 +44,11 @@
 # include "Location.hpp"
 # include "Http.hpp"
 # include "CgiHandler.hpp"
+# include "Client.hpp"
 # include "Mime.hpp"
 # include "Logger.hpp"
 # include "utils.hpp"
+# include "defines.h"
+# include "ServerSocket.hpp"
 
 #endif
