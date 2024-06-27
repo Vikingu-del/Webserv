@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/27 12:17:09 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 18:37:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,6 +221,8 @@ namespace   HTTP {
 			// Setters
 			void        	setRequest(HTTP::Request &);
 			void        	setServer(ServerConfig &);
+			void			setAutoindex(Location &loc); // Sets the autoindex flag based on the location configuration
+
 
 			// methods
 			void			buildResponse();

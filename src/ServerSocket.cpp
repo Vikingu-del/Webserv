@@ -123,20 +123,8 @@ void ServerSocket::sendCgiBody(Client &client, CgiHandler &cgi) {
 }
 
 void ServerSocket::handleEpollIn(int fd) {
-    if (_serversMap.count(fd)) {
+    if (_serversMap.count(fd))
         acceptNewConnection(_serversMap[fd]);
-        std::vector<Location> loc = _serversMap[fd].getLocations();
-        for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); ++it) {
-            if (it->getPath() == "/cgi-bin" || it->getPath() == "/cgi-bin/" || it->getPath() == "cgi-bin" || it->getPath() == "cgi-bin/") {
-                std::cout << "cgi path: " << it->getPath() << std::endl;
-                if (it->_ext_path.empty())
-                    std::cout << "No CGI path found" << std::endl;
-                else
-                    std::cout << "CGI path found" << std::endl;
-            }
-
-        }
-    }
     else if (_clientsMap.count(fd)) {
         int cgiState = _clientsMap[fd].response.getCgiState();
         if (cgiState == 1 && fd == _clientsMap[fd].response._cgiObj.pipe_out[0])

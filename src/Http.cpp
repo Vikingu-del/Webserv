@@ -876,7 +876,6 @@ void    HTTP::Response::date()
     _responseContent.append("Date: ");
     _responseContent.append(date);
     _responseContent.append("\r\n");
-
 }
 // uri ecnoding
 void    HTTP::Response::setHeaders()
@@ -889,6 +888,12 @@ void    HTTP::Response::setHeaders()
     date();
 
     _responseContent.append("\r\n");
+}
+
+void HTTP::Response::setAutoindex(Location &loc)
+{
+    if (loc.getAutoindex())
+        _autoIndex = 1;
 }
 
 static bool fileExists (const std::string& f) {
@@ -1072,6 +1077,7 @@ int    HTTP::Response::handleTarget()
         }
         std::cout << "Location found for key: " << location_key << std::endl;
         Location target_location = *locPair.first;
+        _autoIndex = target_location.getAutoindex();
         if (isAllowedMethod(_request.getMethod(), target_location, _code))
         {
             std::cout << "METHOD NOT ALLOWED \n";
@@ -1199,31 +1205,31 @@ void HTTP::Response::setServerDefaultErrorPages()
 
 void HTTP::Response::buildErrorBody()
 {
-        if( !_server.getErrorPages().count(_code) || _server.getErrorPages().at(_code).empty() ||
-         _request.getMethod() == DELETE || _request.getMethod() == POST)
+    if( !_server.getErrorPages().count(_code) || _server.getErrorPages().at(_code).empty() ||
+        _request.getMethod() == DELETE || _request.getMethod() == POST) {
+        setServerDefaultErrorPages();
+    } else {
+        if(_code >= 400 && _code < 500)
         {
-            setServerDefaultErrorPages();
-        }
-        else
-        {
-            if(_code >= 400 && _code < 500)
-            {
-                _location = _server.getErrorPages().at(_code);
-                if(_location[0] != '/')
-                    _location.insert(_location.begin(), '/');
-                _code = 302;
-            }
-
-            _targetFile = _server.getRoot() +_server.getErrorPages().at(_code);
-            short old_code = _code;
-            if(readFile())
-            {
-                _code = old_code;
-                _responseBody = utils::getErrorPage(_code);
-            }
+            _location = _server.getErrorPages().at(_code);
+            if(_location[0] != '/')
+                _location.insert(_location.begin(), '/');
+            _code = 302;
         }
 
+        std::cout << "root " << _server.getRoot()  << std::endl;
+        // std::cout << "error page " << _server.getErrorPages().at(_code) << std::endl;
+        std::map<short, std::string>::const_iterator it = _server.getErrorPages().find(_code);
+        _targetFile = _server.getRoot() + (it != _server.getErrorPages().end() ? it->second : "");
+        short old_code = _code;
+        if(readFile())
+        {
+            _code = old_code;
+            _responseBody = utils::getErrorPage(_code);
+        }
+    }
 }
+
 void    HTTP::Response::buildResponse()
 {
     if (reqError() || buildBody()) {

@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/27 15:13:44 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 17:19:06 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig &other)
 		this->_listen_fd = other._listen_fd;
 		this->_autoindex = other._autoindex;
 		this->_server_address = other._server_address;
+		this->_error_pages = other._error_pages;
 		this->_mimeTypes = other._mimeTypes;
 	}
 	return (*this);

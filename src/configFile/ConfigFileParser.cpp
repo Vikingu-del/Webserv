@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/27 15:56:33 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 17:16:04 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ void ConfigFileParser::createServer(std::string &config, ServerConfig &server) {
 	bool flag_loc = true;
 	bool flag_autoindex = false;
 	bool flag_max_size = false;
-	std::vector<std::string> error_codes;
+	std::vector<std::string>	error_codes;
 	try {
 		for (size_t i = 0; i < parametrs.size(); i++) {
 			if (parametrs[i] == "listen" && (i + 1) < parametrs.size() && flag_loc) {
