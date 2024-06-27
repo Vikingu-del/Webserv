@@ -146,15 +146,8 @@ void CgiHandler::initEnv(HTTP::Request& req, Location &loc)
 	std::string extension;
 	std::string ext_path;
 
-	std::cout << "CgiHandler::initEnv()" << std::endl;
 	extension = this->_cgi_path.substr(this->_cgi_path.find("."));
 	std::cout << BLUE << "Extension: " << extension << RESET << std::endl;
-	if (loc.getPath() == "/cgi-bin" && loc._ext_path.empty())
-		throw ServerConfig::ServerConfigException("No CGI path found for the specified extension.");
-	for (std::map<std::string, std::string>::const_iterator i = loc._ext_path.begin(); i != loc._ext_path.end(); i++) {
-		std::cout << "printing extensions" << std::endl;
-		std::cout << "Key: " << i->first << " Value: " << i->second << std::endl;
-	}
 	std::map<std::string, std::string>::iterator it_path = loc._ext_path.find(extension);
     if (it_path == loc._ext_path.end()) return;
     ext_path = loc._ext_path[extension];
@@ -197,6 +190,7 @@ void CgiHandler::initEnv(HTTP::Request& req, Location &loc)
 /* Pipe and execute CGI */
 void CgiHandler::execute(short &error_code)
 {
+	std::cout << "Executing CGI" << std::endl;
 	if (!this->_argv[0] || !this->_argv[1])
 	{
 		error_code = 500;

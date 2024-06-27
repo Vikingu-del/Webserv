@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 11:53:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/25 12:48:19 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 15:56:33 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,6 @@ void ConfigFileParser::handleLocationDirective(ServerConfig &server, std::vector
 	while (i < parametrs.size() && parametrs[i] != "}")
 		codes.push_back(parametrs[i++]);
 	server.setLocation(path, codes);
-	// std::cout << PURPLE << "location: " << path << std::endl;
 	if (i < parametrs.size() && parametrs[i] != "}")
 		throw ParsingErrorException("Wrong character in server scope{}");
 	flag_loc = false;
@@ -300,6 +299,23 @@ void ConfigFileParser::finalizeServerConfig(ServerConfig &server, const std::vec
 	server.setErrorPages(error_codes);
 	if (!server.isValidErrorPages())
 		throw ParsingErrorException("Incorrect path for error page or number of error");
+	Location locFound;
+	std::vector<Location> loc = server.getLocations();
+	for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); it++) {
+		if (it->getPath() == "/cgi-bin" || it->getPath() == "/cgi-bin/" || it->getPath() == "/cgi-bin;" || it->getPath() == "/cgi-bin;/") {
+			locFound = *it;
+			for (std::vector<std::string>::const_iterator it_ext = it->getCgiExtension().begin(); it_ext != it->getCgiExtension().end(); it_ext++)
+			{
+				std::string ext = it_ext->substr(1); // remove the dot from the extension
+				for (std::vector<std::string>::const_iterator it_path = it->getCgiPath().begin(); it_path != it->getCgiPath().end(); it_path++) {
+					if ((*it_path).find(ext) != std::string::npos)
+						it->_ext_path.insert(std::make_pair(*it_ext, *it_path));
+				}
+			}
+		}
+	}
+	if (locFound._ext_path.empty())
+		throw ParsingErrorException("CGI location not found");
 }
 
 

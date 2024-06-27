@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/27 14:45:07 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 15:13:44 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -466,17 +466,6 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		}
 		else if (i < parametr.size())
 			throw ServerConfigException("Parametr in a locati is invalid");
-	}
-	if (new_location.getPath() == "/cgi-bin") {
-		if (new_location.getCgiPath().size() != new_location.getCgiExtension().size())
-			throw ServerConfigException("CGI location is invalid");
-		new_location.setMapExtPath();
-		if (new_location._ext_path.empty())
-			throw ServerConfigException("CGI extensions and paths vectors have different lengths.");
-		else {
-			for (std::map<std::string, std::string>::const_iterator it = new_location._ext_path.begin(); it != new_location._ext_path.end(); it++)
-				std::cout << "Extension: " << it->first << " Path: " << it->second << std::endl;
-		}
 	}
 	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
 		new_location.setIndexLocation(this->_index);
