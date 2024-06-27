@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 16:11:16 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/25 18:28:41 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 14:18:29 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,17 @@ void Location::setCgiPath(std::vector<std::string> path) {
 void Location::setCgiExtension(std::vector<std::string> extension) {
 	// std::cout << BLUE "Location setCgiExtension called" RST << std::endl;
 	this->_cgi_ext = extension;
+}
+
+void Location::setMapExtPath() {
+	for (std::vector<std::string>::const_iterator it_ext = _cgi_ext.begin(); it_ext != _cgi_ext.end(); it_ext++)
+	{
+		std::string ext = it_ext->substr(1); // remove the dot from the extension
+		for (std::vector<std::string>::const_iterator it_path = _cgi_path.begin(); it_path != _cgi_path.end(); it_path++) {
+			if ((*it_path).find(ext) != std::string::npos)
+				_ext_path.insert(std::make_pair(*it_ext, *it_path));
+		}
+	}
 }
 
 void Location::setMaxBodySize(std::string string_value) {

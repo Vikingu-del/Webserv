@@ -87,8 +87,8 @@ const std::string &CgiHandler::getCgiPath() const
     return (this->_cgi_path);
 }
 
-void CgiHandler::initEnvCgi(HTTP::Request& req, const std::vector<Location>::iterator it_loc) {
-    std::string cgi_exec = ("cgi-bin/" + it_loc->getCgiPath()[0]).c_str();
+void CgiHandler::initEnvCgi(HTTP::Request& req, const Location& loc) {
+    std::string cgi_exec = ("cgi-bin/" + loc.getCgiPath()[0]).c_str();
 	char    *cwd = getcwd(NULL, 0);
 	if(_cgi_path[0] != '/')
 	{
@@ -140,18 +140,25 @@ void CgiHandler::initEnvCgi(HTTP::Request& req, const std::vector<Location>::ite
 }
 
 /* initialization environment variable */
-void CgiHandler::initEnv(HTTP::Request& req, const std::vector<Location>::iterator it_loc)
+void CgiHandler::initEnv(HTTP::Request& req, Location &loc)
 {
 	int			poz;
 	std::string extension;
 	std::string ext_path;
 
+	std::cout << "CgiHandler::initEnv()" << std::endl;
 	extension = this->_cgi_path.substr(this->_cgi_path.find("."));
-	std::map<std::string, std::string>::iterator it_path = it_loc->_ext_path.find(extension);
-    if (it_path == it_loc->_ext_path.end())
-        return ;
-    ext_path = it_loc->_ext_path[extension];
-
+	std::cout << BLUE << "Extension: " << extension << RESET << std::endl;
+	if (loc.getPath() == "/cgi-bin" && loc._ext_path.empty())
+		throw ServerConfig::ServerConfigException("No CGI path found for the specified extension.");
+	for (std::map<std::string, std::string>::const_iterator i = loc._ext_path.begin(); i != loc._ext_path.end(); i++) {
+		std::cout << "printing extensions" << std::endl;
+		std::cout << "Key: " << i->first << " Value: " << i->second << std::endl;
+	}
+	std::map<std::string, std::string>::iterator it_path = loc._ext_path.find(extension);
+    if (it_path == loc._ext_path.end()) return;
+    ext_path = loc._ext_path[extension];
+	this->_env["AUTH_TYPE"] = "Basic";
 	this->_env["AUTH_TYPE"] = "Basic";
 	this->_env["CONTENT_LENGTH"] = req.getHeader("content-length");
 	this->_env["CONTENT_TYPE"] = req.getHeader("content-type");
@@ -159,8 +166,8 @@ void CgiHandler::initEnv(HTTP::Request& req, const std::vector<Location>::iterat
 	poz = findStart(this->_cgi_path, "cgi-bin/");
 	this->_env["SCRIPT_NAME"] = this->_cgi_path;
     this->_env["SCRIPT_FILENAME"] = ((poz < 0 || (size_t)(poz + 8) > this->_cgi_path.size()) ? "" : this->_cgi_path.substr(poz + 8, this->_cgi_path.size())); // check dif cases after put right parametr from the response
-    this->_env["PATH_INFO"] = getPathInfo(req.getPath(), it_loc->getCgiExtension());
-    this->_env["PATH_TRANSLATED"] = it_loc->getRootLocation() + (this->_env["PATH_INFO"] == "" ? "/" : this->_env["PATH_INFO"]);
+    this->_env["PATH_INFO"] = getPathInfo(req.getPath(), loc.getCgiExtension());
+    this->_env["PATH_TRANSLATED"] = loc.getRootLocation() + (this->_env["PATH_INFO"] == "" ? "/" : this->_env["PATH_INFO"]);
     this->_env["QUERY_STRING"] = decode(req.getQuery());
     this->_env["REMOTE_ADDR"] = req.getHeader("host");
 	poz = findStart(req.getHeader("host"), ":");
@@ -168,7 +175,7 @@ void CgiHandler::initEnv(HTTP::Request& req, const std::vector<Location>::iterat
     this->_env["SERVER_PORT"] = (poz > 0 ? req.getHeader("host").substr(poz + 1, req.getHeader("host").size()) : "");
     this->_env["REQUEST_METHOD"] = req.getMethodStr();
     this->_env["HTTP_COOKIE"] = req.getHeader("cookie");
-    this->_env["DOCUMENT_ROOT"] = it_loc->getRootLocation();
+    this->_env["DOCUMENT_ROOT"] = loc.getRootLocation();
 	this->_env["REQUEST_URI"] = req.getPath() + req.getQuery();
     this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
     this->_env["REDIRECT_STATUS"] = "200";
@@ -190,7 +197,7 @@ void CgiHandler::initEnv(HTTP::Request& req, const std::vector<Location>::iterat
 /* Pipe and execute CGI */
 void CgiHandler::execute(short &error_code)
 {
-	if (this->_argv[0] == NULL || this->_argv[1] == NULL)
+	if (!this->_argv[0] || !this->_argv[1])
 	{
 		error_code = 500;
 		return ;

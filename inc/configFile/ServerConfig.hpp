@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:17:52 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/26 01:49:41 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 10:40:47 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,7 @@ class ServerConfig {
 		void	bindServer();
 		bool	checkLocaitons() const;
 		bool	isValidErrorPages();
-		const std::vector<Location>::iterator getLocationKey(std::string key);
-		bool 	findLocationKey(const std::string &key, std::vector<Location>::iterator &it);
+		std::pair<std::vector<Location>::iterator, bool> getLocationKey(const std::string& key);
 		
 		struct MatchLocation {
 			const std::string& resource;

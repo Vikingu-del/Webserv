@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/25 12:44:30 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 12:17:09 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,41 @@ namespace   HTTP {
 		bool	_multiformFlag; // Indicates whether the request is a multipart/form-data request
 		
 		void	_handleHeaders(); // Internal method to process headers
+		void 	handleRequestLine(char character);
+		void 	handleRequestLinePostPut(char character);
+		void	handleRequestLineMethod(char character);
+		void 	handleRequestLineFirstSpace(char character);
+		void	handleRequestLineURIPathSlash(char character);
+		void	handleRequestLineURIPath(char character);
+		void	handleRequestLineURIQuery(char character);
+		void	handleRequestLineURIFragment(char character);
+		void	handleRequestLineVer(char character);
+		void	handleRequestLineHT(char character);
+		void 	handleRequestLineHTT(char character);
+		void	handleRequestLineHTTP(char character);
+		void 	handleRequestLineHTTPSlash(char character);
+		void	handleRequestLineMajor(char character);
+		void	handleRequestLineDot(char character);
+		void	handleRequestLineMinor(char character);
+		void	handleRequestLineCR(char character);
+		void 	handleRequestLineLF(char character);
+		void 	handleFieldNameStart(char character);
+		void	handleFieldsEnd(char character);
+		void	handleFieldName(char character);
+		void	handleFieldValue(char character);
+		void	handleFieldValueEnd(char character);
+		void	handleChunkedLengthBegin(char character);
+		void	handleChunkedLength(char character);
+		void	handleChunkedLengthCR(char character);
+		void	handleChunkedLengthLF(char character);
+		void	handleChunkedIgnore(char character);
+		void	handleChunkedData(char character);
+		void	handleChunkedDataCR(char character);
+		void	handleChunkedDataLF(char character);
+		void	handleChunkedEndCR(char character);
+		void	handleChunkedEndLF(char character);
+		void	handleMessageBody(char character);
+		void	setError(int code, const std::string &message);
 
 	public:
 		Request(); // Default constructor
@@ -126,7 +161,7 @@ namespace   HTTP {
 		void				setBody(std::string name); // Sets the body of the request
 		
 		// Methods
-		void				feed(char *data, size_t size); // Processes incoming data
+		void				feed(const char *data, size_t size); // Processes incoming data
 		bool				isComplete(); // Returns true if the request has been fully parsed
 		void				printMessage(); // Prints the request for debugging purposes
 		void				clear(); // Clears the request object for reuse
@@ -165,8 +200,8 @@ namespace   HTTP {
 			int     handleTarget();
 			void    buildErrorBody();
 			bool    reqError();
-			int     handleCgi(std::string &);
-			int     handleCgiTemp(std::string &);
+			int     handleCgi(Location &);
+			int     handleCgiTemp(Location&);
 			
 		public:
 			static Mime _mime;

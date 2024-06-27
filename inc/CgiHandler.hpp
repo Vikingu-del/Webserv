@@ -30,8 +30,8 @@ class CgiHandler {
 		CgiHandler(CgiHandler const &other);
 		CgiHandler &operator=(CgiHandler const &rhs);
 
-		void initEnv(HTTP::Request& req, const std::vector<Location>::iterator it_loc);
-		void initEnvCgi(HTTP::Request& req, const std::vector<Location>::iterator it_loc);
+		void initEnv(HTTP::Request& req, Location &loc);
+		void initEnvCgi(HTTP::Request& req, const Location &loc);
 		void execute(short &error_code);
 		void sendHeaderBody(int &pipe_out, int &fd, std::string &);
 		void fixHeader(std::string &header);

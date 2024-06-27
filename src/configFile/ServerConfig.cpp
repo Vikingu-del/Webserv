@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 15:03:51 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/26 02:49:17 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 14:45:07 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -467,6 +467,17 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 		else if (i < parametr.size())
 			throw ServerConfigException("Parametr in a locati is invalid");
 	}
+	if (new_location.getPath() == "/cgi-bin") {
+		if (new_location.getCgiPath().size() != new_location.getCgiExtension().size())
+			throw ServerConfigException("CGI location is invalid");
+		new_location.setMapExtPath();
+		if (new_location._ext_path.empty())
+			throw ServerConfigException("CGI extensions and paths vectors have different lengths.");
+		else {
+			for (std::map<std::string, std::string>::const_iterator it = new_location._ext_path.begin(); it != new_location._ext_path.end(); it++)
+				std::cout << "Extension: " << it->first << " Path: " << it->second << std::endl;
+		}
+	}
 	if (new_location.getPath() != "/cgi-bin" && new_location.getIndexLocation().empty())
 		new_location.setIndexLocation(this->_index);
 	if (!flag_max_size)
@@ -651,11 +662,13 @@ void	ServerConfig::bindServer(void)
 	}
 }
 
-const std::vector<Location>::iterator ServerConfig::getLocationKey(std::string key) {
-	std::vector<Location>::iterator it;
-	for (it = this->_locations.begin(); it != this->_locations.end(); it++) {
-		if (it->getPath() == key)
-			return (it);
-	}
-	return (it);
+std::pair<std::vector<Location>::iterator, bool> ServerConfig::getLocationKey(const std::string& key) {
+    std::cout << "getLocationKey called: " << key << std::endl;
+    for (std::vector<Location>::iterator it = this->_locations.begin(); it != this->_locations.end(); ++it) {
+        if (it->getPath() == key) {
+            return std::make_pair(it, true); // Found a match
+        }
+    }
+    return std::make_pair(_locations.end(), false); // No match found
 }
+

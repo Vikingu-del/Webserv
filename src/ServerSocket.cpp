@@ -123,8 +123,20 @@ void ServerSocket::sendCgiBody(Client &client, CgiHandler &cgi) {
 }
 
 void ServerSocket::handleEpollIn(int fd) {
-    if (_serversMap.count(fd))
+    if (_serversMap.count(fd)) {
         acceptNewConnection(_serversMap[fd]);
+        std::vector<Location> loc = _serversMap[fd].getLocations();
+        for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); ++it) {
+            if (it->getPath() == "/cgi-bin" || it->getPath() == "/cgi-bin/" || it->getPath() == "cgi-bin" || it->getPath() == "cgi-bin/") {
+                std::cout << "cgi path: " << it->getPath() << std::endl;
+                if (it->_ext_path.empty())
+                    std::cout << "No CGI path found" << std::endl;
+                else
+                    std::cout << "CGI path found" << std::endl;
+            }
+
+        }
+    }
     else if (_clientsMap.count(fd)) {
         int cgiState = _clientsMap[fd].response.getCgiState();
         if (cgiState == 1 && fd == _clientsMap[fd].response._cgiObj.pipe_out[0])
@@ -192,8 +204,7 @@ void ServerSocket::sendResponse(const int &fd, Client &client) {
             Logger::logMsg(YELLOW, CONSOLE_OUTPUT, "Client %d: Connection Closed.", fd);
             closeConnection(fd);
         } else {
-            removeFromEpoll(fd);
-            addToEpoll(fd, EPOLLIN);
+            modifyEpoll(fd, EPOLLIN /*| EPOLLET*/);
             client.clearClient();
         }
     } else {
@@ -236,6 +247,8 @@ void ServerSocket::readCgiResponse(Client &client, CgiHandler &cgi) {
 }
 
 void ServerSocket::readRequest(const int &fd, Client& client) {
+
+    std::cout << "readRequest" << std::endl;
     char buf[BUFF_SIZE];
     int count = read(fd, buf, BUFF_SIZE);
     if (count == 0) {
