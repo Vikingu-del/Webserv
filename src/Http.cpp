@@ -831,6 +831,25 @@ HTTP::Response::Response(HTTP::Request &req) : _request(req)
     _autoIndex = 0;
 }
 
+HTTP::Response& HTTP::Response::operator=(const Response &rhs)
+{
+    if (this != &rhs)
+    {
+        _server = rhs._server;
+        _targetFile = rhs._targetFile;
+        _body = rhs._body;
+        _bodyLength = rhs._bodyLength;
+        _responseBody = rhs._responseBody;
+        _responseContent = rhs._responseContent;
+        _location = rhs._location;
+        _code = rhs._code;
+        _cgi = rhs._cgi;
+        _cgiResponseLength = rhs._cgiResponseLength;
+        _autoIndex = rhs._autoIndex;
+    }
+    return (*this);
+}
+
 void   HTTP::Response::contentType()
 {
     _responseContent.append("Content-Type: ");
@@ -1230,21 +1249,23 @@ void HTTP::Response::buildErrorBody()
     }
 }
 
-void    HTTP::Response::buildResponse()
+void HTTP::Response::buildResponse()
 {
+    std::cout << "Starting buildResponse" << std::endl;
     if (reqError() || buildBody()) {
-        std::cout << "ERROR" << std::endl;
+        std::cout << "Error in reqError or buildBody" << std::endl;
         buildErrorBody();
     }
     if (_cgi) {
-        std::cout << "it is Cgi" << std::endl;
+        std::cout << "Handling CGI" << std::endl;
         return ;
     }
     else if (_autoIndex)
     {
-        std::cout << "AUTO index " << std::endl;
+        std::cout << "Handling AutoIndex" << std::endl;
         if (utils::buildHtmlIndex(_targetFile, _body, _bodyLength))
         {
+            std::cout << "Error building autoindex" << std::endl;
             _code = 500;
             buildErrorBody();
         }
@@ -1256,6 +1277,7 @@ void    HTTP::Response::buildResponse()
     setHeaders();
     if (_request.getMethod() != HEAD && (_request.getMethod() == GET || _code != 200))
         _responseContent.append(_responseBody);
+    std::cout << "Finished buildResponse with code: " << _code << std::endl;
 }
 
 void HTTP::Response::setErrorResponse(short code)
@@ -1289,7 +1311,7 @@ void        HTTP::Response::setStatusLine()
     _responseContent.append("\r\n");
 }
 
-int    HTTP::Response::buildBody()
+int HTTP::Response::buildBody()
 {
     std::cout << "BUILD BODY" << std::endl;
     if (_request.getBody().length() > _server.getClientMaxBody())
@@ -1306,50 +1328,63 @@ int    HTTP::Response::buildBody()
     }
     if (_code)
         return (0);
+
     if (_request.getMethod() == GET || _request.getMethod() == HEAD)
     {
         if (readFile())
             return (1);
     }
-     else if (_request.getMethod() == POST || _request.getMethod() == PUT)
+    else if (_request.getMethod() == POST || _request.getMethod() == PUT)
     {
-        if (fileExists(_targetFile) && _request.getMethod() == POST)
-        {
-            _code = 204;
-            return (0);
-        }
-        std::ofstream file(_targetFile.c_str(), std::ios::binary);
-        if (file.fail())
-        {
-            _code = 404;
-            return (1);
-        }
-
-        if (_request.getMultiformFlag())
-        {
-            std::string body = _request.getBody();
-            body = removeBoundary(body, _request.getBoundary());
-            file.write(body.c_str(), body.length());
-        }
-        else
-        {
-            file.write(_request.getBody().c_str(), _request.getBody().length());
-        }
+        return handleWriteRequest();
     }
     else if (_request.getMethod() == DELETE)
     {
-        if (!fileExists(_targetFile))
-        {
-            _code = 404;
-            return (1);
-        }
-        if (remove( _targetFile.c_str() ) != 0 )
-        {
-            _code = 500;
-            return (1);
-        }
+        return handleDeleteRequest();
     }
     _code = 200;
+    return (0);
+}
+
+int HTTP::Response::handleWriteRequest()
+{
+    if (fileExists(_targetFile) && _request.getMethod() == POST)
+    {
+        _code = 204;
+        return (0);
+    }
+    std::ofstream file(_targetFile.c_str(), std::ios::binary);
+    if (file.fail())
+    {
+        _code = 404;
+        return (1);
+    }
+
+    if (_request.getMultiformFlag())
+    {
+        std::string body = _request.getBody();
+        body = removeBoundary(body, _request.getBoundary());
+        file.write(body.c_str(), body.length());
+    }
+    else
+    {
+        file.write(_request.getBody().c_str(), _request.getBody().length());
+    }
+    return (0);
+}
+
+int HTTP::Response::handleDeleteRequest()
+{
+    if (!fileExists(_targetFile))
+    {
+        _code = 404;
+        return (1);
+    }
+    if (remove(_targetFile.c_str()) != 0)
+    {
+        _code = 500;
+        return (1);
+    }
     return (0);
 }
 

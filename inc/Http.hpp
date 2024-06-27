@@ -6,7 +6,7 @@
 /*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/27 18:37:47 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/27 20:57:34 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,7 @@ namespace   HTTP {
 			size_t					_bodyLength;
 			std::string				_responseBody;
 			std::string				_location;
+			Location				_loc;
 			short			 		_code;
 			// char			  		*_res;
 			int						_cgi;
@@ -202,11 +203,14 @@ namespace   HTTP {
 			bool    reqError();
 			int     handleCgi(Location &);
 			int     handleCgiTemp(Location&);
+			int 	handleWriteRequest();
+			int 	handleDeleteRequest();
 			
 		public:
 			static Mime _mime;
 			Response();
 			Response(HTTP::Request&);
+			Response& operator=(const Response &rhs);
 			// Response(StatusCode responseCode, Version version, const std::map<std::string, Header> &headers, const std::string &body);
 			~Response();
 
