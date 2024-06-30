@@ -119,6 +119,23 @@ void    toLower(std::string &str)
         str[i] = std::tolower(str[i]);
 }
 
+void HTTP::Request::normalizePath() {
+    std::string normalizedPath;
+    for (size_t i = 0; i < _path.size(); ++i) {
+        normalizedPath += _path[i];
+        if (_path[i] == '/') {
+            while (i + 1 < _path.size() && _path[i + 1] == '/') {
+                ++i;
+            }
+        }
+    }
+    if (normalizedPath.empty() || normalizedPath[0] != '/')
+        normalizedPath = "/" + normalizedPath;
+    _path.clear();
+    this->_path = normalizedPath;
+    std::cout << "Normalized path: " << _path << std::endl;
+}
+
 void HTTP::Request::feed(const char *data, size_t size)
 {
     for (size_t i = 0; i < size; ++i)
@@ -845,6 +862,26 @@ void            HTTP::Request::cutReqBody(int bytes)
     _bodyStr = _bodyStr.substr(bytes);
 }
 
+void            HTTP::Request::printRequestData() {
+    std::cout << RED << "_path: " << _path << std::endl;
+    std::cout << "_query: " << _query << std::endl;
+    std::cout << "_fragment: " << _fragment << std::endl;
+    std::cout << "_method: " << _methodStr[_method] << std::endl;
+    std::cout << "_body: ";
+    for (size_t i = 0; i < _body.size(); i++)
+        std::cout << _body[i] << ", ";
+    std::cout << std::endl;
+    std::cout << "_boundary: " << _boundary << std::endl;
+    std::cout << "_state: " << _state << std::endl;
+    std::cout << "_maxBodySize: " << _maxBodySize << std::endl;
+    std::cout << "_bodyLength: " << _bodyLength << std::endl;
+    std::cout << "_errorCode: " << _errorCode << std::endl;
+    std::cout << "_chunkLength: " << _chunkLength << std::endl;
+    std::cout << "http Version: " << _verMajor << "." << _verMinor << std::endl;
+    std::cout << "_serverName: " << _serverName << std::endl;
+    std::cout << "_bodyStr: " << _bodyStr << RESET << std::endl;
+}
+
 //             REQUEST                 */
 
 //             RESPONSE                */
@@ -1013,6 +1050,10 @@ static std::string combinePaths(std::string p1, std::string p2, std::string p3)
 
     len1 = p1.length();
     len2 = p2.length();
+    std::cout << GREEN << "P1: " << p1 << std::endl;
+    std::cout << "P2: " << p2 << std::endl;
+    std::cout << "p1[len1 - 1]: " << p1[len1 - 1] << std::endl;
+    std::cout << "p2[0]: " << p2[0] << RESET << std::endl;
     if (p1[len1 - 1] == '/' && (!p2.empty() && p2[0] == '/') )
         p2.erase(0, 1);
     if (p1[len1 - 1] != '/' && (!p2.empty() && p2[0] != '/'))
@@ -1027,12 +1068,19 @@ static std::string combinePaths(std::string p1, std::string p2, std::string p3)
 
 static void replaceAlias(Location &location, HTTP::Request &request, std::string &targetFile)
 {
+    std::cout << "ALIAS: " << location.getAlias() << std::endl;
+    std::cout << "Target File: " << targetFile << std::endl; 
     targetFile = combinePaths(location.getAlias(), request.getPath().substr(location.getPath().length()), "");
+    std::cout << "Target File after combine: " << targetFile << std::endl;
 }
 
 static void appendRoot(Location &location, HTTP::Request &request, std::string &targetFile)
 {
+    std::cout << "ROOT: " << location.getRootLocation() << std::endl;
+    std::cout << "Target File: " << targetFile << std::endl;
+    std::cout << "Request Path: " << request.getPath() << std::endl;
     targetFile = combinePaths(location.getRootLocation(), request.getPath(), "");
+    std::cout << "Target File after combine: " << targetFile << std::endl;
 }
 
 int HTTP::Response::handleCgiTemp(Location &targetLocation)
@@ -1060,15 +1108,13 @@ int        HTTP::Response::handleCgi(Location &targetLocation)
     size_t      pos;
 
     path = this->_request.getPath();
-    std::cout << "PATH: " << path << std::endl;
     if (path[0] && path[0] == '/')
         path.erase(0, 1);
-    std::cout << "PATH after checking for slash: " << path << std::endl;
     if (path == "cgi-bin")
         path += "/" + targetLocation.getIndexLocation();
     else if (path == "cgi-bin/")
         path.append(targetLocation.getIndexLocation());
-
+    std::cout << "update cgi path: " << path << std::endl;
     pos = path.find(".");
     if (pos == std::string::npos)
     {
@@ -1078,7 +1124,7 @@ int        HTTP::Response::handleCgi(Location &targetLocation)
     exten = path.substr(pos);
     if (exten != ".py" && exten != ".sh")
     {
-        _code = 501;
+        _code = 501; // error: not implemented
         return (1);
     }
     if (ConfigFile::checkFileExistence(path) != 1)
@@ -1111,145 +1157,81 @@ int        HTTP::Response::handleCgi(Location &targetLocation)
     If match found, then location_key is set to that location, otherwise location_key will be an empty string.
 */
 
-static void    getLocationMatch(std::string &path, std::vector<Location> locations, std::string &location_key)
-{
+static void    getLocationMatch(std::string &path, std::vector<Location> locations, std::string &location_key) {
     size_t biggest_match = 0;
-
-    for(std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it)
-    {
-        if( ("/" + path).find(it->getPath()) == 0)
-        {
-               if( it->getPath() == "/" || path.length() == it->getPath().length() || path[it->getPath().length()] == '/')
-               {
-                    if(it->getPath().length() > biggest_match)
-                    {
-                        biggest_match = it->getPath().length();
-                        location_key = it->getPath();
-                    }
-               }
+    for(std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
+        if(path.find(it->getPath()) == 0) {
+            if(std::count(path.begin(), path.end(), '/') == 1 || path.length() == it->getPath().length() || path[it->getPath().length()] == '/')
+            {
+                if(it->getPath().length() > biggest_match)
+                {
+                    biggest_match = it->getPath().length();
+                    location_key = it->getPath();
+                    std::cout << "LOCATION_KEY UPDATED: " << location_key << std::endl;
+                }
+            }
         }
     }
 }
 
-int    HTTP::Response::handleTarget()
-{
-    std::cout << "HANDLE TARGET" << std::endl;
+int    HTTP::Response::handleTarget() {
     std::string location_key;
     getLocationMatch(_request.getPath(), _server.getLocations(), location_key);
-    if (!location_key.empty())
-    {
+    if (!location_key.empty()) {
         std::pair<std::vector<Location>::iterator, bool> locPair = _server.getLocationKey(location_key);
-        if (!locPair.second) {
-            Logger::logMsg(RED, CONSOLE_OUTPUT,  "Location %s not found", location_key.c_str());
-            _code = 404; // Or appropriate error code
-            return (1);
-        }
-        std::cout << "Location found for key: " << location_key << std::endl;
         Location target_location = *locPair.first;
-        _autoIndex = target_location.getAutoindex();
         if (isAllowedMethod(_request.getMethod(), target_location, _code))
-        {
-            std::cout << "METHOD NOT ALLOWED \n";
             return (1);
-        }
-        if (_request.getBody().length() > target_location.getMaxBodySize())
-        {
-            std::cout << "BODY TOO LARGE \n";
+        if (_request.getBody().length() > target_location.getMaxBodySize()) {
             _code = 413;
             return (1);
         }
-        if (checkReturn(target_location, _code, _location)) {
-            std::cout << "CHECK RETURN \n";
+        if (checkReturn(target_location, _code, _location))
             return (1);
-        }
-
-		if (target_location.getPath().find("cgi-bin") != std::string::npos)
-		{
+		if (target_location.getPath().find("cgi-bin") != std::string::npos) {
             std::cout << "CGI BIN" << std::endl;
             return (handleCgi(target_location));
 		}
-
         if (!target_location.getAlias().empty())
-        {
             replaceAlias(target_location, _request, _targetFile);
-        }
         else
             appendRoot(target_location, _request, _targetFile);
-
-        if (!target_location.getCgiExtension().empty())
-        {
+        if (!target_location.getCgiExtension().empty()) {
             std::cout << "CGI EXTENSION" << std::endl;
             if (_targetFile.rfind(target_location.getCgiExtension()[0]) != std::string::npos)
-            {
                 return (handleCgiTemp(target_location));
-            }
-
         }
-        if (isDirectory(_targetFile))
-        {
-            std::cout << "IS DIRECTORY" << std::endl;
-            if (_targetFile[_targetFile.length() - 1] != '/')
-            {
+        if (isDirectory(_targetFile)) {
+            if (_targetFile[_targetFile.length() - 1] != '/') {
                 _code = 301;
                 _location = _request.getPath() + "/";
                 return (1);
             }
             if (!target_location.getIndexLocation().empty())
                 _targetFile += target_location.getIndexLocation();
-            else
-                _targetFile += _server.getIndex();
-            if (!fileExists(_targetFile))
-            {
-                if (target_location.getAutoindex())
-                {
-                    _targetFile.erase(_targetFile.find_last_of('/') + 1);
-                    _autoIndex = true;
-                    return (0);
-                }
-                else
-                {
-                    _code = 403;
-                    return (1);
-                }
-            }
-            if (isDirectory(_targetFile))
-            {
-                _code = 301;
-                if (!target_location.getIndexLocation().empty())
-                    _location = combinePaths(_request.getPath(), target_location.getIndexLocation(), "");
-                else
-                    _location = combinePaths(_request.getPath(), _server.getIndex(), "");
-                if (_location[_location.length() - 1] != '/')
-                    _location.insert(_location.end(), '/');
-
+        }
+        if (!fileExists(_targetFile)) {
+            if (target_location.getAutoindex()) {
+                std::cout << "DID WE CAME HERE" << std::endl;
+                _targetFile.erase(_targetFile.find_last_of('/') + 1);
+                _autoIndex = true;
+                return (0);
+            } else {
+                _code = 404;
                 return (1);
             }
         }
-    }
-    else
-    {
-        std::cout << "NO LOCATION FOUND" << std::endl;
+    } else {
         _targetFile = combinePaths(_server.getRoot(), _request.getPath(), "");
-        if (isDirectory(_targetFile))
-        {
-            if (_targetFile[_targetFile.length() - 1] != '/')
-            {
+        if (isDirectory(_targetFile)) {
+            if (_targetFile[_targetFile.length() - 1] != '/') {
                 _code = 301;
                 _location = _request.getPath() + "/";
                 return (1);
             }
-            _targetFile += _server.getIndex();
-            if (!fileExists(_targetFile))
-            {
-                _code = 403;
-                return (1);
-            }
-            if (isDirectory(_targetFile))
-            {
-                _code = 301;
-                _location = combinePaths(_request.getPath(), _server.getIndex(), "");
-                if(_location[_location.length() - 1] != '/')
-                    _location.insert(_location.end(), '/');
+            _targetFile = _server.getRoot() + _server.getIndex();
+            if (!fileExists(_targetFile)) {
+                _code = 404;
                 return (1);
             }
         }
@@ -1301,18 +1283,12 @@ void HTTP::Response::buildErrorBody()
 
 void HTTP::Response::buildResponse()
 {
-    std::cout << "Starting buildResponse" << std::endl;
-    if (reqError() || buildBody()) {
-        std::cout << "Error in reqError or buildBody" << std::endl;
+    if (reqError() || buildBody())
         buildErrorBody();
-    }
-    if (_cgi) {
-        std::cout << "Handling CGI" << std::endl;
-        return ;
-    }
+    if (_cgi)
+        return;
     else if (_autoIndex)
     {
-        std::cout << "Handling AutoIndex" << std::endl;
         if (utils::buildHtmlIndex(_targetFile, _body, _bodyLength))
         {
             std::cout << "Error building autoindex" << std::endl;
@@ -1363,22 +1339,19 @@ void        HTTP::Response::setStatusLine()
 
 int HTTP::Response::buildBody()
 {
-    std::cout << "BUILD BODY" << std::endl;
+    _request.normalizePath();
+    _request.printRequestData();
     if (_request.getBody().length() > _server.getClientMaxBody())
     {
-        std::cout << "BODY TOO LONG" << std::endl;
         _code = 413;
         return (1);
     }
     if (handleTarget())
         return (1);
-    if (_cgi || _autoIndex) {
-        std::cout << "CGI OR AUTOINDEX" << std::endl;
+    if (_cgi || _autoIndex)
         return (0);
-    }
     if (_code)
         return (0);
-
     if (_request.getMethod() == GET || _request.getMethod() == HEAD)
     {
         if (readFile())
@@ -1560,8 +1533,20 @@ std::string HTTP::Response::removeBoundary(std::string &body, std::string &bound
     return (new_body);
 }
 
-void      HTTP::Response::setCgiState(int state)
-{
+void      HTTP::Response::setCgiState(int state) {
     _cgi = state;
+}
+
+void     HTTP::Response::printResponseData() {
+    std::cout << PURPLE << "Server Name: " << _server.getServerName() << std::endl;
+    std::cout << "Target File: " << _targetFile << std::endl;
+    std::cout << "Body Length: " << _bodyLength << std::endl;
+    std::cout << "Response Content: " << _responseContent << std::endl;
+    std::cout << "Response Body: " << _responseBody << std::endl;
+    std::cout << "Location: " << _location << std::endl;
+    std::cout << "Code: " << _code << std::endl;
+    std::cout << "CGI flag: " << _cgi << std::endl;
+    std::cout << "CGI Response Length: " << _cgiResponseLength << std::endl;
+    std::cout << "AutoIndex: " << _autoIndex << RESET << std::endl;
 }
 //            RESPONSE                 */

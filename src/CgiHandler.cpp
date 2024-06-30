@@ -140,7 +140,8 @@ void CgiHandler::initEnvCgi(HTTP::Request& req, const Location& loc) {
 }
 
 /* initialization environment variable */
-void CgiHandler::initEnv(HTTP::Request& req, Location &loc)
+void CgiHandler::
+initEnv(HTTP::Request& req, Location &loc)
 {
 	int			poz;
 	std::string extension;
@@ -172,7 +173,7 @@ void CgiHandler::initEnv(HTTP::Request& req, Location &loc)
 	this->_env["REQUEST_URI"] = req.getPath() + req.getQuery();
     this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
     this->_env["REDIRECT_STATUS"] = "200";
-	this->_env["SERVER_SOFTWARE"] = "AMANIX";
+	this->_env["SERVER_SOFTWARE"] = "WEBSERVER/1.0";
 
 	this->_ch_env = (char **)calloc(sizeof(char *), this->_env.size() + 1);
 	std::map<std::string, std::string>::const_iterator it = this->_env.begin();

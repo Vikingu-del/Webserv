@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 18:57:30 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/24 12:00:44 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/30 21:05:12 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,7 @@ int utils::buildHtmlIndex(std::string &dir_name, std::vector<u_int8_t> &body, si
     DIR             *directory;
     std::string     dirListPage;
     
+    std::cout << "building autoindex page" << std::endl;
     directory = opendir(dir_name.c_str());
     if (directory == NULL)
     {    

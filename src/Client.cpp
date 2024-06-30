@@ -86,6 +86,7 @@ void        Client::buildResponse()
 	std::cout << "Client::buildResponse()" << std::endl;
     response.setRequest(this->request);
     response.buildResponse();
+	// response.printResponseData();
 }
 
 void             Client::updateTime()

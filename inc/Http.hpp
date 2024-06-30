@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 17:44:46 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/27 20:57:34 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/30 18:24:21 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,8 @@ namespace   HTTP {
 		short				errorCode(); // Returns the error code if parsing failed
 		bool				keepAlive(); // Returns true if the connection should be kept alive
 		void				cutReqBody(int bytes); // Removes a specified number of bytes from the beginning of the request body
+		void 				printRequestData();
+		void normalizePath();
 	};
     class   Response {
         private:
@@ -238,6 +240,7 @@ namespace   HTTP {
 			std::string		removeBoundary(std::string &body, std::string &boundary);
 			std::string		_responseContent;
 			HTTP::Request	_request;
+			void 			printResponseData();
     };
 }
 
