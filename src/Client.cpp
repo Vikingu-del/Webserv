@@ -18,7 +18,6 @@ Client::Client(const Client &other)
 		this->response = other.response;
 		this->server = other.server;
 		this->_last_msg_time = other._last_msg_time;
-
 	}
 	return ;
 }

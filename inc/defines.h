@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 13:10:40 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/26 06:25:39 by eseferi          ###   ########.fr       */
+/*   Updated: 2024/06/30 01:07:08 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 #define NO_PERMISSIONS "000"
 #define THIS_FILE_HAS_PERMISSION 0
 #define THIS_FILE_DOESNT_HAVE_PERMISSION -1
-#define MAX_URI_LENGTH 4096
+#define MAX_URI_LENGTH 8192 // this is the maximum length of a URI as NGINX defines it, longer URIs can cause security issues from DoS attacks
 
 //! Color Definitions
 #define RED   "\033[31m"

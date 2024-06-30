@@ -18,11 +18,11 @@
 
 HTTP::Request::Request()
 {
-    _methodStr[::HTTP::GET] = "GET";
-    _methodStr[::HTTP::POST] = "POST";
-    _methodStr[::HTTP::DELETE] = "DELETE";
-    _methodStr[::HTTP::PUT] = "PUT";
-    _methodStr[::HTTP::HEAD] = "HEAD";
+    _methodStr[HTTP::GET] = "GET";
+    _methodStr[HTTP::POST] = "POST";
+    _methodStr[HTTP::DELETE] = "DELETE";
+    _methodStr[HTTP::PUT] = "PUT";
+    _methodStr[HTTP::HEAD] = "HEAD";
     _path = "";
     _query = "";
     _fragment = "";
@@ -45,22 +45,28 @@ HTTP::Request::Request()
 
 HTTP::Request::~Request() {}
 
-bool    checkUriPos(std::string path)
+
+/**
+ * Checks if the URI goes before the root directory
+ * If yes returns true, else false
+ **/
+bool checkUriPos(std::string path)
 {
-    std::string tmp(path);
-    char *res = strtok((char*)tmp.c_str(), "/");
+    std::istringstream iss(path);
+    std::string token;
     int pos = 0;
-    while (res != NULL)
+    while (std::getline(iss, token, '/'))
     {
-        if (!strcmp(res, ".."))
+        if (token.empty())
+            continue;  // Skip empty tokens
+        if (token == "..")
             pos--;
         else
             pos++;
         if (pos < 0)
-            return (1);
-        res = strtok(NULL, "/");
+            return true;
     }
-    return (0);
+    return false;
 }
 
 /**
@@ -236,15 +242,18 @@ void HTTP::Request::feed(const char *data, size_t size)
 void HTTP::Request::handleRequestLine(char character) {
     if (character == 'G')
         _method = GET;
-    else if (character == 'P')
+    else if (character == 'P') {
         _state = Request_Line_Post_Put;
+        return ;
+    }
     else if (character == 'D')
         _method = DELETE;
     else if (character == 'H')
         _method = HEAD;
-    else
+    else {
         setError(501, "Method Error Request_Line");
-
+        return ;
+    }
     _state = Request_Line_Method;
 }
 
@@ -254,9 +263,10 @@ void HTTP::Request::handleRequestLinePostPut(char character)
         _method = POST;
     else if (character == 'U')
         _method = PUT;
-    else
+    else {
         setError(501, "Method Error Request_Line_Post_Put");
-
+        return ;
+    }
     _methodIndex++;
     _state = Request_Line_Method;
 }
@@ -265,18 +275,20 @@ void HTTP::Request::handleRequestLineMethod(char character)
 {
     if (character == _methodStr[_method][_methodIndex])
         _methodIndex++;
-    else
+    else {
         setError(501, "Method Error Request_Line_Method");
-
+        return ;
+    }
     if ((size_t)_methodIndex == _methodStr[_method].length())
         _state = Request_Line_First_Space;
 }
 
 void HTTP::Request::handleRequestLineFirstSpace(char character)
 {
-    if (character != ' ')
+    if (character != ' ') {
         setError(400, "Bad Character Request_Line_First_Space");
-
+        return ;   
+    }
     _state = Request_Line_URI_Path_Slash;
 }
 
@@ -315,7 +327,6 @@ void HTTP::Request::handleRequestLineURIPath(char character)
         setError(400, "Bad Character Request_Line_URI_Path");
     else if (_storage.size() > MAX_URI_LENGTH)
         setError(414, "URI Too Long Request_Line_URI_Path");
-
     _storage += character;
 }
 
@@ -337,7 +348,6 @@ void HTTP::Request::handleRequestLineURIQuery(char character)
         setError(400, "Bad Character Request_Line_URI_Query");
     else if (_storage.size() > MAX_URI_LENGTH)
         setError(414, "URI Too Long Request_Line_URI_Query");
-
     _storage += character;
 }
 
@@ -353,96 +363,129 @@ void HTTP::Request::handleRequestLineURIFragment(char character)
         setError(400, "Bad Character Request_Line_URI_Fragment");
     else if (_storage.size() > MAX_URI_LENGTH)
         setError(414, "URI Too Long Request_Line_URI_Fragment");
-
     _storage += character;
 }
 
 void HTTP::Request::handleRequestLineVer(char character)
 {
-    if (checkUriPos(_path))
+    if (checkUriPos(_path)) {
         setError(400, "Request URI ERROR: goes before root");
-
-    if (character != 'H')
+        return ;
+    }
+    if (character != 'H') {
         setError(400, "Bad Character Request_Line_Ver");
-
+        return ;
+    }
     _state = Request_Line_HT;
 }
 
 void HTTP::Request::handleRequestLineHT(char character)
 {
-    if (character != 'T')
+    if (character != 'T') {
         setError(400, "Bad Character Request_Line_HT");
-
+        return ;
+    }
     _state = Request_Line_HTT;
 }
 
 void HTTP::Request::handleRequestLineHTT(char character)
 {
-    if (character != 'T')
+    if (character != 'T') {
         setError(400, "Bad Character Request_Line_HTT");
-
+        return ;
+    }
     _state = Request_Line_HTTP;
 }
 
 void HTTP::Request::handleRequestLineHTTP(char character)
 {
-    if (character != 'P')
+    if (character != 'P') {
         setError(400, "Bad Character Request_Line_HTTP");
-
+        return ;
+    }
     _state = Request_Line_HTTP_Slash;
 }
 
+
+/**
+ * Checks if the character is a slash
+ **/
 void HTTP::Request::handleRequestLineHTTPSlash(char character)
 {
-    if (character != '/')
+    if (character != '/') {
         setError(400, "Bad Character Request_Line_HTTP_Slash");
-
+        return ;
+    }
     _state = Request_Line_Major;
 }
 
+/**
+ * Parses the major version of the HTTP request 
+ **/
 void HTTP::Request::handleRequestLineMajor(char character)
 {
-    if (!isdigit(character))
+    if (!isdigit(character)) {
         setError(400, "Bad Character Request_Line_Major");
-
+        return ;
+    }
     _verMajor = character;
     _state = Request_Line_Dot;
 }
 
+/**
+ * Parses the major version of the HTTP request
+ **/
 void HTTP::Request::handleRequestLineDot(char character)
 {
-    if (character != '.')
+    if (character != '.') {
         setError(400, "Bad Character Request_Line_Dot");
-
+        return ;
+    }
     _state = Request_Line_Minor;
 }
 
+/**
+ * Parses the minor version of the HTTP request
+ **/
 void HTTP::Request::handleRequestLineMinor(char character)
 {
-    if (!isdigit(character))
+    if (!isdigit(character)) {
         setError(400, "Bad Character Request_Line_Minor");
-
+        return ;
+    }
     _verMinor = character;
     _state = Request_Line_CR;
 }
 
+/**
+ * Checks if the character is a carriage return
+ **/
 void HTTP::Request::handleRequestLineCR(char character)
 {
-    if (character != '\r')
+    if (character != '\r') {
         setError(400, "Bad Character Request_Line_CR");
-
+        return ;
+    }
     _state = Request_Line_LF;
 }
 
+/**
+ * Checks if the character is a line feed
+ **/
 void HTTP::Request::handleRequestLineLF(char character)
 {
-    if (character != '\n')
+    if (character != '\n') {
         setError(400, "Bad Character Request_Line_LF");
-
+        return ;
+    }
     _state = Field_Name_Start;
     _storage.clear();
 }
 
+/**
+ * For every line endet by CR and LF, we are parsing the headers 
+ * by splitting them into key-value pairs
+ **/
 void HTTP::Request::handleFieldNameStart(char character)
 {
     if (character == '\r')
@@ -460,7 +503,6 @@ void HTTP::Request::handleFieldsEnd(char character)
         _storage.clear();
         _fieldsDoneFlag = true;
         _handleHeaders();
-
         if (_bodyFlag)
             _state = (_chunkedFlag) ? Chunked_Length_Begin : Message_Body;
         else
@@ -480,7 +522,6 @@ void HTTP::Request::handleFieldName(char character)
     }
     else if (!isToken(character))
         setError(400, "Bad Character Field_Name");
-
     _storage += character;
 }
 
@@ -493,7 +534,6 @@ void HTTP::Request::handleFieldValue(char character)
         _storage.clear();
         _state = Field_Value_End;
     }
-
     _storage += character;
 }
 
@@ -507,9 +547,10 @@ void HTTP::Request::handleFieldValueEnd(char character)
 
 void HTTP::Request::handleChunkedLengthBegin(char character)
 {
-    if (isxdigit(character) == 0)
+    if (!isxdigit(character)) {
         setError(400, "Bad Character Chunked_Length_Begin");
-
+        return ;
+    }
     std::stringstream s;
     s << character;
     s >> std::hex >> _chunkLength;
@@ -518,7 +559,7 @@ void HTTP::Request::handleChunkedLengthBegin(char character)
 
 void HTTP::Request::handleChunkedLength(char character)
 {
-    if (isxdigit(character) != 0)
+    if (isxdigit(character))
     {
         int temp_len = 0;
         std::stringstream s;
@@ -534,17 +575,19 @@ void HTTP::Request::handleChunkedLength(char character)
 
 void HTTP::Request::handleChunkedLengthCR(char character)
 {
-    if (character != '\r')
+    if (character != '\r') {
         setError(400, "Bad Character Chunked_Length_CR");
-
+        return ;
+    }
     _state = Chunked_Length_LF;
 }
 
 void HTTP::Request::handleChunkedLengthLF(char character)
 {
-    if (character != '\n')
+    if (character != '\n') {
         setError(400, "Bad Character Chunked_Length_LF");
-
+        return ;
+    }
     _state = (_chunkLength == 0) ? Chunked_End_CR : Chunked_Data;
 }
 
@@ -563,25 +606,28 @@ void HTTP::Request::handleChunkedData(char character)
 
 void HTTP::Request::handleChunkedDataCR(char character)
 {
-    if (character != '\r')
+    if (character != '\r') {
         setError(400, "Bad Character Chunked_Data_CR");
-
+        return ;
+    }
     _state = Chunked_Data_LF;
 }
 
 void HTTP::Request::handleChunkedDataLF(char character)
 {
-    if (character != '\n')
+    if (character != '\n') {
         setError(400, "Bad Character Chunked_Data_LF");
-
+        return ;
+    }
     _state = Chunked_Length_Begin;
 }
 
 void HTTP::Request::handleChunkedEndCR(char character)
 {
-    if (character != '\r')
+    if (character != '\r') {
         setError(400, "Bad Character Chunked_End_CR");
-
+        return ;
+    }
     _state = Chunked_End_LF;
 }
 
@@ -589,7 +635,6 @@ void HTTP::Request::handleChunkedEndLF(char character)
 {
     if (character != '\n')
         setError(400, "Bad Character Chunked_End_LF");
-
     _bodyDoneFlag = true;
     _state = Parsing_Done;
 }
@@ -606,7 +651,7 @@ void HTTP::Request::setError(int code, const std::string &message)
 {
     _errorCode = code;
     _state = Parsing_Done;
-    std::cerr << message << std::endl;
+    Logger::logMsg(RED, CONSOLE_OUTPUT, "ERROR: ", message);
 }
 
 bool    HTTP::Request::isComplete()
@@ -741,6 +786,11 @@ void        HTTP::Request::_handleHeaders()
         size_t pos = _headers["content-type"].find("boundary=", 0);
         if (pos != std::string::npos)
             this->_boundary = _headers["content-type"].substr(pos + 9, _headers["content-type"].size());
+        else
+        {
+            setError(400, "Boundary needit for multidata forms content!"); // Set the response status to 400 Bad Request because in rfc is not allowed to not have boundary for multipart/form-data
+            return; // Stop processing the request
+        }
         this->_multiformFlag = true;
     }
 }
