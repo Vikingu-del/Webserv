@@ -1050,10 +1050,6 @@ static std::string combinePaths(std::string p1, std::string p2, std::string p3)
 
     len1 = p1.length();
     len2 = p2.length();
-    std::cout << GREEN << "P1: " << p1 << std::endl;
-    std::cout << "P2: " << p2 << std::endl;
-    std::cout << "p1[len1 - 1]: " << p1[len1 - 1] << std::endl;
-    std::cout << "p2[0]: " << p2[0] << RESET << std::endl;
     if (p1[len1 - 1] == '/' && (!p2.empty() && p2[0] == '/') )
         p2.erase(0, 1);
     if (p1[len1 - 1] != '/' && (!p2.empty() && p2[0] != '/'))
@@ -1068,19 +1064,12 @@ static std::string combinePaths(std::string p1, std::string p2, std::string p3)
 
 static void replaceAlias(Location &location, HTTP::Request &request, std::string &targetFile)
 {
-    std::cout << "ALIAS: " << location.getAlias() << std::endl;
-    std::cout << "Target File: " << targetFile << std::endl; 
     targetFile = combinePaths(location.getAlias(), request.getPath().substr(location.getPath().length()), "");
-    std::cout << "Target File after combine: " << targetFile << std::endl;
 }
 
 static void appendRoot(Location &location, HTTP::Request &request, std::string &targetFile)
 {
-    std::cout << "ROOT: " << location.getRootLocation() << std::endl;
-    std::cout << "Target File: " << targetFile << std::endl;
-    std::cout << "Request Path: " << request.getPath() << std::endl;
     targetFile = combinePaths(location.getRootLocation(), request.getPath(), "");
-    std::cout << "Target File after combine: " << targetFile << std::endl;
 }
 
 int HTTP::Response::handleCgiTemp(Location &targetLocation)
@@ -1159,6 +1148,7 @@ int        HTTP::Response::handleCgi(Location &targetLocation)
 
 static void    getLocationMatch(std::string &path, std::vector<Location> locations, std::string &location_key) {
     size_t biggest_match = 0;
+    std::cout << "PATH: " << path << std::endl;
     for(std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
         if(path.find(it->getPath()) == 0) {
             if(std::count(path.begin(), path.end(), '/') == 1 || path.length() == it->getPath().length() || path[it->getPath().length()] == '/')
@@ -1167,7 +1157,6 @@ static void    getLocationMatch(std::string &path, std::vector<Location> locatio
                 {
                     biggest_match = it->getPath().length();
                     location_key = it->getPath();
-                    std::cout << "LOCATION_KEY UPDATED: " << location_key << std::endl;
                 }
             }
         }
@@ -1207,8 +1196,10 @@ int    HTTP::Response::handleTarget() {
                 _location = _request.getPath() + "/";
                 return (1);
             }
-            if (!target_location.getIndexLocation().empty())
+            if (!target_location.getIndexLocation().empty()) {
                 _targetFile += target_location.getIndexLocation();
+                std::cout << PURPLE << "TARGET FILE: " << _targetFile << RESET << std::endl;
+            }
         }
         if (!fileExists(_targetFile)) {
             if (target_location.getAutoindex()) {
@@ -1229,7 +1220,7 @@ int    HTTP::Response::handleTarget() {
                 _location = _request.getPath() + "/";
                 return (1);
             }
-            _targetFile = _server.getRoot() + _server.getIndex();
+            _targetFile = _server.getRoot() + _server.getIndex();   
             if (!fileExists(_targetFile)) {
                 _code = 404;
                 return (1);
@@ -1340,7 +1331,7 @@ void        HTTP::Response::setStatusLine()
 int HTTP::Response::buildBody()
 {
     _request.normalizePath();
-    _request.printRequestData();
+    // _request.printRequestData();
     if (_request.getBody().length() > _server.getClientMaxBody())
     {
         _code = 413;

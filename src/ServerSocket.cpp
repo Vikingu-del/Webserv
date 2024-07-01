@@ -129,7 +129,7 @@ void ServerSocket::handleEpollIn(int fd) {
         int cgiState = _clientsMap[fd].response.getCgiState();
         if (cgiState == 1 && fd == _clientsMap[fd].response._cgiObj.pipe_out[0])
             readCgiResponse(_clientsMap[fd], _clientsMap[fd].response._cgiObj);
-        else
+        else if (!cgiState)
             readRequest(fd, _clientsMap[fd]);
     }
 }
@@ -139,7 +139,8 @@ void ServerSocket::handleEpollOut(int fd) {
         int cgiState = _clientsMap[fd].response.getCgiState();
         if (cgiState == 1 && fd == _clientsMap[fd].response._cgiObj.pipe_in[1]) {
             sendCgiBody(_clientsMap[fd], _clientsMap[fd].response._cgiObj);
-        } else {
+			closeConnection(fd);
+        } else if (!cgiState || cgiState == 2) {
             sendResponse(fd, _clientsMap[fd]);
         }
     }
