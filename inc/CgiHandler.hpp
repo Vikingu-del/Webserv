@@ -1,16 +1,9 @@
 #ifndef CGIHANDLER_HPP
 #define CGIHANDLER_HPP
 
-#include <map>
-#include <string>
-#include <vector>
+#include "Webserv.hpp"
 
-class Location;
-
-// Forward declaration of HTTP namespace and Request class
-namespace HTTP {
-    class Request;
-}
+class HttpRequest;
 
 class CgiHandler {
 	private:
@@ -24,14 +17,15 @@ class CgiHandler {
 	public:
 		int	pipe_in[2];
 		int	pipe_out[2];
+
 		CgiHandler();
 		CgiHandler(std::string path);
 		~CgiHandler();
 		CgiHandler(CgiHandler const &other);
 		CgiHandler &operator=(CgiHandler const &rhs);
 
-		void initEnv(HTTP::Request& req, Location &loc);
-		void initEnvCgi(HTTP::Request& req, const Location &loc);
+		void initEnv(HttpRequest& req, const std::vector<Location>::iterator it_loc);
+		void initEnvCgi(HttpRequest& req, const std::vector<Location>::iterator it_loc);
 		void execute(short &error_code);
 		void sendHeaderBody(int &pipe_out, int &fd, std::string &);
 		void fixHeader(std::string &header);

@@ -1,4 +1,4 @@
-#include "Webserv.hpp"
+# include "../inc/Client.hpp"
 
 Client::Client()
 {
@@ -18,6 +18,7 @@ Client::Client(const Client &other)
 		this->response = other.response;
 		this->server = other.server;
 		this->_last_msg_time = other._last_msg_time;
+
 	}
 	return ;
 }
@@ -40,7 +41,7 @@ Client &Client::operator=(const Client & rhs)
 Client::Client(ServerConfig &server)
 {
     setServer(server);
-    request.setMaxBodySize(server.getClientMaxBody());
+    request.setMaxBodySize(server.getClientMaxBodySize());
     _last_msg_time = time(NULL);
 }
 
@@ -65,7 +66,7 @@ const int     &Client::getSocket() const
     return (_client_socket);
 }
 
-const HTTP::Request   &Client::getRequest() const
+const HttpRequest   &Client::getRequest() const
 {
     return (request);
 }
@@ -83,10 +84,8 @@ const time_t     &Client::getLastTime() const
 
 void        Client::buildResponse()
 {
-	std::cout << "Client::buildResponse()" << std::endl;
     response.setRequest(this->request);
     response.buildResponse();
-	// response.printResponseData();
 }
 
 void             Client::updateTime()

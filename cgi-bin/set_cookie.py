@@ -11,8 +11,16 @@ form = cgi.FieldStorage()
 # Get data from fields
 key = form.getvalue('key')
 value = form.getvalue('value')
-cookie = cookies.SimpleCookie()
-cookie[key] = value
-print("HTTP/1.1 204 OK")
-print(cookie.output())
-print("\r\n")
+
+# Check if key or value is None
+if key is None or value is None:
+    print("HTTP/1.1 400 Bad Request")
+    print("Content-Type: text/plain\r\n")
+    print("Missing 'key' or 'value' parameter.")
+else:
+    cookie = cookies.SimpleCookie()
+    cookie[key] = value
+    print("HTTP/1.1 204 OK")
+    print("Content-Type: text/plain")
+    print(cookie.output())
+    print("\r\n")

@@ -9,7 +9,7 @@ import json
 cgitb.enable()
 
 # Path to the database file
-DB_PATH = "./gameHub/database/data.json"
+DB_PATH = "cgi-bin/data.json"
 UPLOAD_DIR = "./gameHub/database/uploads"
 
 def load_database():

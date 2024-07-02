@@ -1,16 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Logger.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/03 16:52:12 by ipetruni          #+#    #+#             */
-/*   Updated: 2024/06/25 12:26:26 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "../inc/Logger.hpp"
 
-#include "Webserv.hpp"
 
 std::string Logger::file_name = "logfile.txt";
 LogPrio Logger::prio = ERROR;

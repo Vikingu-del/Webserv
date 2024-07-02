@@ -1,55 +1,21 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.cpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/14 18:57:30 by eseferi           #+#    #+#             */
-/*   Updated: 2024/06/30 21:05:12 by eseferi          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "../inc/Webserv.hpp"
 
-#include "utils.hpp"
-#include <dirent.h>
-#include <string.h>
-#include <sys/stat.h>
-
-
-std::vector<std::string> utils::split(const std::string &s, const std::string &delimiter) {
-    std::vector<std::string> tokens;
-    size_t start = 0;
-    size_t end = s.find(delimiter);
-    while (end != std::string::npos) {
-        tokens.push_back(s.substr(start, end - start));
-        start = end + delimiter.length();
-        end = s.find(delimiter, start);
+int ft_stoi(std::string str)
+{
+    std::stringstream ss(str);
+    if (str.length() > 10)
+        throw std::exception();
+    for (size_t i = 0; i < str.length(); ++i)
+    {
+        if(!isdigit(str[i]))
+            throw std::exception();
     }
-    tokens.push_back(s.substr(start, end));
-    return tokens;
+    int res;
+    ss >> res;
+    return (res);
 }
 
-std::string utils::concat(const std::vector<std::string> &v, const std::string &delimiter) {
-    std::string s;
-    for (size_t i = 0; i < v.size(); ++i) {
-        s += v[i];
-        if (i != v.size() - 1)
-            s += delimiter;
-    }
-    return s;
-}
-
-int utils::strToInt(const std::string& str) {
-    int result = 0;
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!std::isdigit(str[i]))
-            throw std::invalid_argument("Invalid input string");
-        result = result * 10 + str[i] - '0';
-    }
-    return result;
-}
-
-unsigned int utils::hexToDec(const std::string& nb)
+unsigned int fromHexToDec(const std::string& nb)
 {
 	unsigned int x;
 	std::stringstream ss;
@@ -58,19 +24,8 @@ unsigned int utils::hexToDec(const std::string& nb)
 	return (x);
 }
 
-std::string utils::toLower(const std::string& str)
+std::string statusCodeString(short statusCode)
 {
-    std::string lowerStr = str;
-    std::locale loc;
-    for (std::string::size_type i = 0; i < lowerStr.length(); ++i)
-    {
-        lowerStr[i] = std::use_facet<std::ctype<char> >(loc).tolower(lowerStr[i]);
-    }
-    return lowerStr;
-}
-
-//! Returns the status code string
-std::string utils::statusCodeString(short statusCode) {
     switch (statusCode)
     {
         case 100:
@@ -180,43 +135,19 @@ std::string utils::statusCodeString(short statusCode) {
         }
 }
 
-std::string utils::getCurrentDateTime() {
-    std::time_t now = std::time(0);
-    std::tm *gmt = std::gmtime(&now);
-    
-    char buffer[100];
-    strftime(buffer, 100, "%a, %d %b %Y %H:%M:%S GMT", gmt);
-    return std::string(buffer);
-}
-
-std::string utils::intToString(int value) {
-    std::ostringstream oss;
-    oss << value;
-    return oss.str();
-}
-
-void utils::printMap(const std::map<std::string, std::string> &map) {
-    std::map<std::string, std::string>::const_iterator it = map.begin();
-    while (it != map.end()) {
-        std::cout << it->first << " = " << it->second << std::endl;
-        it++;
-    }
-}
-
-std::string utils::getErrorPage(short statusCode)
+std::string getErrorPage(short statusCode)
 {
     return ("<html>\r\n<head><title>" + toString(statusCode) + " " +
              statusCodeString(statusCode) + " </title></head>\r\n" + "<body>\r\n" + 
             "<center><h1>" + toString(statusCode) + " " + statusCodeString(statusCode) + "</h1></center>\r\n");
 }
 
-int utils::buildHtmlIndex(std::string &dir_name, std::vector<u_int8_t> &body, size_t &body_len)
+int buildHtmlIndex(std::string &dir_name, std::vector<uint8_t> &body, size_t &body_len)
 {
     struct dirent   *entityStruct;
     DIR             *directory;
     std::string     dirListPage;
     
-    std::cout << "building autoindex page" << std::endl;
     directory = opendir(dir_name.c_str());
     if (directory == NULL)
     {    
@@ -263,7 +194,7 @@ int utils::buildHtmlIndex(std::string &dir_name, std::vector<u_int8_t> &body, si
         dirListPage.append("</td>\n");
         dirListPage.append("<td>\n");
         if (!S_ISDIR(file_stat.st_mode))
-            dirListPage.append(utils::toString(file_stat.st_size));
+            dirListPage.append(toString(file_stat.st_size));
         dirListPage.append("</td>\n");
         dirListPage.append("</tr>\n");
     }
@@ -277,3 +208,5 @@ int utils::buildHtmlIndex(std::string &dir_name, std::vector<u_int8_t> &body, si
     body_len = body.size();
     return (0);
 }
+
+
