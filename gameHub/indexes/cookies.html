@@ -1,33 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Cookie Example</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Serv Team</title>
+    <link rel="stylesheet" href="../styles/index.css">
 </head>
+
 <body>
-    <h1>Cookie Example</h1>
+    <div class="wrapper">
+        <nav>
+            <div class="menu">
+                <div class="logo">
+                    <img src="../imgs/games/logo.png" alt="Logo">
+                </div>
+                <input type="checkbox" id="check">
+                <label for="check" class="checkbtn">
+                    <i class="fas fa-bars"></i>
+                </label>
+                <ul>
+                    <li>
+                        <div class="MobNavBtns">
+                            <button>Play Now</button>
+                        </div>
+                    </li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="play.html">Play</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="subscribe.html">Subscribe</a></li>
+                </ul>
+            </div>
+        </nav>
 
-    <div class="pass__block">
-		<h1> Set Cookie: </h1> <br />
-    <form action = "../../cgi-bin/set_cookie.py" method = "get">
-        Cookie Name: <input type = "text" name = "key">  <br />
-        <br>
-        Cookie Value: <input type = "text" name = "value" />
-        <input type = "submit" value = "Submit" /> <br />
-    </form>
+        <main>
+            <div class="pass__block">
+                <section id="email" class="card subscribe">
+                    <h2>Set Cookie:</h2>
+                    <form action = "../../cgi-bin/set_cookie.py" method = "get">
+                        Cookie Name: <input type = "text" name = "key">  <br />
+                        <br>
+                        Cookie Value: <input type = "text" name = "value" />
+                        <button type="submit">Set</button>
+                    </form>
+                </section>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <article id="profile3" class="card" style="display: flex; justify-content: center; align-items: center; height: vh;">
+                    <figure style="margin: 0;">
+                        <img src="../imgs/games/cookie.png" alt="cookie" width="150" height="150">
+                    </figure>
+                </article>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <section id="delete" class="card subscribe">
+                    <h2>Get Cookie</h2>
+                    <form action = "../../cgi-bin/get_cookie.py" method = "get">
+                        Cookie Name: <input type = "text" name = "key">  <br />
+                        <br>
+                        <button type="submit">Get</button>
+                    </form>
+                </section>
+            </div>
+        </main>
 
-    <br />
-    <br />
-    <br />
-    <br />
-    <h1> Get Cookie: </h1> <br />
-    <form action = "../../cgi-bin/get_cookie.py" method = "get">
-        Cookie Name: <input type = "text" name = "key">  <br />
-        <br>
-        <input type = "submit" value = "Submit" /> <br />
-    </form>
-
-</div>
-
-
+        <footer>
+            <div class="footer-bottom">
+                <p>© Game Hub 2022, All Rights Reserved</p>
+            </div>
+        </footer>
+    </div>
 </body>
+
 </html>
