@@ -150,10 +150,6 @@ void CgiHandler::initEnv(HttpRequest& req, const std::vector<Location>::iterator
 
 	extension = this->_cgi_path.substr(this->_cgi_path.find("."));
 	std::map<std::string, std::string>::iterator it_path = it_loc->_ext_path.find(extension);
-    for (std::map<std::string, std::string>::const_iterator i = it_loc->_ext_path.begin(); i != it_loc->_ext_path.end(); i++) {
-		std::cout << "printing extensions" << std::endl;
-		std::cout << "Key: " << i->first << " Value: " << i->second << std::endl;
-	}
 	if (it_path == it_loc->_ext_path.end())
         return ;
     ext_path = it_loc->_ext_path[extension];
