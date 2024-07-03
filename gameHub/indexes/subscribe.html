@@ -29,7 +29,7 @@
                     <li><a href="#">Home</a></li>
                     <li><a href="play.html">Play</a></li>
                     <li><a href="about.html">About</a></li>
-                    <li><a href="#">Gallery</a></li>
+                    <li><a href="cookies.html">Cookies</a></li>
                     <li><a href="#subscribe">Subscribe</a></li>
                 </ul>
             </div>
@@ -40,7 +40,7 @@
             <div class="form">
                 <section id="email" class="card subscribe">
                     <h2>Subscribe to our Newsletter</h2>
-                    <form id="subscribeForm" action="/subscribe" method="POST">
+                    <form id="subscribeForm" action="/cgi-bin/subscribe.py" method="POST">
                         <label for="email">Email:</label>
                         <input type="email" id="email" name="email" required>
                         <button type="submit">Subscribe</button>
@@ -48,21 +48,22 @@
                 </section>
                 <section id="post" class="card subscribe">
                     <h2>Post Content</h2>
-                    <form action="/post" method="POST">
+                    <form action="/cgi-bin/upload.py" method="POST" enctype="multipart/form-data">
                         <label for="email">Post:</label>
                         <!-- Drop Zone for files -->
                         <div id="dropZone">
                             Drag and drop a file here or click to select a file.
                         </div>
+                        <input type="file" id="file" name="filename" style="display:none;">
                         <textarea id="postContent" name="content" required hidden></textarea>
                         <button type="submit">Post</button>
                     </form>
                 </section>
                 <section id="delete" class="card subscribe">
                     <h2>Delete Content</h2>
-                    <form action="/delete" method="POST"> <!-- Consider using JavaScript for actual DELETE requests -->
-                        <label for="deleteId">Content ID:</label>
-                        <input type="text" id="deleteId" name="id" required>
+                    <form id="deleteForm" action="/cgi-bin/delete.py" method="POST">
+                        <label for="filename">Content Filename:</label>
+                        <input type="text" id="filename" name="filename" required>
                         <button type="submit">Delete</button>
                     </form>
                 </section>
@@ -80,7 +81,7 @@
             event.preventDefault();
             const formData = new FormData(event.target);
 
-            fetch('/cgi-bin/form.py', {
+            fetch('/cgi-bin/subscribe.py', {
                 method: 'POST',
                 body: formData
             })
@@ -94,6 +95,7 @@
 
         // Handle File Upload via Drag-and-Drop
         const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('file');
         const postContent = document.getElementById('postContent');
 
         dropZone.addEventListener('dragover', (event) => {
@@ -110,19 +112,19 @@
             dropZone.classList.remove('dragging');
             const files = event.dataTransfer.files;
             if (files.length > 0) {
+                fileInput.files = files;
                 handleFileUpload(files[0]);
             }
         });
 
         dropZone.addEventListener('click', () => {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.onchange = () => {
-                if (fileInput.files.length > 0) {
-                    handleFileUpload(fileInput.files[0]);
-                }
-            };
             fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFileUpload(fileInput.files[0]);
+            }
         });
 
         function handleFileUpload(file) {
@@ -139,7 +141,7 @@
             event.preventDefault();
             const formData = new FormData(event.target);
 
-            fetch('/cgi-bin/form.py', {
+            fetch('/cgi-bin/upload.py', {
                 method: 'POST',
                 body: formData
             })
@@ -156,8 +158,8 @@
             event.preventDefault();
             const formData = new FormData(event.target);
 
-            fetch('/cgi-bin/form.py', {
-                method: 'DELETE',
+            fetch('/cgi-bin/delete.py', {
+                method: 'POST',
                 body: formData
             })
             .then(response => response.text())

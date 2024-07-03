@@ -259,7 +259,6 @@ int    Response::handleTarget()
 {
     std::string location_key;
     getLocationMatch(request.getPath(), _server.getLocations(), location_key);
-    std::cout << "Location key: " << location_key << std::endl;
     if (location_key.length() > 0)
     {
         Location target_location = *_server.getLocationKey(location_key);
@@ -314,7 +313,6 @@ int    Response::handleTarget()
             {
                 if (target_location.getAutoindex())
                 {
-                    std::cout << RED << "TargetFile:" << _target_file << RESET << std::endl;
                     _target_file.erase(_target_file.find_last_of('/') + 1);
                     _auto_index = true;
                     return (0);
@@ -341,7 +339,6 @@ int    Response::handleTarget()
             {
                 if (target_location.getAutoindex())
                 {
-                    std::cout << RED << "TargetFile:" << _target_file << RESET << std::endl;
                     _target_file.erase(_target_file.find_last_of('/') + 1);
                     _auto_index = true;
                     return (0);
@@ -434,7 +431,6 @@ void    Response::buildResponse()
         return ;
     else if (_auto_index)
     {
-        std::cout << "AUTO index " << std::endl;
         if (buildHtmlIndex(_target_file, _body, _body_length))
         {
             _code = 500;

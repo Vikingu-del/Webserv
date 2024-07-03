@@ -1,30 +1,17 @@
 #!/bin/bash
 
-echo -e 'HTTP/1.1 200 OK'
-echo -e 'Content-Type: text/html\r\n\r\n'
+# Output HTTP headers
+printf "HTTP/1.1 200 OK\nContent-Type: text/html\n\n"
 
-echo '<h3>'
-echo 'Calendar:'
-echo '</h3>'
+# Output HTML content
+cat <<EOF
+<h3>Calendar:</h3>
+<pre>$(cal)</pre>
 
+<h3>Date: </h3>
+<pre>$(date)
+$(date -u)</pre>
 
-echo ''
-echo '<pre>' 
-cal 
-echo '</pre>' 
-echo ''
-
-echo '<h3>'
-echo 'Date: '
-echo '</h3>'
-echo '<pre>'
-date
-date -u
-echo '</pre>'
-
-echo '<h4>'
-echo 'Days have passed since the beginning of the year: '
-echo '</h4>'
-echo '<pre>'
-date +%j
-echo '</pre>'
+<h4>Days have passed since the beginning of the year: </h4>
+<pre>$(date +%j)</pre>
+EOF

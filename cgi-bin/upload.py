@@ -1,26 +1,32 @@
-from flask import Flask, request, jsonify
-import os
+#!/usr/bin/python3
 
-app = Flask(__name__)
-UPLOAD_FOLDER = './gameHub/database/'
+import cgi, os
 
-# Ensure the upload folder exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+form = cgi.FieldStorage()
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Get filename here
+fileitem = form['filename']
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'image' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    if file:
-        filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filename)
-        return jsonify({"message": "File successfully uploaded"}), 200
+# Initialize message
+message = 'Uploading Failed'
 
-if __name__ == "__main__":
-    app.run(port=8002)
+# Ensure the directory exists
+upload_dir = os.path.join(os.getcwd(), 'cgi-bin', 'tmp')
+os.makedirs(upload_dir, exist_ok=True)
+
+# Test if the file was uploaded
+if fileitem.filename:
+    # Sanitize the file name
+    filename = os.path.basename(fileitem.filename)
+    filepath = os.path.join(upload_dir, filename)
+    
+    try:
+        # Write the file content in binary mode
+        with open(filepath, 'wb') as file:
+            file.write(fileitem.file.read())
+        message = f'The file "{filename}" was uploaded to {upload_dir}'
+    except Exception as e:
+        message = f'An error occurred: {str(e)}'
+
+print("Content-Type: text/html;charset=utf-8\r\n")
+print(f"<H1>{message}</H1>")
