@@ -1,17 +1,17 @@
-#ifndef CONFIGFILE_HPP
-#define CONFIGFILE_HPP
+#ifndef FILECONF_HPP
+#define FILECONF_HPP
 
 #include "Webserv.hpp"
 
-class ConfigFile {
+class FileConf {
 	private:
 		std::string		_path;
 		size_t			_size;	// проверить нужен ли
 
 	public:
-		ConfigFile();
-		ConfigFile(std::string const path);
-		~ConfigFile();
+		FileConf();
+		FileConf(std::string const path);
+		~FileConf();
 
 		static int getTypePath(std::string const path);
 		static int checkFile(std::string const path, int mode);

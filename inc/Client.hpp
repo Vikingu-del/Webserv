@@ -2,7 +2,7 @@
 # define CLIENT_HPP
 
 #include "Webserv.hpp"
-#include "HttpRequest.hpp"
+#include "Request.hpp"
 #include "Response.hpp"
 
 /**
@@ -15,25 +15,25 @@ class Client
     public:
         Client();
         Client(const Client &other);
-        Client(ServerConfig &);
+        Client(ServerConf &);
 		    Client &operator=(const Client & rhs);
         ~Client();
 
         const int                 &getSocket() const;
         const struct sockaddr_in  &getAddress() const;
-        const HttpRequest         &getRequest() const;
+        const Request             &getRequest() const;
         const time_t              &getLastTime() const;
 
         void                setSocket(int &);
         void                setAddress(sockaddr_in &);
-        void                setServer(ServerConfig &);
+        void                setServer(ServerConf &);
         void                buildResponse();
         void                updateTime();
 
         void                clearClient();
         Response            response;
-        HttpRequest         request;
-        ServerConfig        server;
+        Request         request;
+        ServerConf        server;
     private:
         int                 _client_socket;
         struct sockaddr_in  _client_address;

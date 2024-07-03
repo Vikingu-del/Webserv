@@ -1,20 +1,20 @@
-#ifndef CONFIGPARSER_HPP
-#define CONFIGPARSER_HPP
+#ifndef PARSECONF_HPP
+#define PARSECONF_HPP
 
 #include "Webserv.hpp"
 
-class ServerConfig;
+class ServerConf;
 
-class ConfigParser {
+class ParseConf {
 	private:
-		std::vector<ServerConfig>	_servers;
+		std::vector<ServerConf>	_servers;
 		std::vector<std::string>	_server_config;
 		size_t						_nb_server;
 
 	public:
 
-		ConfigParser();
-		~ConfigParser();
+		ParseConf();
+		~ParseConf();
 
 		int createCluster(const std::string &config_file);
 
@@ -23,9 +23,9 @@ class ConfigParser {
 		void removeWhiteSpace(std::string &content);
 		size_t findStartServer(size_t start, std::string &content);
 		size_t findEndServer(size_t start, std::string &content);
-		void createServer(std::string &config, ServerConfig &server);
+		void createServer(std::string &config, ServerConf &server);
 		void checkServers();
-		std::vector<ServerConfig>	getServers();
+		std::vector<ServerConf>	getServers();
 		int	stringCompare(std::string str1, std::string str2, size_t pos);
 
 		int print();

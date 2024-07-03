@@ -1,7 +1,7 @@
-#include "../inc/CgiHandler.hpp"
+#include "Cgi.hpp"
 
 /* Constructor */
-CgiHandler::CgiHandler() {
+Cgi::Cgi() {
 	this->_cgi_pid = -1;
 	this->_exit_status = 0;
 	this->_cgi_path = "";
@@ -9,7 +9,7 @@ CgiHandler::CgiHandler() {
 	this->_argv = NULL;
 }
 
-CgiHandler::CgiHandler(std::string path)
+Cgi::Cgi(std::string path)
 {
 	this->_cgi_pid = -1;
 	this->_exit_status = 0;
@@ -18,7 +18,7 @@ CgiHandler::CgiHandler(std::string path)
 	this->_argv = NULL;
 }
 
-CgiHandler::~CgiHandler() {
+Cgi::~Cgi() {
 
 	if (this->_ch_env)
 	{
@@ -35,7 +35,7 @@ CgiHandler::~CgiHandler() {
 	this->_env.clear();
 }
 
-CgiHandler::CgiHandler(const CgiHandler &other)
+Cgi::Cgi(const Cgi &other)
 {
 		this->_env = other._env;
 		this->_ch_env = other._ch_env;
@@ -45,7 +45,7 @@ CgiHandler::CgiHandler(const CgiHandler &other)
 		this->_exit_status = other._exit_status;
 }
 
-CgiHandler &CgiHandler::operator=(const CgiHandler &rhs)
+Cgi &Cgi::operator=(const Cgi &rhs)
 {
     if (this != &rhs)
 	{
@@ -60,33 +60,33 @@ CgiHandler &CgiHandler::operator=(const CgiHandler &rhs)
 }
 
 /*Set functions */
-void CgiHandler::setCgiPid(pid_t cgi_pid)
+void Cgi::setCgiPid(pid_t cgi_pid)
 {
     this->_cgi_pid = cgi_pid;
 }
 
-void CgiHandler::setCgiPath(const std::string &cgi_path)
+void Cgi::setCgiPath(const std::string &cgi_path)
 {
 	this->_cgi_path = cgi_path;
 }
 
 /* Get functions */
-const std::map<std::string, std::string> &CgiHandler::getEnv() const
+const std::map<std::string, std::string> &Cgi::getEnv() const
 {
     return (this->_env);
 }
 
-const pid_t &CgiHandler::getCgiPid() const
+const pid_t &Cgi::getCgiPid() const
 {
     return (this->_cgi_pid);
 }
 
-const std::string &CgiHandler::getCgiPath() const
+const std::string &Cgi::getCgiPath() const
 {
     return (this->_cgi_path);
 }
 
-void CgiHandler::initEnvCgi(HttpRequest& req, const std::vector<Location>::iterator it_loc)
+void Cgi::initEnvCgi(Request& req, const std::vector<Location>::iterator it_loc)
 {
 	std::string cgi_exec = ("cgi-bin/" + it_loc->getCgiPath()[0]).c_str();
 	char    *cwd = getcwd(NULL, 0);
@@ -142,7 +142,7 @@ void CgiHandler::initEnvCgi(HttpRequest& req, const std::vector<Location>::itera
 
 
 /* initialization environment variable */
-void CgiHandler::initEnv(HttpRequest& req, const std::vector<Location>::iterator it_loc)
+void Cgi::initEnv(Request& req, const std::vector<Location>::iterator it_loc)
 {
 	int			poz;
 	std::string extension;
@@ -190,7 +190,7 @@ void CgiHandler::initEnv(HttpRequest& req, const std::vector<Location>::iterator
 }
 
 /* Pipe and execute CGI */
-void CgiHandler::execute(short &error_code)
+void Cgi::execute(short &error_code)
 {
 	if (this->_argv[0] == NULL || this->_argv[1] == NULL)
 	{
@@ -235,7 +235,7 @@ void CgiHandler::execute(short &error_code)
 
 
 
-int CgiHandler::findStart(const std::string path, const std::string delim)
+int Cgi::findStart(const std::string path, const std::string delim)
 {
 	if (path.empty())
 		return (-1);
@@ -247,7 +247,7 @@ int CgiHandler::findStart(const std::string path, const std::string delim)
 }
 
 /* Translation of parameters for QUERY_STRING environment variable */
-std::string CgiHandler::decode(std::string &path)
+std::string Cgi::decode(std::string &path)
 {
 	size_t token = path.find("%");
 	while (token != std::string::npos)
@@ -262,7 +262,7 @@ std::string CgiHandler::decode(std::string &path)
 }
 
 /* Isolation PATH_INFO environment variable */
-std::string CgiHandler::getPathInfo(std::string& path, std::vector<std::string> extensions)
+std::string Cgi::getPathInfo(std::string& path, std::vector<std::string> extensions)
 {
 	std::string tmp;
 	size_t start, end;
@@ -284,7 +284,7 @@ std::string CgiHandler::getPathInfo(std::string& path, std::vector<std::string> 
 	return (end == std::string::npos ? tmp : tmp.substr(0, end));
 }
 
-void		CgiHandler::clear()
+void		Cgi::clear()
 {
 	this->_cgi_pid = -1;
 	this->_exit_status = 0;

@@ -1,6 +1,6 @@
-#include "../inc/ServerConfig.hpp"
+#include "ServerConf.hpp"
 
-ServerConfig::ServerConfig()
+ServerConf::ServerConf()
 {
 	this->_port = 0;
 	this->_host = 0;
@@ -13,10 +13,10 @@ ServerConfig::ServerConfig()
 	this->initErrorPages();
 }
 
-ServerConfig::~ServerConfig() { }
+ServerConf::~ServerConf() { }
 
 /* copy constructor */
-ServerConfig::ServerConfig(const ServerConfig &other)
+ServerConf::ServerConf(const ServerConf &other)
 {
 	if (this != &other)
 	{
@@ -37,7 +37,7 @@ ServerConfig::ServerConfig(const ServerConfig &other)
 }
 
 /* assinment operator */
-ServerConfig &ServerConfig::operator=(const ServerConfig & rhs)
+ServerConf &ServerConf::operator=(const ServerConf & rhs)
 {
 	if (this != &rhs)
 	{
@@ -57,7 +57,7 @@ ServerConfig &ServerConfig::operator=(const ServerConfig & rhs)
 }
 
 /* init error page by default */
-void ServerConfig::initErrorPages(void)
+void ServerConf::initErrorPages(void)
 {
 	_error_pages[301] = "";
 	_error_pages[302] = "";
@@ -77,13 +77,13 @@ void ServerConfig::initErrorPages(void)
 }
 
 /* Set functions */
-void ServerConfig::setServerName(std::string server_name)
+void ServerConf::setServerName(std::string server_name)
 {
 	checkToken(server_name);
 	this->_server_name = server_name;
 }
 
-void ServerConfig::setHost(std::string parametr)
+void ServerConf::setHost(std::string parametr)
 {
 	checkToken(parametr);
 	if (parametr == "localhost")
@@ -93,10 +93,10 @@ void ServerConfig::setHost(std::string parametr)
 	this->_host = inet_addr(parametr.data());
 }
 
-void ServerConfig::setRoot(std::string root)
+void ServerConf::setRoot(std::string root)
 {
 	checkToken(root);
-	if (ConfigFile::getTypePath(root) == 2)
+	if (FileConf::getTypePath(root) == 2)
 	{
 		this->_root = root;
 		return ;
@@ -104,12 +104,12 @@ void ServerConfig::setRoot(std::string root)
 	char dir[1024];
 	getcwd(dir, 1024);
 	std::string full_root = dir + root;
-	if (ConfigFile::getTypePath(full_root) != 2)
+	if (FileConf::getTypePath(full_root) != 2)
 		throw ErrorException("Wrong syntax: root");
 	this->_root = full_root;
 }
 
-void ServerConfig::setPort(std::string parametr)
+void ServerConf::setPort(std::string parametr)
 {
 	unsigned int port;
 	
@@ -126,7 +126,7 @@ void ServerConfig::setPort(std::string parametr)
 	this->_port = (uint16_t) port;
 }
 
-void ServerConfig::setClientMaxBodySize(std::string parametr)
+void ServerConf::setClientMaxBodySize(std::string parametr)
 {
 	unsigned long body_size;
 	
@@ -143,13 +143,13 @@ void ServerConfig::setClientMaxBodySize(std::string parametr)
 	this->_client_max_body_size = body_size;
 }
 
-void ServerConfig::setIndex(std::string index)
+void ServerConf::setIndex(std::string index)
 {
 	checkToken(index);
 	this->_index = index;
 }
 
-void ServerConfig::setAutoindex(std::string autoindex)
+void ServerConf::setAutoindex(std::string autoindex)
 {
 	checkToken(autoindex);
 	if (autoindex != "on" && autoindex != "off")
@@ -160,7 +160,7 @@ void ServerConfig::setAutoindex(std::string autoindex)
 
 /* checks if there is such a default error code. If there is, it overwrites the path to the file,
 otherwise it creates a new pair: error code - path to the file */
-void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
+void ServerConf::setErrorPages(std::vector<std::string> &parametr)
 {
 	if (parametr.empty())
 		return;
@@ -180,11 +180,11 @@ void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
 		i++;
 		std::string path = parametr[i];
 		checkToken(path);
-		if (ConfigFile::getTypePath(path) != 2)
+		if (FileConf::getTypePath(path) != 2)
 		{
-			if (ConfigFile::getTypePath(this->_root + path) != 1)
+			if (FileConf::getTypePath(this->_root + path) != 1)
 				throw ErrorException ("Incorrect path for error page file: " + this->_root + path);
-			if (ConfigFile::checkFile(this->_root + path, 0) == -1 || ConfigFile::checkFile(this->_root + path, 4) == -1)
+			if (FileConf::checkFile(this->_root + path, 0) == -1 || FileConf::checkFile(this->_root + path, 4) == -1)
 				throw ErrorException ("Error page file :" + this->_root + path + " is not accessible");
 		}
 		std::map<short, std::string>::iterator it = this->_error_pages.find(code_error);
@@ -196,7 +196,7 @@ void ServerConfig::setErrorPages(std::vector<std::string> &parametr)
 }
 
 /* parsing and set locations */
-void ServerConfig::setLocation(std::string path, std::vector<std::string> parametr)
+void ServerConf::setLocation(std::string path, std::vector<std::string> parametr)
 {
 	Location new_location;
 	std::vector<std::string> methods;
@@ -213,7 +213,7 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 			if (!new_location.getRootLocation().empty())
 				throw ErrorException("Root of location is duplicated");
 			checkToken(parametr[++i]);
-			if (ConfigFile::getTypePath(parametr[i]) == 2)
+			if (FileConf::getTypePath(parametr[i]) == 2)
 				new_location.setRootLocation(parametr[i]);
 			else
 				new_location.setRootLocation(this->_root + parametr[i]);
@@ -345,33 +345,33 @@ void ServerConfig::setLocation(std::string path, std::vector<std::string> parame
 	this->_locations.push_back(new_location);
 }
 
-void	ServerConfig::setFd(int fd)
+void	ServerConf::setFd(int fd)
 {
 	this->_listen_fd = fd;
 }
 
 /* validation of parametrs */
-bool ServerConfig::isValidHost(std::string host) const
+bool ServerConf::isValidHost(std::string host) const
 {
 	struct sockaddr_in sockaddr;
   	return (inet_pton(AF_INET, host.c_str(), &(sockaddr.sin_addr)) ? true : false);
 }
 
-bool ServerConfig::isValidErrorPages()
+bool ServerConf::isValidErrorPages()
 {
 	std::map<short, std::string>::const_iterator it;
 	for (it = this->_error_pages.begin(); it != this->_error_pages.end(); it++)
 	{
 		if (it->first < 100 || it->first > 599)
 			return (false);
-		if (ConfigFile::checkFile(getRoot() + it->second, 0) < 0 || ConfigFile::checkFile(getRoot() + it->second, 4) < 0)
+		if (FileConf::checkFile(getRoot() + it->second, 0) < 0 || FileConf::checkFile(getRoot() + it->second, 4) < 0)
 			return (false);
 	}
 	return (true);
 }
 
 /* check parametrs of location */
-int ServerConfig::isValidLocation(Location &location) const
+int ServerConf::isValidLocation(Location &location) const
 {
 	if (location.getPath() == "/cgi-bin")
 	{
@@ -379,16 +379,16 @@ int ServerConfig::isValidLocation(Location &location) const
 			return (1);
 
 
-		if (ConfigFile::checkFile(location.getIndexLocation(), 4) < 0)
+		if (FileConf::checkFile(location.getIndexLocation(), 4) < 0)
 		{
 			std::string path = location.getRootLocation() + location.getPath() + "/" + location.getIndexLocation();
-			if (ConfigFile::getTypePath(path) != 1)
+			if (FileConf::getTypePath(path) != 1)
 			{				
 				std::string root = getcwd(NULL, 0);
 				location.setRootLocation(root);
 				path = root + location.getPath() + "/" + location.getIndexLocation();
 			}
-			if (path.empty() || ConfigFile::getTypePath(path) != 1 || ConfigFile::checkFile(path, 4) < 0)
+			if (path.empty() || FileConf::getTypePath(path) != 1 || FileConf::checkFile(path, 4) < 0)
 				return (1);
 		}
 		if (location.getCgiPath().size() != location.getCgiExtension().size())
@@ -396,7 +396,7 @@ int ServerConfig::isValidLocation(Location &location) const
 		std::vector<std::string>::const_iterator it;
 		for (it = location.getCgiPath().begin(); it != location.getCgiPath().end(); ++it)
 		{
-			if (ConfigFile::getTypePath(*it) < 0)
+			if (FileConf::getTypePath(*it) < 0)
 				return (1);
 		}
 		std::vector<std::string>::const_iterator it_path;
@@ -430,16 +430,16 @@ int ServerConfig::isValidLocation(Location &location) const
 		if (location.getRootLocation().empty()) {
 			location.setRootLocation(this->_root);
 		}
-		if (ConfigFile::isFileExistAndReadable(location.getRootLocation() + location.getPath() + "/", location.getIndexLocation()))
+		if (FileConf::isFileExistAndReadable(location.getRootLocation() + location.getPath() + "/", location.getIndexLocation()))
 			return (5);
 		if (!location.getReturn().empty())
 		{
-			if (ConfigFile::isFileExistAndReadable(location.getRootLocation(), location.getReturn()))
+			if (FileConf::isFileExistAndReadable(location.getRootLocation(), location.getReturn()))
 				return (3);
 		}
 		if (!location.getAlias().empty())
 		{
-			if (ConfigFile::isFileExistAndReadable(location.getRootLocation(), location.getAlias()))
+			if (FileConf::isFileExistAndReadable(location.getRootLocation(), location.getAlias()))
 			 	return (4);
 		}
 	}
@@ -447,58 +447,58 @@ int ServerConfig::isValidLocation(Location &location) const
 }
 
 /* Get functions */
-const std::string &ServerConfig::getServerName()
+const std::string &ServerConf::getServerName()
 {
 	return (this->_server_name);
 }
 
-const std::string &ServerConfig::getRoot()
+const std::string &ServerConf::getRoot()
 {
 	return (this->_root);
 }
 
-const bool &ServerConfig::getAutoindex()
+const bool &ServerConf::getAutoindex()
 {
 	return (this->_autoindex);
 }
 
-const in_addr_t &ServerConfig::getHost()
+const in_addr_t &ServerConf::getHost()
 {
 	return (this->_host);
 }
 
-const uint16_t &ServerConfig::getPort()
+const uint16_t &ServerConf::getPort()
 {
 	return (this->_port);
 }
 
-const size_t &ServerConfig::getClientMaxBodySize()
+const size_t &ServerConf::getClientMaxBodySize()
 {
 	return (this->_client_max_body_size);
 }
 
-const std::vector<Location> &ServerConfig::getLocations()
+const std::vector<Location> &ServerConf::getLocations()
 {
 	return (this->_locations);
 }
 
-const std::map<short, std::string> &ServerConfig::getErrorPages()
+const std::map<short, std::string> &ServerConf::getErrorPages()
 {
 	return (this->_error_pages);
 }
 
-const std::string &ServerConfig::getIndex()
+const std::string &ServerConf::getIndex()
 {
 	return (this->_index);
 }
 
-int   	ServerConfig::getFd() 
+int   	ServerConf::getFd() 
 { 
 	return (this->_listen_fd); 
 }
 
 /* the two functions below can be used later for response */
-const std::string &ServerConfig::getPathErrorPage(short key)
+const std::string &ServerConf::getPathErrorPage(short key)
 {
 	std::map<short, std::string>::iterator it = this->_error_pages.find(key);
 	if (it == this->_error_pages.end())
@@ -507,7 +507,7 @@ const std::string &ServerConfig::getPathErrorPage(short key)
 }
 
 /* find location by a name */ //do not using in parser, created for server manager
-const std::vector<Location>::iterator ServerConfig::getLocationKey(std::string key)
+const std::vector<Location>::iterator ServerConf::getLocationKey(std::string key)
 {
 	std::vector<Location>::iterator it;
 	for (it = this->_locations.begin(); it != this->_locations.end(); it++)
@@ -519,7 +519,7 @@ const std::vector<Location>::iterator ServerConfig::getLocationKey(std::string k
 }
 
 /* check is a properly end of parametr */
-void ServerConfig::checkToken(std::string &parametr)
+void ServerConf::checkToken(std::string &parametr)
 {
 	size_t pos = parametr.rfind(';');
 	if (pos != parametr.size() - 1)
@@ -528,7 +528,7 @@ void ServerConfig::checkToken(std::string &parametr)
 }
 
 /* check location for a dublicate */
-bool ServerConfig::checkLocaitons() const
+bool ServerConf::checkLocaitons() const
 {
 	if (this->_locations.size() < 2)
 		return (false);
@@ -544,7 +544,7 @@ bool ServerConfig::checkLocaitons() const
 }
 
 /* socket setup and binding */
-void	ServerConfig::setupServer(void)
+void	ServerConf::setupServer(void)
 {
 	if ((_listen_fd = socket(AF_INET, SOCK_STREAM, 0) )  == -1 )
     {

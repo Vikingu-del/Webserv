@@ -2,7 +2,7 @@
 # define RESPONSE_HPP
 
 # include "Webserv.hpp"
-# include "HttpRequest.hpp"
+# include "Request.hpp"
 
 
 /*
@@ -14,32 +14,32 @@ class Response
     public:
         static     Mime _mime;
         Response();
-        Response(HttpRequest&);
+        Response(Request&);
         ~Response();
 
         std::string     getRes();
         size_t      getLen() const;
         int         getCode() const;
 
-        void        setRequest(HttpRequest &);
-        void        setServer(ServerConfig &);
+        void        setRequest(Request &);
+        void        setServer(ServerConf &);
 
         void        buildResponse();
         void        clear();
-        void        handleCgi(HttpRequest&);
+        void        handleCgi(Request&);
         void        cutRes(size_t);
         int         getCgiState();
         void        setCgiState(int);
         void        setErrorResponse(short code);
 
-		CgiHandler		_cgi_obj;
+		Cgi 		_cgi_obj;
 
         std::string removeBoundary(std::string &body, std::string &boundary);
         std::string     _response_content;
 
-        HttpRequest     request;
+        Request     request;
     private:
-        ServerConfig    _server;
+        ServerConf    _server;
         std::string     _target_file;
         std::vector<uint8_t> _body;
         size_t          _body_length;

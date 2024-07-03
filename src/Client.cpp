@@ -38,7 +38,7 @@ Client &Client::operator=(const Client & rhs)
 	return (*this);
 }
 
-Client::Client(ServerConfig &server)
+Client::Client(ServerConf &server)
 {
     setServer(server);
     request.setMaxBodySize(server.getClientMaxBodySize());
@@ -55,7 +55,7 @@ void    Client::setAddress(sockaddr_in &addr)
     _client_address =  addr;
 }
 
-void    Client::setServer(ServerConfig &server)
+void    Client::setServer(ServerConf &server)
 {
     response.setServer(server);
 }
@@ -66,7 +66,7 @@ const int     &Client::getSocket() const
     return (_client_socket);
 }
 
-const HttpRequest   &Client::getRequest() const
+const Request   &Client::getRequest() const
 {
     return (request);
 }

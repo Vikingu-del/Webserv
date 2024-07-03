@@ -1,14 +1,14 @@
-#include "../inc/ConfigParser.hpp"
+#include "ParseConf.hpp"
 
-ConfigParser::ConfigParser()
+ParseConf::ParseConf()
 {
 	this->_nb_server = 0;
 }
 
-ConfigParser::~ConfigParser() { }
+ParseConf::~ParseConf() { }
 
 /* printing parametrs of servers from config file */
-int ConfigParser::print()
+int ParseConf::print()
 {
 	std::cout << "------------- Config -------------" << std::endl;
 	for (size_t i = 0; i < _servers.size(); i++)
@@ -57,10 +57,10 @@ int ConfigParser::print()
 }
 
 /* checking and read config file, split servers to strings and creating vector of servers */
-int ConfigParser::createCluster(const std::string &config_file)
+int ParseConf::createCluster(const std::string &config_file)
 {
 	std::string		content;
-	ConfigFile		file(config_file);
+	FileConf		file(config_file);
 
 	if (file.getTypePath(file.getPath()) != 1)
 		throw ErrorException("File is invalid");
@@ -76,7 +76,7 @@ int ConfigParser::createCluster(const std::string &config_file)
 		throw ErrorException("Somthing with size"); //rewrite the sentence
 	for (size_t i = 0; i < this->_nb_server; i++)
 	{
-		ServerConfig server;
+		ServerConf server;
 		createServer(this->_server_config[i], server);
 		this->_servers.push_back(server);
 	}
@@ -86,7 +86,7 @@ int ConfigParser::createCluster(const std::string &config_file)
 }
 
 /*remove comments from char # to \n */
-void ConfigParser::removeComments(std::string &content)
+void ParseConf::removeComments(std::string &content)
 {
 	size_t pos;
 
@@ -101,7 +101,7 @@ void ConfigParser::removeComments(std::string &content)
 }
 
 /* deleting whitespaces in the start, end and in the content if more than one */
-void ConfigParser::removeWhiteSpace(std::string &content)
+void ParseConf::removeWhiteSpace(std::string &content)
 {
 	size_t	i = 0;
 
@@ -115,7 +115,7 @@ void ConfigParser::removeWhiteSpace(std::string &content)
 }
 
 /* spliting servers on separetly strings in vector */
-void ConfigParser::splitServers(std::string &content)
+void ParseConf::splitServers(std::string &content)
 {
 	size_t start = 0;
 	size_t end = 1;
@@ -135,7 +135,7 @@ void ConfigParser::splitServers(std::string &content)
 }
 
 /* finding a server begin and return the index of { start of server */
-size_t ConfigParser::findStartServer (size_t start, std::string &content)
+size_t ParseConf::findStartServer (size_t start, std::string &content)
 {
 	size_t i;
 
@@ -161,7 +161,7 @@ size_t ConfigParser::findStartServer (size_t start, std::string &content)
 }
 
 /* finding a server end and return the index of } end of server */
-size_t ConfigParser::findEndServer (size_t start, std::string &content)
+size_t ParseConf::findEndServer (size_t start, std::string &content)
 {
 	size_t	i;
 	size_t	scope;
@@ -203,7 +203,7 @@ std::vector<std::string> splitParametrs(std::string line, std::string sep)
 }
 
 /* creating Server from string and fill the value */
-void ConfigParser::createServer(std::string &config, ServerConfig &server)
+void ParseConf::createServer(std::string &config, ServerConf &server)
 {
 	std::vector<std::string>	parametrs;
 	std::vector<std::string>	error_codes;
@@ -303,7 +303,7 @@ void ConfigParser::createServer(std::string &config, ServerConfig &server)
 		server.setHost("localhost;");
 	if (server.getIndex().empty())
 		server.setIndex("index.html;");
-	if (ConfigFile::isFileExistAndReadable(server.getRoot(), server.getIndex()))
+	if (FileConf::isFileExistAndReadable(server.getRoot(), server.getIndex()))
 		throw ErrorException("Index from config file not found or unreadable");
 	if (server.checkLocaitons())
 		throw ErrorException("Locaition is duplicated");
@@ -315,7 +315,7 @@ void ConfigParser::createServer(std::string &config, ServerConfig &server)
 }
 
 /* comparing strings from position */
-int	ConfigParser::stringCompare(std::string str1, std::string str2, size_t pos)
+int	ParseConf::stringCompare(std::string str1, std::string str2, size_t pos)
 {
 	size_t	i;
 
@@ -331,10 +331,10 @@ int	ConfigParser::stringCompare(std::string str1, std::string str2, size_t pos)
 }
 
 /* checking repeat and mandatory parametrs*/
-void ConfigParser::checkServers()
+void ParseConf::checkServers()
 {
-	std::vector<ServerConfig>::iterator it1;
-	std::vector<ServerConfig>::iterator it2;
+	std::vector<ServerConf>::iterator it1;
+	std::vector<ServerConf>::iterator it2;
 
 	for (it1 = this->_servers.begin(); it1 != this->_servers.end() - 1; it1++)
 	{
@@ -346,7 +346,7 @@ void ConfigParser::checkServers()
 	}
 }
 
-std::vector<ServerConfig>	ConfigParser::getServers()
+std::vector<ServerConf>	ParseConf::getServers()
 {
 	return (this->_servers);
 }

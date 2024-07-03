@@ -54,15 +54,15 @@ enum ParsingState
 
 /**
  *
- * - HttpRequest Class will be used to parase and store the request.
+ * - Request Class will be used to parase and store the request.
    It gets feeded with the request and will triiger a flag when parasing is finished.
    - If any error was found in the request, _code will be set to the correct error code.
 **/
-class HttpRequest
+class Request
 {
     public:
-        HttpRequest();
-        ~HttpRequest();
+        Request();
+        ~Request();
 
         HttpMethod                                  &getMethod();
         std::string                                 &getPath();

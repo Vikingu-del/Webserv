@@ -1,14 +1,14 @@
-#include "../inc/ConfigFile.hpp"
+#include "FileConf.hpp"
 
-ConfigFile::ConfigFile() : _size(0) { }
+FileConf::FileConf() : _size(0) { }
 
-ConfigFile::ConfigFile(std::string const path) : _path(path), _size(0) { }
+FileConf::FileConf(std::string const path) : _path(path), _size(0) { }
 
-ConfigFile::~ConfigFile() { }
+FileConf::~FileConf() { }
 
 
 /* define is path is file(1), folder(2) or something else(3) */
-int ConfigFile::getTypePath(std::string const path)
+int FileConf::getTypePath(std::string const path)
 {
 	struct stat	buffer;
 	int			result;
@@ -28,12 +28,12 @@ int ConfigFile::getTypePath(std::string const path)
 }
 
 /* checks is the file exists and accessable */
-int	ConfigFile::checkFile(std::string const path, int mode)
+int	FileConf::checkFile(std::string const path, int mode)
 {
 	return (access(path.c_str(), mode));
 }
 
-int ConfigFile::isFileExistAndReadable(std::string const path, std::string const index)
+int FileConf::isFileExistAndReadable(std::string const path, std::string const index)
 {
 	if (getTypePath(index) == 1 && checkFile(index, 4) == 0)
 		return (0);
@@ -43,7 +43,7 @@ int ConfigFile::isFileExistAndReadable(std::string const path, std::string const
 }
 
 /* reading from file to string */
-std::string	ConfigFile::readFile(std::string path)
+std::string	FileConf::readFile(std::string path)
 {
 	if (path.empty() || path.length() == 0)
 		return (NULL);
@@ -57,12 +57,12 @@ std::string	ConfigFile::readFile(std::string path)
 }
 
 /* Get functions */
-std::string ConfigFile::getPath()
+std::string FileConf::getPath()
 {
 	return (this->_path);
 }
 
-int ConfigFile::getSize()
+int FileConf::getSize()
 {
 	return (this->_size);
 }

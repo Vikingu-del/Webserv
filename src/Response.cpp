@@ -1,4 +1,4 @@
-# include "../inc/Response.hpp"
+# include "Response.hpp"
 
 Mime Response::_mime;
 
@@ -18,7 +18,7 @@ Response::Response()
 
 Response::~Response() {}
 
-Response::Response(HttpRequest &req) : request(req)
+Response::Response(Request &req) : request(req)
 {
     _target_file = "";
     _body.clear();
@@ -151,12 +151,12 @@ static std::string combinePaths(std::string p1, std::string p2, std::string p3)
     return (res);
 }
 
-static void replaceAlias(Location &location, HttpRequest &request, std::string &target_file)
+static void replaceAlias(Location &location, Request &request, std::string &target_file)
 {
     target_file = combinePaths(location.getAlias(), request.getPath().substr(location.getPath().length()), "");
 }
 
-static void appendRoot(Location &location, HttpRequest &request, std::string &target_file)
+static void appendRoot(Location &location, Request &request, std::string &target_file)
 {
     target_file = combinePaths(location.getRootLocation(), request.getPath(), "");
 }
@@ -205,12 +205,12 @@ int        Response::handleCgi(std::string &location_key)
         _code = 501;
         return (1);
     }
-    if (ConfigFile::getTypePath(path) != 1)
+    if (FileConf::getTypePath(path) != 1)
     {
         _code = 404;
         return (1);
     }
-    if (ConfigFile::checkFile(path, 1) == -1 || ConfigFile::checkFile(path, 3) == -1)
+    if (FileConf::checkFile(path, 1) == -1 || FileConf::checkFile(path, 3) == -1)
     {
         _code = 403;
         return (1);
@@ -552,12 +552,12 @@ int Response::readFile()
     return (0);
 }
 
-void     Response::setServer(ServerConfig &server)
+void     Response::setServer(ServerConf &server)
 {
     _server = server;
 }
 
-void    Response::setRequest(HttpRequest &req)
+void    Response::setRequest(Request &req)
 {
     request = req;
 }

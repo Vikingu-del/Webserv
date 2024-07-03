@@ -1,5 +1,5 @@
-#ifndef SERVERCONFIG_HPP
-#define SERVERCONFIG_HPP
+#ifndef SERVERCONF_HPP
+#define SERVERCONF_HPP
 
 #include "Webserv.hpp"
 
@@ -7,7 +7,7 @@ static std::string	serverParametrs[] = {"server_name", "listen", "root", "index"
 
 class Location;
 
-class ServerConfig
+class ServerConf
 {
 	private:
 		uint16_t						_port;
@@ -23,10 +23,10 @@ class ServerConfig
         int     						_listen_fd;
 
 	public:
-		ServerConfig();
-		~ServerConfig();
-		ServerConfig(const ServerConfig &other);
-		ServerConfig &operator=(const ServerConfig & rhs);
+		ServerConf();
+		~ServerConf();
+		ServerConf(const ServerConf &other);
+		ServerConf &operator=(const ServerConf & rhs);
 
 		void initErrorPages(void);
 

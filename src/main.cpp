@@ -1,5 +1,5 @@
-#include "../inc/Webserv.hpp"
-#include "../inc/ServerManager.hpp"
+#include "Webserv.hpp"
+#include "ServerSocket.hpp"
 
 void sigpipeHandle(int sig) { if(sig) {}}
 
@@ -10,8 +10,8 @@ int main(int argc, char **argv)
 		try 
 		{
 			std::string		config;
-			ConfigParser	cluster;
-        	ServerManager 	master;
+			ParseConf		cluster;
+        	ServerSocket 	master;
 			signal(SIGPIPE, sigpipeHandle);
 			/* configuration file as argument or default path */
 			config = (argc == 1 ? "configs/default.conf" : argv[1]);

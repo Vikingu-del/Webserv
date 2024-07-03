@@ -41,12 +41,12 @@
 # include <sys/select.h>
 # include <arpa/inet.h>
 
-# include "ConfigParser.hpp"
-# include "ConfigFile.hpp"
-# include "ServerConfig.hpp"
+# include "ParseConf.hpp"
+# include "FileConf.hpp"
+# include "ServerConf.hpp"
 # include "Location.hpp"
-# include "HttpRequest.hpp"
-# include "CgiHandler.hpp"
+# include "Request.hpp"
+# include "Cgi.hpp"
 # include "Mime.hpp"
 # include "Logger.hpp"
 

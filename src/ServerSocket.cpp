@@ -1,22 +1,22 @@
-# include "../inc/ServerManager.hpp"
+# include "ServerSocket.hpp"
 
-ServerManager::ServerManager(){}
-ServerManager::~ServerManager(){}
+ServerSocket::ServerSocket(){}
+ServerSocket::~ServerSocket(){}
 
 /**
  * Start all servers on ports specified in the config file
  */
-void    ServerManager::setupServers(std::vector<ServerConfig> servers)
+void    ServerSocket::setupServers(std::vector<ServerConf> servers)
 {
     std::cout << std::endl;
     Logger::logMsg(LIGHTMAGENTA, CONSOLE_OUTPUT, "Initializing  Servers...");
     _servers = servers;
     char buf[INET_ADDRSTRLEN];
     bool    serverDub;
-    for (std::vector<ServerConfig>::iterator it = _servers.begin(); it != _servers.end(); ++it)
+    for (std::vector<ServerConf>::iterator it = _servers.begin(); it != _servers.end(); ++it)
     {
         serverDub = false;
-        for (std::vector<ServerConfig>::iterator it2 = _servers.begin(); it2 != it; ++it2)
+        for (std::vector<ServerConf>::iterator it2 = _servers.begin(); it2 != it; ++it2)
         {
             if (it2->getHost() == it->getHost() && it2->getPort() == it->getPort())
             {
@@ -43,7 +43,7 @@ void    ServerManager::setupServers(std::vector<ServerConfig> servers)
  * - servers and clients sockets will be added to _recv_set_pool initially,
  *   after that, when a request is fully parsed, socket will be moved to _write_set_pool
  */
-void    ServerManager::runServers()
+void    ServerSocket::runServers()
 {
     fd_set  recv_set_cpy;
     fd_set  write_set_cpy;
@@ -87,7 +87,7 @@ void    ServerManager::runServers()
 }
 
 /* Checks time passed for clients since last message, If more than CONNECTION_TIMEOUT, close connection */
-void    ServerManager::checkTimeout()
+void    ServerSocket::checkTimeout()
 {
     for(std::map<int, Client>::iterator it = _clients_map.begin() ; it != _clients_map.end(); ++it)
     {
@@ -101,13 +101,13 @@ void    ServerManager::checkTimeout()
 }
 
 /* initialize recv+write fd_sets and add all server listening sockets to _recv_fd_pool. */
-void    ServerManager::initializeSets()
+void    ServerSocket::initializeSets()
 {
     FD_ZERO(&_recv_fd_pool);
     FD_ZERO(&_write_fd_pool);
 
     // adds servers sockets to _recv_fd_pool set
-    for(std::vector<ServerConfig>::iterator it = _servers.begin(); it != _servers.end(); ++it)
+    for(std::vector<ServerConf>::iterator it = _servers.begin(); it != _servers.end(); ++it)
     {
         //Now it calles listen() twice on even if two servers have the same host:port
         if (listen(it->getFd(), 512) == -1)
@@ -132,7 +132,7 @@ void    ServerManager::initializeSets()
  * Create new Client object and add it to _client_map
  * Add client socket to _recv_fd_pool
 */
-void    ServerManager::acceptNewConnection(ServerConfig &serv)
+void    ServerSocket::acceptNewConnection(ServerConf &serv)
 {
     struct sockaddr_in client_address;
     long  client_address_size = sizeof(client_address);
@@ -165,7 +165,7 @@ void    ServerManager::acceptNewConnection(ServerConfig &serv)
 
 
 /* Closes connection from fd i and remove associated client object from _clients_map */
-void    ServerManager::closeConnection(const int i)
+void    ServerSocket::closeConnection(const int i)
 {
     if (FD_ISSET(i, &_write_fd_pool))
         removeFromSet(i, _write_fd_pool);
@@ -180,7 +180,7 @@ void    ServerManager::closeConnection(const int i)
  * If no error was found in request and Connection header value is keep-alive,
  * connection is kept, otherwise connection will be closed.
  */
-void    ServerManager::sendResponse(const int &i, Client &c)
+void    ServerSocket::sendResponse(const int &i, Client &c)
 {
     int bytes_sent;
     std::string response = c.response.getRes();
@@ -219,9 +219,9 @@ void    ServerManager::sendResponse(const int &i, Client &c)
 }
 
 /* Assigen server_block configuration to a client based on Host Header in request and server_name*/
-void    ServerManager::assignServer(Client &c)
+void    ServerSocket::assignServer(Client &c)
 {
-    for (std::vector<ServerConfig>::iterator it = _servers.begin();
+    for (std::vector<ServerConf>::iterator it = _servers.begin();
         it != _servers.end(); ++it)
     {
         if (c.server.getHost() == it->getHost() &&
@@ -240,7 +240,7 @@ void    ServerManager::assignServer(Client &c)
  * socket will be moved from _recv_fd_pool to _write_fd_pool
  * and response will be sent on the next iteration of select().
  */
-void    ServerManager::readRequest(const int &i, Client &c)
+void    ServerSocket::readRequest(const int &i, Client &c)
 {
     char    buffer[MESSAGE_BUFFER];
     int     bytes_read = 0;
@@ -281,7 +281,7 @@ void    ServerManager::readRequest(const int &i, Client &c)
     }
 }
 
-void    ServerManager::handleReqBody(Client &c)
+void    ServerSocket::handleReqBody(Client &c)
 {
     	if (c.request.getBody().length() == 0)
 		{
@@ -295,7 +295,7 @@ void    ServerManager::handleReqBody(Client &c)
 }
 
 /* Send request body to CGI script */
-void    ServerManager::sendCgiBody(Client &c, CgiHandler &cgi)
+void    ServerSocket::sendCgiBody(Client &c, Cgi &cgi)
 {
     int bytes_sent;
     std::string &req_body = c.request.getBody();
@@ -329,7 +329,7 @@ void    ServerManager::sendCgiBody(Client &c, CgiHandler &cgi)
 }
 
 /* Reads outpud produced by the CGI script */
-void    ServerManager::readCgiResponse(Client &c, CgiHandler &cgi)
+void    ServerSocket::readCgiResponse(Client &c, Cgi &cgi)
 {
     char    buffer[MESSAGE_BUFFER * 2];
     int     bytes_read = 0;
@@ -369,14 +369,14 @@ void    ServerManager::readCgiResponse(Client &c, CgiHandler &cgi)
     }
 }
 
-void	ServerManager::addToSet(const int i, fd_set &set)
+void	ServerSocket::addToSet(const int i, fd_set &set)
 {
     FD_SET(i, &set);
     if (i > _biggest_fd)
         _biggest_fd = i;
 }
 
-void	ServerManager::removeFromSet(const int i, fd_set &set)
+void	ServerSocket::removeFromSet(const int i, fd_set &set)
 {
     FD_CLR(i, &set);
     if (i == _biggest_fd)

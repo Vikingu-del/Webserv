@@ -61,8 +61,8 @@ void Location::setPath(std::string parametr)
 
 void Location::setRootLocation(std::string parametr)
 {
-	if (ConfigFile::getTypePath(parametr) != 2)
-		throw ServerConfig::ErrorException("root of location");
+	if (FileConf::getTypePath(parametr) != 2)
+		throw ServerConf::ErrorException("root of location");
 	this->_root = parametr;
 }
 
@@ -87,7 +87,7 @@ void Location::setMethods(std::vector<std::string> methods)
 		else if (methods[i] == "HEAD")
 			this->_methods[4] = 1;
 		else
-			throw ServerConfig::ErrorException("Allow method not supported " + methods[i]);
+			throw ServerConf::ErrorException("Allow method not supported " + methods[i]);
 	}
 }
 
@@ -96,7 +96,7 @@ void Location::setAutoindex(std::string parametr)
 	if (parametr == "on" || parametr == "off")
 		this->_autoindex = (parametr == "on");
 	else
-		throw ServerConfig::ErrorException("Wrong autoindex");
+		throw ServerConf::ErrorException("Wrong autoindex");
 }
 
 void Location::setIndexLocation(std::string parametr)
@@ -131,10 +131,10 @@ void Location::setMaxBodySize(std::string parametr)
 	for (size_t i = 0; i < parametr.length(); i++)
 	{
 		if (parametr[i] < '0' || parametr[i] > '9')
-			throw ServerConfig::ErrorException("Wrong syntax: client_max_body_size");
+			throw ServerConf::ErrorException("Wrong syntax: client_max_body_size");
 	}
 	if (!ft_stoi(parametr))
-		throw ServerConfig::ErrorException("Wrong syntax: client_max_body_size");
+		throw ServerConf::ErrorException("Wrong syntax: client_max_body_size");
 	body_size = ft_stoi(parametr);
 	this->_client_max_body_size = body_size;
 }

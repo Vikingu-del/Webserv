@@ -1,6 +1,6 @@
-#include "../inc/HttpRequest.hpp"
+#include "Request.hpp"
 
-HttpRequest::HttpRequest()
+Request::Request()
 {
     _method_str[::GET] = "GET";
     _method_str[::POST] = "POST";
@@ -27,7 +27,7 @@ HttpRequest::HttpRequest()
     _boundary = "";
 }
 
-HttpRequest::~HttpRequest() {}
+Request::~Request() {}
 
 bool    checkUriPos(std::string path)
 {
@@ -96,7 +96,7 @@ void    toLower(std::string &str)
     for (size_t i = 0; i < str.length(); ++i)
         str[i] = std::tolower(str[i]);
 }
-void    HttpRequest::feed(char *data, size_t size)
+void    Request::feed(char *data, size_t size)
 {
     u_int8_t character;
     static std::stringstream s;
@@ -637,92 +637,92 @@ void    HttpRequest::feed(char *data, size_t size)
     }
 }
 
-bool    HttpRequest::parsingCompleted()
+bool    Request::parsingCompleted()
 {
     return (_state == Parsing_Done);
 }
 
-HttpMethod  &HttpRequest::getMethod()
+HttpMethod  &Request::getMethod()
 {
     return (_method);
 }
 
-std::string &HttpRequest::getPath()
+std::string &Request::getPath()
 {
     return (_path);
 }
 
-std::string &HttpRequest::getQuery()
+std::string &Request::getQuery()
 {
     return (_query);
 }
 
-std::string &HttpRequest::getFragment()
+std::string &Request::getFragment()
 {
     return (_fragment);
 }
 
-std::string HttpRequest::getHeader(std::string const &name)
+std::string Request::getHeader(std::string const &name)
 {
     return (_request_headers[name]);
 }
 
-const std::map<std::string, std::string> &HttpRequest::getHeaders() const
+const std::map<std::string, std::string> &Request::getHeaders() const
 {
 	return (this->_request_headers);
 }
 
-std::string HttpRequest::getMethodStr()
+std::string Request::getMethodStr()
 {
 	return (_method_str[_method]);
 }
 
-std::string &HttpRequest::getBody()
+std::string &Request::getBody()
 {
     return (_body_str);
 }
 
-std::string     HttpRequest::getServerName()
+std::string     Request::getServerName()
 {
     return (this->_server_name);
 }
 
-bool    HttpRequest::getMultiformFlag()
+bool    Request::getMultiformFlag()
 {
     return (this->_multiform_flag);
 }
 
-std::string     &HttpRequest::getBoundary()
+std::string     &Request::getBoundary()
 {
     return (this->_boundary);
 }
 
-void    HttpRequest::setBody(std::string body)
+void    Request::setBody(std::string body)
 {
     _body.clear();
     _body.insert(_body.begin(), body.begin(), body.end());
     _body_str = body;
 }
 
-void    HttpRequest::setMethod(HttpMethod & method)
+void    Request::setMethod(HttpMethod & method)
 {
     _method = method;
 }
 
-void    HttpRequest::setHeader(std::string &name, std::string &value)
+void    Request::setHeader(std::string &name, std::string &value)
 {
     trimStr(value);
     toLower(name);
     _request_headers[name] = value;
 }
 
-void    HttpRequest::setMaxBodySize(size_t size)
+void    Request::setMaxBodySize(size_t size)
 {
     _max_body_size = size;
 }
 
 
-void        HttpRequest::printMessage()
+void        Request::printMessage()
 {
     std::cout << _method_str[_method] + " " + _path + "?" + _query + "#" + _fragment
               + " " + "HTTP/" << _ver_major  << "." << _ver_minor << std::endl;
@@ -743,7 +743,7 @@ void        HttpRequest::printMessage()
 }
 
 
-void        HttpRequest::_handle_headers()
+void        Request::_handle_headers()
 {
     std::stringstream ss;
 
@@ -773,14 +773,14 @@ void        HttpRequest::_handle_headers()
     }
 }
 
-short     HttpRequest::errorCode()
+short     Request::errorCode()
 {
     return (this->_error_code);
 }
 
 /* Reset object variables to recive new request */
 
-void    HttpRequest::clear()
+void    Request::clear()
 {
     _path.clear();
     _error_code = 0;
@@ -808,7 +808,7 @@ void    HttpRequest::clear()
 
 /* Checks the value of header "Connection". If keep-alive, don't close the connection. */
 
-bool        HttpRequest::keepAlive()
+bool        Request::keepAlive()
 {
     if (_request_headers.count("connection"))
     {
@@ -818,7 +818,7 @@ bool        HttpRequest::keepAlive()
     return (true);
 }
 
-void            HttpRequest::cutReqBody(int bytes)
+void            Request::cutReqBody(int bytes)
 {
     _body_str = _body_str.substr(bytes);
 }
