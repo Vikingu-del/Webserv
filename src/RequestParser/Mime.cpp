@@ -1,4 +1,4 @@
-#include "../inc/Mime.hpp"
+#include "Mime.hpp"
 
 
 Mime::Mime()
