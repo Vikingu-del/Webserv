@@ -94,3 +94,5 @@ Initialization: Set up pipes and fork the CGI process.
 Sending Body: Write the request body to the CGI process and close the pipe.
 Reading Response: Read the response from the CGI process, and handle the completion state.
 Sending Client Response: Ensure that the connection is only closed once the response is fully sent and the CGI handler is done processing.
+
+For more check the subject [here](./subject)
