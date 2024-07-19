@@ -51,7 +51,9 @@ header .log {
     padding-right: 5em;
     padding-left: 5em;
     align-items: center;
+    list-style: none;
 }
+
 
 .log img {
     width: 200px;

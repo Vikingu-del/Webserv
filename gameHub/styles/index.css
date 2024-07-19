@@ -37,7 +37,6 @@ nav .menu {
 
 .menu ul {
     display: flex;
-    list-style: none;
 }
 
 .menu ul li {
